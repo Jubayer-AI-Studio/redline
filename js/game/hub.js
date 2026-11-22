@@ -934,9 +934,11 @@ CB.game = CB.game || {};
     s.push('<rect x="0" y="100" width="400" height="10" fill="#000" opacity=".35"/>');
     s.push('</g>');
     s.push('<path d="' + sh.glass + '" fill="url(#' + id + 'g)" stroke="rgba(0,0,0,.7)" stroke-width="1"/>');
-    if (number) {
-      s.push('<circle cx="200" cy="84" r="11" fill="#f4f1ea" stroke="#111" stroke-width="1.2"/>');
-      s.push('<text x="200" y="88.5" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="800" font-size="12" fill="#111">' + esc(String(number).slice(0, 3)) + '</text>');
+    // As-Sunnah logo on the car door - large, crisp, clearly visible
+    s.push('<image href="img/as_sunnah_door_decal.png" xlink:href="img/as_sunnah_door_decal.png" x="120" y="52" width="170" height="75" preserveAspectRatio="xMidYMid meet"/>');
+    if (number && !opts.spin) {
+      s.push('<circle cx="310" cy="84" r="11" fill="#f4f1ea" stroke="#111" stroke-width="1.2"/>');
+      s.push('<text x="310" y="88.5" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="800" font-size="12" fill="#111">' + esc(String(number).slice(0, 3)) + '</text>');
     }
     s.push('<path d="M384 82 l6 2 l-1 6 l-7 -1 z" fill="#ffe7a8" class="gh-car-head"/>');
     s.push('<path d="M20 84 l-4 2 l1 6 l5 -1 z" fill="#ff2b2b" class="gh-car-tail"/>');
@@ -1103,26 +1105,25 @@ background:var(--gh-panel2);border:1px solid var(--gh-line);color:var(--gh-dim);
 #game-hub .gh-loading::before{content:"";width:22px;height:22px;border-radius:50%;border:2px solid var(--gh-line2);border-top-color:var(--gh-accent);animation:gh-spin 1s linear infinite;flex:none}
 #game-hub .gh-loading b{color:var(--gh-text)}
 @keyframes gh-spin{to{transform:rotate(360deg)}}
-/* title */
-#game-hub .gh-title{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden}
-#game-hub .gh-title-logo{position:relative;font-size:clamp(52px,11.5vw,170px);font-weight:700;letter-spacing:.04em;line-height:.9;display:flex;margin-top:-6vh}
-#game-hub .gh-title-logo span{display:inline-block;background:var(--accent-grad,linear-gradient(180deg,#fff 0%,#e9e3d6 38%,#8d877a 52%,#efe7d6 64%,#a8a091 100%));-webkit-background-clip:text;background-clip:text;color:transparent;
-filter:drop-shadow(0 10px 30px rgba(0,0,0,.6));opacity:0;transform:translateY(40px);animation:gh-letter .9s cubic-bezier(.2,.9,.2,1) forwards}
-#game-hub .gh-title-logo::after{content:"REDLINE";position:absolute;inset:0;display:flex;letter-spacing:inherit;color:transparent;-webkit-text-fill-color:transparent;
-background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.5) 50%,transparent 58%) no-repeat;background-size:250% 100%;background-position:150% 0;-webkit-background-clip:text;background-clip:text;
-opacity:0;animation:gh-fade .01s 1.4s forwards,gh-sheen 4.5s 1.4s ease-in-out infinite;pointer-events:none}
-#game-hub .gh-title-logo span.is-red{background:linear-gradient(180deg,#ff8a6a 0%,#ff4b33 40%,#c22a17 58%,#ff6a4d 72%,#a8200f 100%);-webkit-background-clip:text;background-clip:text}
+@keyframes gh-fade{from{opacity:0}to{opacity:1}}
 @keyframes gh-letter{to{opacity:1;transform:none}}
 @keyframes gh-sheen{0%{background-position:150% 0}55%,100%{background-position:-60% 0}}
-#game-hub .gh-title-tag{margin-top:14px;font-size:var(--fs-sm);letter-spacing:.7em;text-transform:uppercase;color:var(--gh-accent);opacity:0;animation:gh-fade 1s 1s forwards;padding-left:.7em}
-#game-hub .gh-title-car{position:relative;width:min(760px,80vw);margin-top:3vh;opacity:0;transform:translateX(-60px);animation:gh-car-in 1.3s .5s cubic-bezier(.15,.85,.25,1) forwards}
-#game-hub .gh-title-car svg{width:100%;height:auto;display:block;filter:drop-shadow(0 30px 40px rgba(0,0,0,.7))}
-#game-hub .gh-title-car::after{content:"";position:absolute;left:5%;right:5%;bottom:-6%;height:30%;background:radial-gradient(closest-side,rgba(212,176,106,.22),transparent);filter:blur(10px);z-index:-1}
 @keyframes gh-car-in{to{opacity:1;transform:none}}
-#game-hub .gh-title-press{margin-top:5vh;font-size:var(--fs-sm);letter-spacing:.42em;text-transform:uppercase;color:var(--gh-text);opacity:0;animation:gh-fade .8s 1.8s forwards,gh-pulse 2s 2.6s ease-in-out infinite}
-@keyframes gh-fade{to{opacity:1}}
-@keyframes gh-pulse{0%,100%{opacity:1}50%{opacity:.35}}
-#game-hub .gh-title-meta{position:absolute;bottom:22px;left:28px;right:28px;display:flex;justify-content:space-between;font-size:var(--fs-2xs);letter-spacing:.2em;text-transform:uppercase;color:var(--gh-mute)}
+/* title */
+#game-hub .gh-title{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;background:radial-gradient(ellipse at 50% 50%,#fbfbfc 0%,#ececed 60%,#dedee4 100%)!important;color:#1e293b!important}
+#game-hub .gh-title::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0,transparent 40px,rgba(234,88,12,0.02) 40px,rgba(234,88,12,0.02) 41px);pointer-events:none}
+#game-hub .gh-title-badge{width:88px;height:88px;background:#ffffff;border-radius:22px;box-shadow:0 10px 32px rgba(0,0,0,0.08),0 0 24px rgba(56,189,248,0.18);display:flex;align-items:center;justify-content:center;padding:10px;margin-bottom:14px;margin-top:-2vh;z-index:2}
+#game-hub .gh-title-badge img{width:100%;height:100%;object-fit:contain}
+#game-hub .gh-title-logo{position:relative;font-size:clamp(56px,11vw,150px);font-weight:900;letter-spacing:.04em;line-height:.9;display:flex;justify-content:center;text-transform:uppercase;margin:0}
+#game-hub .gh-title-logo span{display:inline-block;background:linear-gradient(180deg,#3b82f6 0%,#1d4ed8 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;filter:drop-shadow(0 4px 18px rgba(37,99,235,.25));opacity:1;transform:none}
+#game-hub .gh-title-logo::after{content:"JUBAYER";position:absolute;inset:0;display:flex;justify-content:center;letter-spacing:inherit;color:transparent;-webkit-text-fill-color:transparent;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.8) 50%,transparent 60%) no-repeat;background-size:250% 100%;background-position:150% 0;-webkit-background-clip:text;background-clip:text;opacity:1;animation:gh-sheen 4.5s 1.4s ease-in-out infinite;pointer-events:none}
+#game-hub .gh-title-sub{margin-top:14px;font-size:clamp(14px,2.2vw,24px);font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#ea580c;text-align:center;display:block}
+#game-hub .gh-title-tag{margin-top:8px;font-size:clamp(11px,1.3vw,15px);font-weight:600;letter-spacing:.35em;text-transform:uppercase;color:#64748b;text-align:center;display:block}
+#game-hub .gh-title-car{position:relative;width:min(860px,86vw);margin-top:2.5vh;opacity:1;transform:none}
+#game-hub .gh-title-car svg{width:100%;height:auto;display:block;filter:drop-shadow(0 20px 28px rgba(0,0,0,.18))}
+#game-hub .gh-title-car::after{content:"";position:absolute;left:5%;right:5%;bottom:-4%;height:25%;background:radial-gradient(closest-side,rgba(0,0,0,.2),transparent);filter:blur(8px);z-index:-1}
+#game-hub .gh-title-press{display:block!important;margin-top:3.5vh;font-size:13px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:#94a3b8;text-align:center}
+#game-hub .gh-title-meta{display:flex!important;position:absolute;bottom:24px;left:36px;right:36px;justify-content:space-between;align-items:center;font-size:11px;font-weight:700;color:#94a3b8;letter-spacing:.08em;text-transform:uppercase;pointer-events:none}
 #game-hub .gh-wheel-spin{animation:gh-spin .5s linear infinite}
 #game-hub .gh-car-sheen{animation:gh-carsheen 5s ease-in-out infinite}
 @keyframes gh-carsheen{0%,100%{transform:translateX(-30%)}50%{transform:translateX(30%)}}
@@ -1195,7 +1196,7 @@ background:var(--gh-panel);transition:border-color .2s,background .2s}
 #game-hub .gh-modes{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#game-hub .gh-mode{min-height:112px;padding:14px}#game-hub .gh-mode-lbl{margin-top:10px}
 #game-hub .gh-links{grid-template-columns:minmax(0,1fr)}
 #game-hub .gh-btn.big small{white-space:normal}#game-hub .gh-home-hero{grid-template-columns:minmax(0,1fr)}
-#game-hub .gh-title-tag{letter-spacing:.36em;font-size:var(--fs-xs);padding-left:.36em;text-align:center}}
+#game-hub .gh-title-tag{letter-spacing:.12em;font-size:clamp(12px,3.2vw,17px);padding-left:.12em;text-align:center}}
 @media (max-height:520px) and (min-width:641px){#game-hub .gh-home-hero{grid-template-columns:1fr 1fr;padding:16px 20px}#game-hub .gh-home-car{order:0}#game-hub .gh-hero-name{font-size:var(--fs-2xl)}#game-hub .gh-home-prog{display:none}}
 /* tabs */
 /* tabs = the Atelier's .cb-tab-list / .cb-tab */
@@ -1739,11 +1740,8 @@ animation:gh-in .3s both;box-shadow:var(--shadow-lg,0 10px 30px rgba(0,0,0,.5));
     var hasTabs = cur && SCREENS[cur.id] && SCREENS[cur.id].tabs;
     var k = function (key, padKey, cls, label) { return '<span>' + (pad ? '<kbd class="pad ' + (cls || '') + '">' + padKey + '</kbd>' : '<kbd>' + key + '</kbd>') + label + '</span>'; };
     var foot = H.root.querySelector('.gh-foot');
-    // the Atelier and Race / Drift setup have no hint bar: in the unified game the hub shows one only for a controller
-    foot.style.display = !cur || cur.id === 'title' || (H.routed && !pad) ? 'none' : '';
-    foot.innerHTML =
-      k('↑↓←→', '✛', '', 'Navigate') + k('Enter', 'A', 'pad-a', 'Select') + k('Esc', 'B', 'pad-b', 'Back') +
-      (hasTabs ? k('Q / E', 'LB RB', '', 'Tabs') : '');
+    foot.style.display = 'none';
+    foot.innerHTML = '';
   }
 
   /* -------------------------------------------------------- navigation */
@@ -1798,6 +1796,7 @@ animation:gh-in .3s both;box-shadow:var(--shadow-lg,0 10px 30px rgba(0,0,0,.5));
     var cur = H.stack[H.stack.length - 1];
     var def = cur && SCREENS[cur.id];
     if (def && def.onLeave) safe(function () { def.onLeave(cur.params || {}); });
+    if (hasDOM) document.documentElement.classList.remove('has-title-screen');
     H.charts.forEach(function (c) { safe(function () { c.destroy(); }); });
     H.charts = [];
     if (H.screenCleanup) { H.screenCleanup.forEach(function (f) { safe(f); }); }
@@ -1836,6 +1835,7 @@ animation:gh-in .3s both;box-shadow:var(--shadow-lg,0 10px 30px rgba(0,0,0,.5));
     H.main.appendChild(host);
     H.focusEl = null; H.focusIdx = -1;
     H.root.dataset.screen = cur.id;
+    if (hasDOM) document.documentElement.classList.toggle('has-title-screen', cur.id === 'title');
 
     try { def.render(host, cur.params || {}); }
     catch (e) {
@@ -2544,12 +2544,14 @@ animation:gh-in .3s both;box-shadow:var(--shadow-lg,0 10px 30px rgba(0,0,0,.5));
   }
   function carStatsStrip(build) {
     var m = metricsFor(build) || {}, u = setting('units', 'kph');
+    var z = u === 'mph' ? m.zeroTo60_s : (isNum(m.zeroTo100_s) ? m.zeroTo100_s : null);
+    var topSpd = u === 'mph' ? Math.round(num(m.topSpeed_kph, 0) * 0.621371) : fmtInt(m.topSpeed_kph);
     return '<div class="gh-hero-stats">' +
-      '<div><b>' + fmtInt(m.power_hp) + '</b><small>hp</small></div>' +
-      '<div><b>' + fmtInt(m.weight_kg) + '</b><small>kg</small></div>' +
-      // sprint in the player's units: 0–100 km/h (as the Garage shows it) or 0–60 mph
-      (function () { var z = u === 'mph' ? m.zeroTo60_s : (isNum(m.zeroTo100_s) ? m.zeroTo100_s : null); return '<div><b>' + (isNum(z) ? z.toFixed(1) : '—') + '</b><small>' + (u === 'mph' ? '0–60 s' : '0–100 s') + '</small></div>'; })() +
-      '<div><b>' + (u === 'mph' ? Math.round(num(m.topSpeed_kph, 0) * 0.621371) : fmtInt(m.topSpeed_kph)) + '</b><small>' + (u === 'mph' ? 'mph top' : 'km/h top') + '</small></div></div>';
+      '<div class="gh-stat-box"><b>' + fmtInt(m.power_hp) + '</b><small class="gh-stat-lbl">hp</small></div>' +
+      '<div class="gh-stat-box"><b>' + fmtInt(m.weight_kg) + '</b><small class="gh-stat-lbl">kg</small></div>' +
+      '<div class="gh-stat-box"><b>' + (isNum(z) ? z.toFixed(1) : '—') + '</b><small class="gh-stat-lbl">' + (u === 'mph' ? '0–60 s' : '0–100 s') + '</small></div>' +
+      '<div class="gh-stat-box"><b>' + topSpd + '</b><small class="gh-stat-lbl">' + (u === 'mph' ? 'mph top' : 'km/h top') + '</small></div>' +
+    '</div>';
   }
   function moduleMissing(name, what) {
     return '<div class="gh-loading"><span><b>' + esc(name) + ' module loading…</b><br>' + esc(what || 'This feature becomes available as soon as the module is loaded.') + '</span></div>';
@@ -2615,18 +2617,26 @@ animation:gh-in .3s both;box-shadow:var(--shadow-lg,0 10px 30px rgba(0,0,0,.5));
      Screen: title
      ====================================================================== */
   screen('title', {
-    title: 'Redline',
+    title: 'JUBAYER — As-Sunnah Skill Development Institute',
     render: function (host) {
-      var b = activeBuild(), p = P();
-      var coarse = hasDOM && window.matchMedia ? safe(function () { return window.matchMedia('(pointer: coarse)').matches; }, false) : false;
+      var b = activeBuild();
+      var p = (CB.game && CB.game.profile && CB.game.profile.get) ? CB.game.profile.get() : { driverName: 'JUBAYER', level: 2 };
+      var coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+      var letters = 'JUBAYER';
       host.className = 'gh-title';
       host.style.padding = '0';
-      var letters = 'REDLINE'.split('').map(function (c, i) { return '<span' + (i >= 3 ? ' class="is-red"' : '') + ' style="animation-delay:' + (0.15 + i * 0.09) + 's">' + c + '</span>'; }).join('');
-      host.innerHTML = '<div class="gh-title-logo" aria-label="Redline">' + letters + '</div>' +
-        '<div class="gh-title-tag">Build it · Race it · Drift it</div>' +
+      host.innerHTML =
+        '<div class="gh-title-badge"><img src="img/as_sunnah_logo.png" alt="As-Sunnah Logo"></div>' +
+        '<div class="gh-title-logo" aria-label="Jubayer"><span>' + letters + '</span></div>' +
+        '<div class="gh-title-sub">AS-SUNNAH SKILL DEVELOPMENT INSTITUTE</div>' +
+        '<div class="gh-title-tag">BUILD IT &middot; RACE IT &middot; DRIFT IT</div>' +
         '<div class="gh-title-car">' + carArt(b, { spin: true, uid: 'title', own: !(CB.render && CB.render.thumbnail) }) + '</div>' +
-        '<div class="gh-title-press">' + (coarse ? 'Tap to start' : 'Press any key') + (H.pad.active ? ' · Ⓐ' : '') + '</div>' +
-        '<div class="gh-title-meta"><span>' + esc(p.driverName || 'Driver') + ' · Level ' + (p.level || 1) + '</span><span>' + esc(buildName(b, '')) + '</span><span>© Redline</span></div>';
+        '<div class="gh-title-press"><div class="gh-title-press-btn">' + (coarse ? 'TAP TO START' : 'PRESS ANY KEY') + '</div></div>' +
+        '<div class="gh-title-meta">' +
+          '<span>' + esc(p.driverName || 'JUBAYER') + ' &middot; LEVEL ' + (p.level || 2) + '</span>' +
+          '<span>' + esc(buildName(b, 'TRACK WEAPON')) + '</span>' +
+          '<span>&copy; JUBAYER &middot; AS-SUNNAH</span>' +
+        '</div>';
       host.addEventListener('click', function () { sfx('select'); show('menu', null, { replace: true }); });
     }
   });
@@ -2748,6 +2758,10 @@ animation:gh-in .3s both;box-shadow:var(--shadow-lg,0 10px 30px rgba(0,0,0,.5));
           '<span class="gh-mode-art" aria-hidden="true">' + icon(m.icon, 120) + '</span><span class="gh-mode-ic">' + icon(m.icon, 20) + '</span>' +
           '<span class="gh-mode-lbl">' + esc(m.id === 'derby' ? 'Derby' : m.id === 'drag' ? 'Drag' : m.label) + badgeOf(m.id) + '</span><span class="gh-mode-ds">' + esc(t.short) + '</span></button>';
       });
+      // Prominent Garage Tile at position #1
+      tiles.unshift('<button class="gh-mode gh-mode-garage" role="menuitem" data-nav data-key="mi-garage" data-act="go" data-id="atelier" title="53 Cars Garage - Choose and drive any car 100% free" style="--mc:#0a72cc;--mcs:rgba(10,114,204,0.25);background:linear-gradient(135deg,#0a72cc,#004b93);color:#fff;border-color:rgba(255,255,255,0.25);">' +
+        '<span class="gh-mode-art" aria-hidden="true">' + icon('wrench', 120) + '</span><span class="gh-mode-ic" style="color:#ffd000;">' + icon('wrench', 20) + '</span>' +
+        '<span class="gh-mode-lbl" style="color:#fff;font-weight:800;">🚗 Garage (53)</span><span class="gh-mode-ds" style="color:#d9eaff;">53 Cars Free</span></button>');
       if (routerMod()) {
         tiles.push('<button class="gh-mode" role="menuitem" data-nav data-key="mi-multiplayer" data-act="go" data-id="multiplayer" title="Peer-to-peer races with friends, each in their own build" style="--mc:var(--mode-online);--mcs:var(--mode-online-soft)">' +
           '<span class="gh-mode-art" aria-hidden="true">' + icon('users', 120) + '</span><span class="gh-mode-ic">' + icon('users', 20) + '</span>' +
@@ -2758,6 +2772,8 @@ animation:gh-in .3s both;box-shadow:var(--shadow-lg,0 10px 30px rgba(0,0,0,.5));
           '<span class="gh-link-ic">' + icon(m.icon, 18) + '</span><span class="gh-link-txt"><b>' + esc(m.label) + badgeOf(m.id) + '</b><small>' + esc(m.desc) + '</small></span>' +
           '<span class="gh-link-go" aria-hidden="true">' + icon('chev', 16) + '</span></button>';
       });
+      var garageCta = '<button class="gh-btn primary big gh-garage-cta-btn" data-nav data-key="cta-garage-hero" data-act="go" data-id="atelier" style="background:linear-gradient(135deg,#0a72cc,#0052a3);color:#fff;font-weight:700;box-shadow:0 4px 14px rgba(10,114,204,0.4);border:none;">' +
+        icon('wrench', 18) + '<span>🚗 Garage (53 Cars)<small>Choose &amp; customize any car FREE</small></span></button>';
       var careerCta = nextChamp
         ? '<button class="gh-btn big" data-nav data-key="cta-career" data-act="go" data-id="career">' + icon('career', 18) + '<span>Continue career<small>' + esc(nextChamp.name) + ' · round ' + (nextChamp.roundsDone + 1) + ' of ' + nextChamp.rounds.length + '</small></span></button>'
         : '<button class="gh-btn big" data-nav data-key="cta-career" data-act="go" data-id="career">' + icon('career', 18) + '<span>Start career<small>Rookie Cup to Hypercar Masters</small></span></button>';
@@ -2769,9 +2785,9 @@ animation:gh-in .3s both;box-shadow:var(--shadow-lg,0 10px 30px rgba(0,0,0,.5));
           '<div class="gh-home-txt"><div class="gh-kicker">' + (heroCar ? 'Active car' : 'Your build') + (b ? ' · ' + esc(modelName(b) || titleCase(bodyStyleOf(b))) : '') + '</div>' +
           '<div class="gh-hero-name">' + esc(heroCar ? heroCar.name : buildName(b)) + '</div>' +
           '<div class="gh-home-chips">' + (b ? piBadge(b) : '') + (heroCar ? '<span class="gh-chip ' + conditionLabel(heroCar.condition).kind + '">' + conditionLabel(heroCar.condition).label + ' · ' + pct(heroCar.condition) + '</span>'
-            : ab ? (car ? '<span class="gh-chip" title="Career championships use your active career car">Career car · ' + esc(car.name) + '</span>' : '') : '<span class="gh-chip warn">Not owned</span>') +
+            : '<span class="gh-chip good">Owned · 100% Free</span>') +
             '<button class="gh-btn ghost small" data-nav data-key="cta-garage" data-act="go" data-id="atelier">' + icon('wrench', 14) + 'Tune in Garage</button></div>' +
-          '<div class="gh-home-cta">' + quickCta + careerCta + '</div>' +
+          '<div class="gh-home-cta">' + garageCta + quickCta + careerCta + '</div>' +
           '<div class="gh-home-prog">' +
             '<div class="gh-home-lv"><span><b>Level ' + li.level + '</b> · ' + esc(levelTitle(li.level)) + '</span><span class="gh-num">' + (li.maxed ? 'Max level' : fmtInt(li.remaining) + ' XP to go') + '</span>' +
               '<div class="gh-bar"><i style="width:' + (li.progress * 100).toFixed(1) + '%"></i></div></div>' +
@@ -3915,7 +3931,7 @@ animation:gh-in .3s both;box-shadow:var(--shadow-lg,0 10px 30px rgba(0,0,0,.5));
   function carPanelHTML(title) {
     var car = activeCar(), b = activeBuild();
     return '<div class="gh-panel cut"><div class="gh-kicker">' + esc(title || 'Your car') + '</div><div class="gh-hero-name" style="font-size:var(--fs-xl)">' + esc(car ? car.name : buildName(b)) + '</div>' +
-      '<div style="display:flex;gap:6px;margin:8px 0">' + (b ? piBadge(b) : '') + (car ? '<span class="gh-chip ' + conditionLabel(car.condition).kind + '">' + pct(car.condition) + '</span>' : '<span class="gh-chip warn">Garage build (not owned)</span>') + '</div>' +
+      '<div style="display:flex;gap:6px;margin:8px 0">' + (b ? piBadge(b) : '') + (car ? '<span class="gh-chip ' + conditionLabel(car.condition).kind + '">' + pct(car.condition) + '</span>' : '<span class="gh-chip good">Owned · Ready to Race</span>') + '</div>' +
       '<div>' + carArt(b, { uid: 'setup' }) + '</div>' + (b ? carStatsStrip(b) : '') +
       '<div class="gh-btns" style="margin-top:12px"><button class="gh-btn small" data-nav data-act="garage">Change car</button></div></div>';
   }
@@ -4643,44 +4659,7 @@ animation:gh-in .3s both;box-shadow:var(--shadow-lg,0 10px 30px rgba(0,0,0,.5));
         tile('Credits earned', esc(fmtCompact(st.creditsEarned)), lsum ? 'spent ' + fmtCompact(lsum.spent) : '') +
         tile('Drift best', fmtInt(st.driftScoreBest), 'points') +
         tile('Titles', fmtInt(cstats.titles), fmtInt(cstats.rounds) + ' career rounds') +
-        tile('Career cars', fmtInt((p.ownedCars || []).length), ss.favoriteTrack ? 'favourite: ' + esc(trackName(ss.favoriteTrack, true)) : '') + '</div>' +
-        '<div class="gh-grid c2" style="margin-top:16px">' +
-        chartCard('form', 'Recent form', 'Finishing position, last 20 races (P1 at top)', 230) +
-        chartCard('results', 'Results breakdown', 'All races', 230) +
-        chartCard('balance', 'Credit balance', 'From the transaction ledger', 230, true) +
-        chartCard('tracks', 'Circuits', 'Races per circuit', 230) +
-        chartCard('earn', 'Earnings by source', 'Credits earned per category', 230) + '</div>' +
-        '<h2 class="gh-h2">Recent transactions</h2><div class="gh-panel gh-ledger" style="padding:6px">' + (arr(ledger).length ? '<table class="gh-table"><thead><tr><th>Date</th><th>Description</th><th>Category</th><th class="n">Amount</th><th class="n">Balance</th></tr></thead><tbody>' +
-          arr(ledger).slice(-12).reverse().map(function (e) { return '<tr><td style="color:var(--gh-dim)">' + fmtDate(e.t) + '</td><td>' + esc(e.reason) + '</td><td style="color:var(--gh-dim)">' + esc(titleCase(e.category || '')) + '</td><td class="n" style="color:' + (e.amount >= 0 ? 'var(--gh-good)' : 'var(--gh-bad)') + '">' + (e.amount >= 0 ? '+' : '−') + esc(fmtCredits(Math.abs(e.amount))) + '</td><td class="n">' + (isNum(e.balance) ? esc(fmtCredits(e.balance)) : '—') + '</td></tr>'; }).join('') + '</tbody></table>' : '<div class="gh-empty"><b>No transactions yet</b></div>') + '</div>';
-      // charts
-      var form = formSeries(hist, 20);
-      var maxField = Math.max(4, Math.max.apply(null, form.map(function (f) { return f.field || 0; }).concat([4])));
-      miniChart(host.querySelector('[data-chart="form"]'), {
-        type: 'line', invertY: true, yMin: 1, yMax: maxField, yStep: maxField > 10 ? 2 : 1, yFmt: function (v) { return 'P' + Math.round(v); }, empty: 'Race to build your form guide',
-        points: form.map(function (f, i) { return { y: f.position, highlight: f.position === 1, label: trackName(f.trackId, true), tip: '<b>' + (f.dnf ? 'DNF' : 'P' + f.position) + '</b> / ' + f.field + ' · ' + esc(trackName(f.trackId, true)) + (f.t ? '<br><small>' + fmtDate(f.t) + '</small>' : '') }; }),
-        xLabel: function (p0, i) { return String(i + 1); }
-      });
-      var buckets = resultBuckets(hist);
-      miniChart(host.querySelector('[data-chart="results"]'), {
-        type: 'bars', valueLabels: true, integer: true, yFmt: function (v) { return fmtInt(v); }, empty: 'No races yet',
-        points: buckets.some(function (b) { return b.value; }) ? buckets.map(function (b) { return { y: b.value, label: b.label.split(' (')[0], tip: '<b>' + b.value + '</b> ' + esc(b.label) }; }) : []
-      });
-      var bal = balanceSeries(ledger, p.credits);
-      miniChart(host.querySelector('[data-chart="balance"]'), {
-        type: 'area', yFmt: function (v) { return fmtCompact(v); }, markers: bal.length <= 40, lastLabel: fmtCredits(p.credits),
-        points: bal.map(function (b) { return { y: b.balance, label: b.reason || '', tip: '<b>' + esc(fmtCredits(b.balance)) + '</b>' + (b.amount != null ? ' (' + (b.amount >= 0 ? '+' : '−') + esc(fmtCredits(Math.abs(b.amount))) + ')' : '') + (b.reason ? '<br><small>' + esc(b.reason) + '</small>' : '') + '<br><small>' + fmtDate(b.t) + '</small>' }; }),
-        xLabel: function (b) { return ''; }
-      });
-      var tu = trackUsage(st.tracks).slice(0, 7);
-      miniChart(host.querySelector('[data-chart="tracks"]'), {
-        type: 'hbars', labelWidth: 110, empty: 'No circuits raced yet',
-        points: tu.map(function (t) { return { y: t.races, label: t.name, valueLabel: t.races + (t.wins ? ' · ' + t.wins + 'W' : ''), tip: '<b>' + t.races + '</b> races · ' + t.wins + ' wins' + (t.bestLap_s ? '<br>Best lap ' + fmtTime(t.bestLap_s) : '') }; })
-      });
-      var cats = lsum ? Object.keys(lsum.byCategory).map(function (k) { return { k: k, v: lsum.byCategory[k].earned }; }).filter(function (x) { return x.v > 0; }).sort(function (a, b) { return b.v - a.v; }).slice(0, 7) : [];
-      miniChart(host.querySelector('[data-chart="earn"]'), {
-        type: 'hbars', labelWidth: 110, empty: 'Earn credits by racing', yFmt: function (v) { return fmtCompact(v); },
-        points: cats.map(function (c) { return { y: c.v, label: titleCase(c.k), tip: '<b>' + esc(fmtCredits(c.v)) + '</b> ' + esc(titleCase(c.k)) }; })
-      });
+        tile('Career cars', fmtInt((p.ownedCars || []).length), ss.favoriteTrack ? 'favourite: ' + esc(trackName(ss.favoriteTrack, true)) : '') + '</div>';
       var nameInput = host.querySelector('input[data-key="name"]');
       nameInput.addEventListener('change', function () {
         var v = nameInput.value.trim().slice(0, 24);
