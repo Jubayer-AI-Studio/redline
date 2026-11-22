@@ -209,8 +209,54 @@ Racing aesthetics demand aggressive diagonal styling:
   - Top: Red-accented progressive Brake pedal.
   - Bottom: Green-accented progressive Throttle / Gas pedal.
 - **Top Corners**:
-  - Top-Left: Pause / Menu button.
-  - Top-Right: Camera angle toggle (Cockpit, Chase, Hood) and Audio mute button.
+  - Top-Left: Pause / Menu button and Camera perspective toggle.
+  - Top-Right: Audio mute button and Quick Settings gear.
+
+### 3.8 Dialogs & Contained Modals (`.rl-dialog`, `.rl-drawer`)
+- **Structure**: Centered backdrop modal or sliding bottom-up sheet with heavy blur (`backdrop-filter: blur(16px)`).
+- **Use Cases**:
+  - Pre-race career briefing & rival breakdown.
+  - Multiplayer room code entry & lobby browser.
+  - Part purchase confirmation ("Buy & Install").
+  - Factory stock reset warning.
+- **Specifications**:
+  - Header: Skewed title chip with dismiss icon button (>= 48px).
+  - Body: Contained viewport with horizontal carousel or scroll-free grid.
+  - Actions: Dual button group: Secondary "Cancel" pill + Primary "Confirm" red skewed CTA.
+
+### 3.9 Toast Notifications & Telemetry Banners (`.rl-toast`)
+- **Structure**: Floating pill anchored to top-center (beneath top bar safe-area) with slide-down/fade-in animation.
+- **Use Cases**:
+  - Controller connected / disconnected: `Controller connected · Xbox Wireless Controller`.
+  - In-game achievements: `Achievement Unlocked · Apex Predator (+5,000 CR)`.
+  - Save sync & cloud backup status.
+- **Specifications**:
+  - Height: `44px`, horizontal padding `16px`.
+  - Border: 1px solid with accent glow (Green for success, Gold for trophy, Red for warning).
+  - Auto-dismiss: 3.5 seconds with cubic-bezier out-expo ease.
+
+### 3.10 3D Showroom Quality Architecture & Hardware Tiers
+- **Environment Lighting**:
+  - CC0 High Dynamic Range Image (HDRI) studio equirectangular map (Poly Haven "Studio Small" CC0 license, or warm warehouse reflection rig).
+  - Ambient occlusion contact ground shadow beneath active tire contact patches.
+- **Floor Reflections**:
+  - High tier: Real-time planar roughness reflection map displaying dynamic car underside and neon underglow.
+  - Low tier: Blurry pre-baked directional gradient fake reflection (`scaleY(-0.45)` with linear fade mask).
+- **Post-Processing Bloom**:
+  - Dual-pass Gaussian threshold bloom enabled **strictly on high-tier hardware**.
+  - Luminance threshold: `0.85`, radius: `0.4` for subtle brake calipers and LED light bar bloom without blowing out carbon texture.
+- **Paint Finishes (Instant Real-Time Preview)**:
+  - **Gloss**: Roughness `0.08`, Metalness `0.10`, Clearcoat `1.0`.
+  - **Matte**: Roughness `0.65`, Metalness `0.02`, Clearcoat `0.0`.
+  - **Metallic**: Roughness `0.22`, Metalness `0.88`, Clearcoat `0.6`.
+  - **Pearl**: Two-tone custom iridescence shader shifting from base red `#e0412f` to amber gold `#c9a56b` along grazing angles.
+- **Device Quality Tiering**:
+  - **Tier 1 (Flagship / Desktop)**: 60 FPS target, full WebGL PBR, HDRI radiosity, real-time reflection, subtle bloom, full anti-aliasing.
+  - **Tier 2 (Mid-range Mobile)**: 60 FPS target, standard PBR, contact shadow, cheap fake floor reflection, bloom disabled.
+  - **Tier 3 (Budget / Thermal Throttled)**: 60 FPS target, simplified shading, reduced canvas resolution (0.8x DPR), static studio still.
+- **Geometric Ceiling & Weakest Car Models**:
+  - **Detailed Models**: Sports, exotics and JDM icons (`mclaren-p1`, `ferrari-sf90-stradale`, `porsche-911-992`, `nissan-skyline-gtr-r34`) feature high-density lofted splines with defined vents, diffusers, and aerodynamic spoilers.
+  - **Weakest Models**: Utility and commercial shapes (`mercedes-sprinter-vs30`, `ford-transit-hr`, `tesla-cybertruck`) are constrained by simple polygonal box profiles with minimal exterior curvature and flatter geometric depth.
 
 ---
 
@@ -230,9 +276,13 @@ Every single capability present in Redline's codebase (`hub.js`, `router.js`, `a
 | `router.js` (`#/derby`) | Demolition Derby | **Modes -> Derby** | Mode carousel card -> Arena selector, vehicle armor bars, ramming physics |
 | `router.js` (`#/drag`) | Drag racing mode | **Modes -> Drag** | Mode carousel card -> 1/4 & 1/2 mile strip, Christmas tree launch lights HUD |
 | `router.js` (`#/f1`) | Formula 1 Grand Prix | **Modes -> F1** | Mode carousel card -> Open-wheel cars, tire wear telemetry, DRS zones |
+| `hub.js` (`timetrial`) | Time trial vs ghost laps | **Modes -> Time Trial** | Mode carousel card -> Ghost car selector, split delta comparison |
+| `endurance.js` | Long-distance endurance racing | **Modes -> Endurance** | Mode carousel card -> Day/night cycle, tire/fuel management |
 | `router.js` (`#/multiplayer`) | Online lobbies & room codes | **Modes -> Online** | Mode carousel card -> Room browser drawer, join code input modal |
 | `hub.js` (`challenges`) | Daily & weekly challenges | **Modes -> Challenges** | Featured time-limited challenge banners on Mode carousel |
 | `router.js` (`#/garage`, `atelier`) | 53-car builder & specs | **Garage Screen** | Central turntable 3D car, 53-car horizontal thumbnail strip, left stat bars |
+| `hub.js` (`showroom`) | Car dealership & purchases | **Garage -> Showroom** | 3D vehicle catalog to browse, inspect, and purchase new cars |
+| `hub.js` (`workshop`) | Car repair & maintenance | **Garage -> Workshop** | Condition meter (`condition < 0.6`) with instant repair & refresh action |
 | `garage.js` (`openPresets`) | Factory and iconic car presets | **Garage -> Presets** | "Presets" button on top bar -> Modal gallery card drawer |
 | `garage.js` (`Auto-config`) | Factory stock reset | **Garage -> Stock** | "Factory Stock" pill button in Garage top actions |
 | `garage.js` (`Share / Export`) | Build URL share, JSON export | **Garage -> Share** | Share icon button -> Instant copyable link / spec sheet export |
@@ -245,6 +295,9 @@ Every single capability present in Redline's codebase (`hub.js`, `router.js`, `a
 | `hub.js` (`achievements`) | Achievement unlocks & rewards | **Profile -> Achievements** | Achievements drawer accessible via top driver profile chip |
 | `hub.js` (`replays`) | Saved race replays & photo mode | **Profile -> Replays** | Replays tab in profile with camera playback controls |
 | `hub.js` (`settings`) | Sound, Graphics, Units, Controls | **Settings Screen** | Settings modal via gear icon: Audio sliders, Graphics tier, km/h vs mph, Lang |
+| `camwheel.js` | AI camera gesture steering | **Settings -> CamWheel** | Webcam hands tracking calibration and sensitivity settings |
+| `phone-wheel.js` | Mobile QR orientation steering | **Settings -> PhoneWheel** | QR pairing screen to use phone gyroscope as steering wheel |
+| `audio/music.js` | Soundtrack player & music tracks | **Settings -> Music** | Track selector, playback controls, and sound balance |
 | `settings` (Language) | English / Bangla switch | **Global Quick Action** | Dedicated `[EN | বাংলা]` toggle on top/edge bar with instant text swap |
 
 ---

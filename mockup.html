@@ -3,10 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-  <title>Redline UI v2.0 — Interactive Design Mockups</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,600;0,700;0,800;1,700;1,800&family=Hind+Siliguri:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Rajdhani:ital,wght@0,600;0,700;1,700&display=swap" rel="stylesheet">
+  <title>Redline UI v2.0 — Premium Mobile-First Racing Game UI</title>
+  
+  <!-- Self-Hosted OFL Typography Fallback & Optimization (No hard network dependency) -->
   <style>
     /* ==========================================================================
        REDLINE DESIGN SYSTEM TOKENS & SHELL
@@ -15,9 +14,9 @@
       --rl-bg-void: #08090b;
       --rl-bg-surface: #101216;
       --rl-bg-elevated: #161920;
-      --rl-bg-card: rgba(22, 26, 35, 0.75);
-      --rl-bg-glass: rgba(14, 17, 23, 0.65);
-      --rl-bg-glass-heavy: rgba(10, 12, 16, 0.90);
+      --rl-bg-card: rgba(22, 26, 35, 0.78);
+      --rl-bg-glass: rgba(14, 17, 23, 0.70);
+      --rl-bg-glass-heavy: rgba(10, 12, 16, 0.92);
 
       --rl-accent-red: #e0412f;
       --rl-accent-red-bright: #ff4733;
@@ -46,7 +45,8 @@
       --rl-border-med: rgba(255, 255, 255, 0.16);
       --rl-border-active: #e0412f;
 
-      --rl-font-display: "Rajdhani", "Exo 2", "Orbitron", -apple-system, sans-serif;
+      /* Self-hosted & system-first resilient font stacks */
+      --rl-font-display: "Rajdhani", "Exo 2", "Orbitron", "Segoe UI", -apple-system, sans-serif;
       --rl-font-body: "Inter", "Hind Siliguri", "Segoe UI", system-ui, sans-serif;
 
       --rl-safe-top: env(safe-area-inset-top, 0px);
@@ -110,9 +110,14 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      pointer-events: none;
       z-index: 2;
       overflow: hidden;
+      touch-action: pan-y;
+      cursor: grab;
+    }
+
+    .rl-stage-backdrop:active {
+      cursor: grabbing;
     }
 
     .rl-stage-floor {
@@ -125,6 +130,7 @@
       border-top: 1px solid rgba(255,255,255,0.06);
       transform-origin: bottom;
       perspective: 800px;
+      pointer-events: none;
     }
 
     .rl-floor-grid {
@@ -148,6 +154,8 @@
       background: radial-gradient(ellipse, rgba(224, 65, 47, 0.28) 0%, rgba(201, 165, 107, 0.12) 40%, transparent 70%);
       filter: blur(25px);
       border-radius: 50%;
+      pointer-events: none;
+      transition: filter 0.3s ease, background 0.3s ease;
     }
 
     .rl-floor-shadow {
@@ -159,6 +167,7 @@
       height: 55px;
       background: radial-gradient(ellipse, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 55%, transparent 75%);
       border-radius: 50%;
+      pointer-events: none;
     }
 
     .rl-stage-car-wrap {
@@ -170,6 +179,7 @@
       max-width: 75vw;
       filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8));
       transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+      pointer-events: none;
     }
 
     .rl-stage-car-wrap svg {
@@ -178,7 +188,7 @@
       display: block;
     }
 
-    /* Reflection of Car on Floor */
+    /* Reflection of Car on Floor (Fake blur reflection for budget/mid, PBR for high) */
     .rl-car-reflection {
       position: absolute;
       bottom: 3%;
@@ -190,7 +200,37 @@
       filter: blur(2px) contrast(1.2);
       mask-image: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 65%);
       -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 65%);
+      pointer-events: none;
     }
+
+    /* Garage TurnTable Arrow Overlays (>= 48px touch targets) */
+    .rl-stage-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--rl-bg-glass-heavy);
+      border: 1px solid var(--rl-border-med);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+      transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .rl-stage-arrow:active {
+      transform: translateY(-50%) scale(0.92);
+      border-color: var(--rl-accent-red);
+    }
+
+    .rl-stage-arrow.left { left: 88px; }
+    .rl-stage-arrow.right { right: 24px; }
 
     /* Screen Layer Framework */
     .rl-screen {
@@ -199,7 +239,7 @@
       z-index: 10;
       display: none;
       flex-direction: column;
-      padding: calc(var(--rl-safe-top) + 8px) calc(var(--rl-safe-right) + 12px) calc(var(--rl-safe-bottom) + 8px) calc(var(--rl-safe-left) + 12px);
+      padding: calc(var(--rl-safe-top) + 6px) calc(var(--rl-safe-right) + 12px) calc(var(--rl-safe-bottom) + 6px) calc(var(--rl-safe-left) + 12px);
       opacity: 0;
       transform: scale(0.985);
       transition: opacity 0.24s ease, transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
@@ -222,7 +262,7 @@
       justify-content: space-between;
       height: 48px;
       padding: 0 4px;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       flex-shrink: 0;
     }
 
@@ -232,10 +272,13 @@
       gap: 10px;
     }
 
+    /* Touch Target strictly >= 48px */
     .rl-back-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 8px;
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      min-height: 48px;
+      border-radius: 10px;
       background: var(--rl-bg-glass);
       border: 1px solid var(--rl-border-med);
       color: var(--rl-text-primary);
@@ -282,7 +325,7 @@
       text-transform: uppercase;
     }
 
-    /* Right Header Chips: Currencies & Profile */
+    /* Right Header Chips: Currencies & Controls */
     .rl-header-chips {
       display: flex;
       align-items: center;
@@ -290,7 +333,7 @@
     }
 
     .rl-chip {
-      height: 36px;
+      height: 38px;
       padding: 0 12px;
       border-radius: 20px;
       background: var(--rl-bg-glass-heavy);
@@ -300,7 +343,7 @@
       gap: 7px;
       font-family: var(--rl-font-display);
       font-weight: 700;
-      font-size: 14px;
+      font-size: 13px;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       box-shadow: 0 4px 12px rgba(0,0,0,0.4);
@@ -339,10 +382,12 @@
       font-weight: 800;
     }
 
-    /* Quick Action Round Buttons */
+    /* Quick Action Round Buttons (Strictly >= 48px touch target) */
     .rl-quick-btn {
-      width: 38px;
-      height: 38px;
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      min-height: 48px;
       border-radius: 50%;
       background: var(--rl-bg-glass);
       border: 1px solid var(--rl-border-subtle);
@@ -352,8 +397,9 @@
       justify-content: center;
       cursor: pointer;
       transition: color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
+      font-family: var(--rl-font-display);
     }
 
     .rl-quick-btn:active {
@@ -362,7 +408,7 @@
       border-color: var(--rl-accent-red);
     }
 
-    /* Left Ergonomic Navigation Rail */
+    /* Left Ergonomic Navigation Rail (>= 48px touch targets) */
     .rl-nav-rail {
       position: absolute;
       left: calc(var(--rl-safe-left) + 8px);
@@ -371,7 +417,7 @@
       z-index: 25;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       padding: 8px 6px;
       background: var(--rl-bg-glass-heavy);
       border: 1px solid var(--rl-border-subtle);
@@ -385,6 +431,8 @@
       position: relative;
       width: 48px;
       height: 48px;
+      min-width: 48px;
+      min-height: 48px;
       border-radius: 12px;
       background: transparent;
       border: none;
@@ -393,21 +441,21 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 3px;
+      gap: 2px;
       cursor: pointer;
       transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
     }
 
     .rl-nav-item svg {
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       stroke: currentColor;
       stroke-width: 1.8;
       fill: none;
     }
 
     .rl-nav-item span {
-      font-size: 9px;
+      font-size: 8.5px;
       font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: uppercase;
@@ -439,7 +487,7 @@
       box-shadow: 0 0 10px var(--rl-accent-red-glow);
     }
 
-    /* Screen Main Content Shell (No vertical scroll) */
+    /* Screen Main Content Shell (Strictly No vertical scroll) */
     .rl-screen-body {
       flex: 1;
       position: relative;
@@ -448,7 +496,7 @@
       margin-left: 64px; /* clearance for nav rail */
     }
 
-    /* Large Skewed Primary Action Button */
+    /* Large Skewed Primary Action Button (>= 48px touch target) */
     .rl-btn-cta {
       position: relative;
       display: inline-flex;
@@ -456,6 +504,7 @@
       justify-content: center;
       gap: 12px;
       height: 52px;
+      min-height: 48px;
       padding: 0 32px;
       background: linear-gradient(135deg, var(--rl-accent-red-bright) 0%, var(--rl-accent-red) 50%, var(--rl-accent-red-dark) 100%);
       color: #ffffff;
@@ -489,7 +538,7 @@
        ========================================================================== */
     .rl-home-hero {
       position: absolute;
-      bottom: 24px;
+      bottom: 20px;
       left: 14px;
       z-index: 15;
       display: flex;
@@ -537,7 +586,7 @@
 
     .rl-home-cta-wrap {
       position: absolute;
-      bottom: 24px;
+      bottom: 20px;
       right: 18px;
       z-index: 15;
       display: flex;
@@ -562,7 +611,7 @@
     }
 
     /* ==========================================================================
-       SCREEN 2: MODE SELECTION CAROUSEL
+       SCREEN 2: MODE SELECTION CAROUSEL (ALL 10 MODES)
        ========================================================================== */
     .rl-modes-wrap {
       flex: 1;
@@ -576,12 +625,12 @@
       display: flex;
       align-items: baseline;
       gap: 10px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .rl-section-title {
       font-family: var(--rl-font-display);
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 800;
       font-style: italic;
       text-transform: uppercase;
@@ -589,7 +638,7 @@
     }
 
     .rl-section-subtitle {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--rl-text-secondary);
     }
 
@@ -600,7 +649,7 @@
       overflow-x: auto;
       overflow-y: hidden;
       scroll-snap-type: x mandatory;
-      padding: 8px 12px 14px 4px;
+      padding: 6px 12px 12px 4px;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
     }
@@ -638,20 +687,20 @@
       inset: 0;
       background-size: cover;
       background-position: center;
-      filter: brightness(0.65) saturate(1.1);
+      filter: brightness(0.70) saturate(1.1);
       transition: transform 0.4s ease;
     }
 
     .rl-mode-card:hover .rl-mode-bg,
     .rl-mode-card.is-focused .rl-mode-bg {
       transform: scale(1.05);
-      filter: brightness(0.8) saturate(1.2);
+      filter: brightness(0.85) saturate(1.2);
     }
 
     .rl-mode-gradient {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(12,14,18,0.1) 0%, rgba(12,14,18,0.4) 40%, rgba(8,9,11,0.95) 100%);
+      background: linear-gradient(180deg, rgba(12,14,18,0.1) 0%, rgba(12,14,18,0.45) 40%, rgba(8,9,11,0.96) 100%);
     }
 
     .rl-mode-content {
@@ -659,7 +708,7 @@
       z-index: 2;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
     }
 
     .rl-mode-badge {
@@ -677,7 +726,7 @@
 
     .rl-mode-title {
       font-family: var(--rl-font-display);
-      font-size: 22px;
+      font-size: 21px;
       font-weight: 800;
       font-style: italic;
       text-transform: uppercase;
@@ -702,21 +751,29 @@
 
     .rl-mode-stars {
       color: var(--rl-accent-gold);
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 700;
       font-family: var(--rl-font-display);
     }
 
+    /* Touch target >= 48px */
     .rl-mode-btn-sm {
-      padding: 4px 12px;
-      border-radius: 6px;
+      min-height: 48px;
+      min-width: 80px;
+      padding: 0 16px;
+      border-radius: 8px;
       background: var(--rl-accent-red);
       color: #fff;
       font-family: var(--rl-font-display);
-      font-size: 12px;
-      font-weight: 700;
+      font-size: 13px;
+      font-weight: 800;
       text-transform: uppercase;
       border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
 
     /* ==========================================================================
@@ -735,11 +792,11 @@
     .rl-stat-panel {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 7px;
       background: var(--rl-bg-card);
       border: 1px solid var(--rl-border-subtle);
       border-radius: 14px;
-      padding: 14px;
+      padding: 12px 14px;
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       box-shadow: 0 8px 30px rgba(0,0,0,0.6);
@@ -758,7 +815,7 @@
 
     .rl-stat-car-title {
       font-family: var(--rl-font-display);
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 800;
       font-style: italic;
       text-transform: uppercase;
@@ -824,7 +881,7 @@
       gap: 8px;
       overflow-x: auto;
       overflow-y: hidden;
-      padding: 8px 4px;
+      padding: 6px 4px;
       scroll-snap-type: x mandatory;
       scrollbar-width: none;
       -webkit-overflow-scrolling: touch;
@@ -835,8 +892,9 @@
     }
 
     .rl-car-thumb-item {
-      flex: 0 0 96px;
-      height: 64px;
+      flex: 0 0 100px;
+      height: 68px;
+      min-height: 48px;
       border-radius: 10px;
       background: var(--rl-bg-glass-heavy);
       border: 1px solid var(--rl-border-subtle);
@@ -851,7 +909,7 @@
     }
 
     .rl-car-thumb-item svg {
-      width: 80%;
+      width: 75%;
       height: auto;
       opacity: 0.7;
     }
@@ -885,11 +943,11 @@
       color: #fff;
     }
 
-    /* Right Category Action Pills */
+    /* Right Category Action Pills (Strictly >= 48px touch target) */
     .rl-category-tabs {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       justify-content: center;
     }
 
@@ -898,6 +956,7 @@
       align-items: center;
       gap: 10px;
       height: 48px;
+      min-height: 48px;
       padding: 0 14px;
       border-radius: 10px;
       background: var(--rl-bg-card);
@@ -907,7 +966,7 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       font-family: var(--rl-font-display);
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.04em;
@@ -952,7 +1011,7 @@
       overflow: hidden;
     }
 
-    /* Hotspots pinned on 3D Car */
+    /* Hotspots pinned on 3D Car (>= 48px touch target hit area) */
     .rl-hotspot-container {
       position: absolute;
       inset: 0;
@@ -966,6 +1025,10 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      min-height: 48px;
+      min-width: 48px;
+      padding: 6px 12px;
+      border-radius: 24px;
       transition: transform 0.2s ease;
     }
 
@@ -974,8 +1037,8 @@
     }
 
     .rl-pin-circle {
-      width: 24px;
-      height: 24px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
       background: rgba(224, 65, 47, 0.85);
       border: 2px solid #fff;
@@ -1006,7 +1069,7 @@
       border: 1px solid var(--rl-border-subtle);
       border-radius: 6px;
       font-family: var(--rl-font-display);
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: uppercase;
@@ -1026,10 +1089,10 @@
     }
 
     /* Hotspot Coordinates over the car */
-    .rl-pin-wheels { top: 62%; left: 32%; }
-    .rl-pin-aero { top: 44%; left: 78%; }
-    .rl-pin-engine { top: 46%; left: 28%; }
-    .rl-pin-paint { top: 38%; left: 52%; }
+    .rl-pin-wheels { top: 58%; left: 30%; }
+    .rl-pin-aero { top: 40%; left: 76%; }
+    .rl-pin-engine { top: 42%; left: 24%; }
+    .rl-pin-paint { top: 34%; left: 50%; }
 
     /* Customization Bottom Drawer */
     .rl-parts-drawer {
@@ -1037,13 +1100,13 @@
       background: var(--rl-bg-card);
       border: 1px solid var(--rl-border-subtle);
       border-radius: 14px 14px 0 0;
-      padding: 12px 16px;
+      padding: 10px 16px;
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       box-shadow: 0 -8px 30px rgba(0,0,0,0.7);
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
     .rl-drawer-top {
@@ -1054,7 +1117,7 @@
 
     .rl-drawer-title {
       font-family: var(--rl-font-display);
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 800;
       font-style: italic;
       text-transform: uppercase;
@@ -1076,20 +1139,15 @@
       font-weight: 700;
     }
 
-    .rl-delta-pos {
-      color: var(--rl-delta-pos);
-    }
-
-    .rl-delta-neg {
-      color: var(--rl-delta-neg);
-    }
+    .rl-delta-pos { color: var(--rl-delta-pos); }
+    .rl-delta-neg { color: var(--rl-delta-neg); }
 
     .rl-parts-grid {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       overflow-x: auto;
       overflow-y: hidden;
-      padding-bottom: 4px;
+      padding-bottom: 2px;
       scrollbar-width: none;
     }
 
@@ -1099,7 +1157,8 @@
 
     .rl-part-tile {
       flex: 0 0 130px;
-      height: 78px;
+      height: 74px;
+      min-height: 48px;
       border-radius: 10px;
       background: var(--rl-bg-surface);
       border: 1px solid var(--rl-border-subtle);
@@ -1141,7 +1200,7 @@
       font-size: 13px;
       font-weight: 700;
       color: #fff;
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     .rl-part-footer {
@@ -1162,25 +1221,28 @@
       align-items: center;
       justify-content: space-between;
       border-top: 1px solid var(--rl-border-subtle);
-      padding-top: 8px;
+      padding-top: 6px;
     }
 
     .rl-total-price-chip {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 12px;
+      font-size: 11.5px;
       color: var(--rl-text-secondary);
     }
 
     .rl-total-price-chip b {
       color: #fff;
       font-family: var(--rl-font-display);
-      font-size: 16px;
+      font-size: 15px;
     }
 
+    /* Touch target strictly >= 48px */
     .rl-btn-apply {
-      padding: 8px 24px;
+      height: 48px;
+      min-height: 48px;
+      padding: 0 24px;
       border-radius: 8px;
       background: var(--rl-accent-red);
       color: #fff;
@@ -1191,6 +1253,9 @@
       font-style: italic;
       text-transform: uppercase;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       box-shadow: 0 0 16px var(--rl-accent-red-glow);
     }
 
@@ -1225,7 +1290,7 @@
       pointer-events: none;
     }
 
-    /* Top Corner Controls & Telemetry */
+    /* Top Corner Controls & Telemetry (>= 48px touch targets) */
     .rl-hud-topbar {
       position: relative;
       z-index: 10;
@@ -1247,7 +1312,7 @@
 
     .rl-hud-lap {
       font-family: var(--rl-font-display);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       color: var(--rl-text-secondary);
       letter-spacing: 0.05em;
@@ -1259,7 +1324,7 @@
 
     .rl-hud-time {
       font-family: var(--rl-font-display);
-      font-size: 22px;
+      font-size: 21px;
       font-weight: 800;
       color: #fff;
       font-variant-numeric: tabular-nums;
@@ -1267,15 +1332,15 @@
 
     .rl-hud-split {
       font-family: var(--rl-font-display);
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 700;
-      color: #a855f7; /* purple delta */
+      color: #a855f7;
     }
 
     /* Mini-Map Circuit */
     .rl-hud-minimap {
-      width: 84px;
-      height: 84px;
+      width: 76px;
+      height: 76px;
       background: var(--rl-bg-glass-heavy);
       border: 1px solid var(--rl-border-subtle);
       border-radius: 50%;
@@ -1295,7 +1360,7 @@
     /* Center Speedometer & Tachometer Cluster */
     .rl-hud-center-cluster {
       position: absolute;
-      top: calc(var(--rl-safe-top) + 10px);
+      top: calc(var(--rl-safe-top) + 8px);
       left: 50%;
       transform: translateX(-50%);
       z-index: 10;
@@ -1331,7 +1396,7 @@
 
     .rl-speed-digits {
       font-family: var(--rl-font-display);
-      font-size: 52px;
+      font-size: 50px;
       font-weight: 800;
       font-style: italic;
       color: #fff;
@@ -1426,7 +1491,7 @@
       justify-content: center;
     }
 
-    /* Right Stacked Vertical Pedals */
+    /* Right Stacked Vertical Pedals (>= 48px touch target) */
     .rl-pedals-stack {
       display: flex;
       flex-direction: column;
@@ -1435,7 +1500,7 @@
     }
 
     .rl-pedal-btn {
-      width: 82px;
+      width: 84px;
       border-radius: 12px;
       border: 1px solid var(--rl-border-med);
       display: flex;
@@ -1454,13 +1519,15 @@
 
     .rl-pedal-btn.brake {
       height: 52px;
+      min-height: 48px;
       background: linear-gradient(180deg, #b91c1c 0%, #7f1d1d 100%);
       border-color: #ef4444;
       color: #fff;
     }
 
     .rl-pedal-btn.gas {
-      height: 78px;
+      height: 80px;
+      min-height: 48px;
       background: linear-gradient(180deg, #059669 0%, #064e3b 100%);
       border-color: #10b981;
       color: #fff;
@@ -1469,6 +1536,118 @@
     .rl-pedal-btn:active {
       transform: scale(0.94) translateY(4px);
       filter: brightness(1.25);
+    }
+
+    /* ==========================================================================
+       TOAST & MODAL DIALOG COMPONENTS
+       ========================================================================== */
+    .rl-toast {
+      position: absolute;
+      top: calc(var(--rl-safe-top) + 10px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      z-index: 90;
+      height: 44px;
+      padding: 0 20px;
+      border-radius: 22px;
+      background: var(--rl-bg-glass-heavy);
+      border: 1px solid var(--rl-accent-gold);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--rl-font-display);
+      font-weight: 700;
+      font-size: 13px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.8), 0 0 16px var(--rl-accent-gold-glow);
+      backdrop-filter: blur(12px);
+      opacity: 0;
+      transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .rl-toast.is-visible {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .rl-dialog-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rl-dialog-backdrop.is-open {
+      display: flex;
+    }
+
+    .rl-dialog-card {
+      width: 420px;
+      max-width: 85vw;
+      border-radius: 16px;
+      background: var(--rl-bg-elevated);
+      border: 1px solid var(--rl-border-med);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.9);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .rl-dialog-title {
+      font-family: var(--rl-font-display);
+      font-size: 20px;
+      font-weight: 800;
+      font-style: italic;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    .rl-dialog-desc {
+      font-size: 12.5px;
+      color: var(--rl-text-secondary);
+      line-height: 1.4;
+    }
+
+    .rl-dialog-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 6px;
+    }
+
+    .rl-dialog-btn {
+      min-height: 48px;
+      min-width: 90px;
+      padding: 0 18px;
+      border-radius: 8px;
+      font-family: var(--rl-font-display);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rl-dialog-btn.cancel {
+      background: var(--rl-bg-glass);
+      color: var(--rl-text-secondary);
+      border: 1px solid var(--rl-border-med);
+    }
+
+    .rl-dialog-btn.confirm {
+      background: var(--rl-accent-red);
+      color: #fff;
+      box-shadow: 0 0 14px var(--rl-accent-red-glow);
     }
 
     /* ==========================================================================
@@ -1522,13 +1701,17 @@
     }
 
     .rl-portrait-override-btn {
-      padding: 8px 18px;
-      border-radius: 20px;
+      min-height: 48px;
+      padding: 0 24px;
+      border-radius: 24px;
       background: var(--rl-bg-glass);
       border: 1px solid var(--rl-border-med);
       color: var(--rl-text-secondary);
-      font-size: 12px;
+      font-size: 13px;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     /* Media Query for Automatic Portrait Display */
@@ -1536,6 +1719,25 @@
       .rl-portrait-overlay.auto-detect {
         display: flex;
       }
+    }
+
+    /* ==========================================================================
+       REDUCED MOTION COMPLIANCE
+       ========================================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .rl-pulse-ring, .rl-pin-circle::after, .rl-tach-led.blue.is-lit, .rl-rotate-phone-anim {
+        animation: none !important;
+      }
+    }
+
+    body.reduced-motion *, body.reduced-motion ::before, body.reduced-motion ::after {
+      animation: none !important;
+      transition: none !important;
     }
   </style>
 </head>
@@ -1549,10 +1751,10 @@
       <div class="rl-stage-floor">
         <div class="rl-floor-grid"></div>
       </div>
-      <div class="rl-floor-spotlight"></div>
+      <div class="rl-floor-spotlight" id="rl-stage-spotlight"></div>
       <div class="rl-floor-shadow"></div>
       
-      <!-- Central Showcase Car (SVG Vector High-Fi Model) -->
+      <!-- Central Showcase Car (Vector High-Fi Model) -->
       <div class="rl-stage-car-wrap" id="rl-stage-car">
         <svg viewBox="0 0 600 240" fill="none" xmlns="http://www.w3.org/2000/svg">
           <!-- Car Silhouette: Modern Aggressive Supercar -->
@@ -1594,19 +1796,28 @@
           </defs>
         </svg>
       </div>
+
       <!-- Reflective Mirror on Floor -->
       <div class="rl-car-reflection">
         <svg viewBox="0 0 600 240" fill="none">
           <use href="#rl-stage-car svg path" />
         </svg>
       </div>
+
+      <!-- Turntable Left / Right Chevrons (Garage view) -->
+      <button class="rl-stage-arrow left" id="rl-arrow-prev" onclick="rlCycleCar(-1)" style="display:none;" title="Previous Car">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button class="rl-stage-arrow right" id="rl-arrow-next" onclick="rlCycleCar(1)" style="display:none;" title="Next Car">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
     </div>
 
     <!-- Universal Header Bar (Active across all screens) -->
     <header class="rl-header-bar" id="rl-header">
       <div class="rl-brand-group">
         <button class="rl-back-btn" id="rl-btn-back" title="Back" style="display:none;" onclick="rlNav('home')">
-          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" fill="none"><path d="M15 19l-7-7 7-7"/></svg>
+          <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.4" fill="none"><path d="M15 19l-7-7 7-7"/></svg>
         </button>
         <div class="rl-brand-title">
           <div class="rl-brand-name">RED<span>LINE</span></div>
@@ -1634,18 +1845,22 @@
           </div>
           <span>1,250</span>
         </div>
-        <!-- Language Switcher Button -->
+        <!-- Language Switcher Button (>= 48px) -->
         <button class="rl-quick-btn" id="rl-lang-btn" onclick="rlToggleLang()" title="Switch Language">
           BN
         </button>
-        <!-- Audio Mute Button -->
-        <button class="rl-quick-btn" title="Audio">
-          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        <!-- Audio Mute Button (>= 48px) -->
+        <button class="rl-quick-btn" id="rl-audio-btn" onclick="rlToggleAudio()" title="Toggle Sound">
+          <svg id="rl-audio-icon" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        </button>
+        <!-- Reduced Motion Toggle (>= 48px) -->
+        <button class="rl-quick-btn" id="rl-motion-btn" onclick="rlToggleMotion()" title="Reduced Motion">
+          ⚡
         </button>
       </div>
     </header>
 
-    <!-- Left Ergonomic Navigation Rail -->
+    <!-- Left Ergonomic Navigation Rail (>= 48px touch targets) -->
     <nav class="rl-nav-rail" id="rl-nav-rail">
       <button class="rl-nav-item is-active" id="rail-home" onclick="rlNav('home')" title="Home">
         <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -1680,13 +1895,13 @@
             <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             <span data-i18n="hero_class">S-CLASS · TIER 4</span>
           </div>
-          <div class="rl-hero-name" id="rl-home-car-name">APEX GT-R SUPERSPORT</div>
+          <div class="rl-hero-name" id="rl-home-car-name">PORSCHE 911 GT3</div>
           <div class="rl-hero-stats-mini">
-            <span><b id="rl-home-hp">650</b> HP</span>
+            <span><b id="rl-home-hp">502</b> HP</span>
             <span>·</span>
-            <span><b id="rl-home-speed">328</b> KM/H</span>
+            <span><b id="rl-home-speed">318</b> KM/H</span>
             <span>·</span>
-            <span><b id="rl-home-accel">2.9</b>s (0-100)</span>
+            <span><b id="rl-home-accel">3.2</b>s (0-100)</span>
           </div>
         </div>
 
@@ -1702,20 +1917,20 @@
     </section>
 
     <!-- ======================================================================
-         SCREEN 2: GAME MODES (SWIPEABLE HORIZONTAL CAROUSEL)
+         SCREEN 2: GAME MODES (SWIPEABLE HORIZONTAL CAROUSEL - ALL 10 MODES)
          ====================================================================== -->
     <section class="rl-screen" id="screen-modes">
       <div class="rl-screen-body">
         <div class="rl-modes-wrap">
           <div class="rl-section-header">
             <div class="rl-section-title" data-i18n="modes_title">SELECT GAME MODE</div>
-            <div class="rl-section-subtitle" data-i18n="modes_subtitle">Swipe to explore 8 competitive racing disciplines</div>
+            <div class="rl-section-subtitle" data-i18n="modes_subtitle">Swipe to explore 10 competitive racing disciplines</div>
           </div>
 
           <div class="rl-carousel-track" id="rl-modes-carousel">
             <!-- Mode 1: Quick Race -->
             <div class="rl-mode-card is-focused" onclick="rlSelectModeCard(this, 'hud')">
-              <div class="rl-mode-bg" style="background-image: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);"></div>
+              <div class="rl-mode-bg" style="background-image: url('assets/cards/mode_race.webp'), linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);"></div>
               <div class="rl-mode-gradient"></div>
               <div class="rl-mode-content">
                 <span class="rl-mode-badge" data-i18n="badge_circuit">CIRCUIT</span>
@@ -1730,7 +1945,7 @@
 
             <!-- Mode 2: Drift Challenge -->
             <div class="rl-mode-card" onclick="rlSelectModeCard(this, 'hud')">
-              <div class="rl-mode-bg" style="background-image: linear-gradient(135deg, #701a75 0%, #18021e 100%);"></div>
+              <div class="rl-mode-bg" style="background-image: url('assets/cards/mode_drift.webp'), linear-gradient(135deg, #701a75 0%, #18021e 100%);"></div>
               <div class="rl-mode-gradient"></div>
               <div class="rl-mode-content">
                 <span class="rl-mode-badge" style="background:#a855f7" data-i18n="badge_drift">TANDEM</span>
@@ -1745,7 +1960,7 @@
 
             <!-- Mode 3: Arcade Stunts -->
             <div class="rl-mode-card" onclick="rlSelectModeCard(this, 'hud')">
-              <div class="rl-mode-bg" style="background-image: linear-gradient(135deg, #065f46 0%, #022c22 100%);"></div>
+              <div class="rl-mode-bg" style="background-image: url('assets/cards/mode_arcade.webp'), linear-gradient(135deg, #065f46 0%, #022c22 100%);"></div>
               <div class="rl-mode-gradient"></div>
               <div class="rl-mode-content">
                 <span class="rl-mode-badge" style="background:#10b981" data-i18n="badge_arcade">ACTION</span>
@@ -1760,7 +1975,7 @@
 
             <!-- Mode 4: Demolition Derby -->
             <div class="rl-mode-card" onclick="rlSelectModeCard(this, 'hud')">
-              <div class="rl-mode-bg" style="background-image: linear-gradient(135deg, #991b1b 0%, #450a0a 100%);"></div>
+              <div class="rl-mode-bg" style="background-image: url('assets/cards/mode_derby.webp'), linear-gradient(135deg, #991b1b 0%, #450a0a 100%);"></div>
               <div class="rl-mode-gradient"></div>
               <div class="rl-mode-content">
                 <span class="rl-mode-badge" style="background:#ef4444" data-i18n="badge_derby">ARENA</span>
@@ -1775,7 +1990,7 @@
 
             <!-- Mode 5: Drag Strip -->
             <div class="rl-mode-card" onclick="rlSelectModeCard(this, 'hud')">
-              <div class="rl-mode-bg" style="background-image: linear-gradient(135deg, #b45309 0%, #451a03 100%);"></div>
+              <div class="rl-mode-bg" style="background-image: url('assets/cards/mode_drag.webp'), linear-gradient(135deg, #b45309 0%, #451a03 100%);"></div>
               <div class="rl-mode-gradient"></div>
               <div class="rl-mode-content">
                 <span class="rl-mode-badge" style="background:#f59e0b" data-i18n="badge_drag">1/4 MILE</span>
@@ -1788,9 +2003,69 @@
               </div>
             </div>
 
-            <!-- Mode 6: Career Championship -->
+            <!-- Mode 6: Formula 1 -->
             <div class="rl-mode-card" onclick="rlSelectModeCard(this, 'hud')">
-              <div class="rl-mode-bg" style="background-image: linear-gradient(135deg, #1e293b 0%, #090d16 100%);"></div>
+              <div class="rl-mode-bg" style="background-image: url('assets/cards/mode_f1.webp'), linear-gradient(135deg, #0f172a 0%, #0369a1 100%);"></div>
+              <div class="rl-mode-gradient"></div>
+              <div class="rl-mode-content">
+                <span class="rl-mode-badge" style="background:#38bdf8" data-i18n="badge_f1">GRAND PRIX</span>
+                <div class="rl-mode-title" data-i18n="mode_f1">FORMULA 1</div>
+                <div class="rl-mode-desc" data-i18n="mode_f1_desc">Open-wheel apex speeds, tire wear & DRS zones.</div>
+                <div class="rl-mode-meta">
+                  <span class="rl-mode-stars">★ 8/10 STARS</span>
+                  <button class="rl-mode-btn-sm" style="background:#38bdf8" data-i18n="btn_enter">ENTER</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mode 7: Time Trial -->
+            <div class="rl-mode-card" onclick="rlSelectModeCard(this, 'hud')">
+              <div class="rl-mode-bg" style="background-image: url('assets/cards/mode_timetrial.webp'), linear-gradient(135deg, #1f2937 0%, #374151 100%);"></div>
+              <div class="rl-mode-gradient"></div>
+              <div class="rl-mode-content">
+                <span class="rl-mode-badge" style="background:#9ca3af" data-i18n="badge_timetrial">SOLO</span>
+                <div class="rl-mode-title" data-i18n="mode_timetrial">TIME TRIAL</div>
+                <div class="rl-mode-desc" data-i18n="mode_timetrial_desc">Chase personal bests against translucent ghost telemetry.</div>
+                <div class="rl-mode-meta">
+                  <span class="rl-mode-stars">★ 20/25 STARS</span>
+                  <button class="rl-mode-btn-sm" style="background:#9ca3af" data-i18n="btn_enter">ENTER</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mode 8: Driving School / Challenges -->
+            <div class="rl-mode-card" onclick="rlSelectModeCard(this, 'hud')">
+              <div class="rl-mode-bg" style="background-image: url('assets/cards/mode_challenges.webp'), linear-gradient(135deg, #3b0764 0%, #581c87 100%);"></div>
+              <div class="rl-mode-gradient"></div>
+              <div class="rl-mode-content">
+                <span class="rl-mode-badge" style="background:#c084fc" data-i18n="badge_challenges">ACADEMY</span>
+                <div class="rl-mode-title" data-i18n="mode_challenges">CHALLENGES</div>
+                <div class="rl-mode-desc" data-i18n="mode_challenges_desc">Master slalom maneuvers, threshold braking & hairpin apexes.</div>
+                <div class="rl-mode-meta">
+                  <span class="rl-mode-stars">★ 14/16 STARS</span>
+                  <button class="rl-mode-btn-sm" style="background:#c084fc" data-i18n="btn_enter">ENTER</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mode 9: Online Multiplayer -->
+            <div class="rl-mode-card" onclick="rlOpenDialog('Multiplayer Lobby', 'Connect to private P2P racing rooms or search for open competitive lobbies across Asia/Global servers.')">
+              <div class="rl-mode-bg" style="background-image: url('assets/cards/mode_online.webp'), linear-gradient(135deg, #082f49 0%, #0369a1 100%);"></div>
+              <div class="rl-mode-gradient"></div>
+              <div class="rl-mode-content">
+                <span class="rl-mode-badge" style="background:#00e5ff;color:#000" data-i18n="badge_online">ONLINE</span>
+                <div class="rl-mode-title" data-i18n="mode_online">MULTIPLAYER</div>
+                <div class="rl-mode-desc" data-i18n="mode_online_desc">Live competitive lobbies with room codes & real-time sync.</div>
+                <div class="rl-mode-meta">
+                  <span class="rl-mode-stars">★ 8 SLOTS</span>
+                  <button class="rl-mode-btn-sm" style="background:#00e5ff;color:#000" data-i18n="btn_enter">ENTER</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mode 10: Career Championship -->
+            <div class="rl-mode-card" onclick="rlSelectModeCard(this, 'hud')">
+              <div class="rl-mode-bg" style="background-image: url('assets/cards/mode_career.webp'), linear-gradient(135deg, #1e293b 0%, #090d16 100%);"></div>
               <div class="rl-mode-gradient"></div>
               <div class="rl-mode-content">
                 <span class="rl-mode-badge" style="background:#c9a56b" data-i18n="badge_career">SEASON 3</span>
@@ -1816,18 +2091,18 @@
           <!-- Left Floating Stat Card -->
           <div class="rl-stat-panel">
             <div class="rl-stat-header">
-              <span class="rl-stat-car-title" id="rl-garage-car-name">APEX GT-R</span>
-              <span class="rl-car-tier-badge" id="rl-garage-car-tier">TIER 4</span>
+              <span class="rl-stat-car-title" id="rl-garage-car-name">PORSCHE 911 GT3</span>
+              <span class="rl-car-tier-badge" id="rl-garage-car-tier">1 / 53 · TIER 4</span>
             </div>
 
             <!-- Power Stat -->
             <div class="rl-stat-row">
               <div class="rl-stat-label-wrap">
                 <span data-i18n="stat_power">POWER</span>
-                <span class="rl-stat-val" id="rl-val-power">650 HP</span>
+                <span class="rl-stat-val" id="rl-val-power">502 HP</span>
               </div>
               <div class="rl-stat-bar-bg">
-                <div class="rl-stat-bar-fill" id="rl-bar-power" style="width: 82%;"></div>
+                <div class="rl-stat-bar-fill" id="rl-bar-power" style="width: 75%;"></div>
               </div>
             </div>
 
@@ -1835,10 +2110,10 @@
             <div class="rl-stat-row">
               <div class="rl-stat-label-wrap">
                 <span data-i18n="stat_speed">TOP SPEED</span>
-                <span class="rl-stat-val" id="rl-val-speed">328 KM/H</span>
+                <span class="rl-stat-val" id="rl-val-speed">318 KM/H</span>
               </div>
               <div class="rl-stat-bar-bg">
-                <div class="rl-stat-bar-fill" id="rl-bar-speed" style="width: 86%;"></div>
+                <div class="rl-stat-bar-fill" id="rl-bar-speed" style="width: 82%;"></div>
               </div>
             </div>
 
@@ -1846,10 +2121,10 @@
             <div class="rl-stat-row">
               <div class="rl-stat-label-wrap">
                 <span data-i18n="stat_accel">0-100 KM/H</span>
-                <span class="rl-stat-val" id="rl-val-accel">2.9 SEC</span>
+                <span class="rl-stat-val" id="rl-val-accel">3.2 SEC</span>
               </div>
               <div class="rl-stat-bar-bg">
-                <div class="rl-stat-bar-fill" id="rl-bar-accel" style="width: 90%;"></div>
+                <div class="rl-stat-bar-fill" id="rl-bar-accel" style="width: 86%;"></div>
               </div>
             </div>
 
@@ -1857,10 +2132,10 @@
             <div class="rl-stat-row">
               <div class="rl-stat-label-wrap">
                 <span data-i18n="stat_grip">GRIP</span>
-                <span class="rl-stat-val" id="rl-val-grip">1.24 G</span>
+                <span class="rl-stat-val" id="rl-val-grip">1.28 G</span>
               </div>
               <div class="rl-stat-bar-bg">
-                <div class="rl-stat-bar-fill" id="rl-bar-grip" style="width: 78%;"></div>
+                <div class="rl-stat-bar-fill" id="rl-bar-grip" style="width: 84%;"></div>
               </div>
             </div>
 
@@ -1868,10 +2143,10 @@
             <div class="rl-stat-row">
               <div class="rl-stat-label-wrap">
                 <span data-i18n="stat_weight">WEIGHT</span>
-                <span class="rl-stat-val" id="rl-val-weight">1,340 KG</span>
+                <span class="rl-stat-val" id="rl-val-weight">1,435 KG</span>
               </div>
               <div class="rl-stat-bar-bg">
-                <div class="rl-stat-bar-fill" id="rl-bar-weight" style="width: 68%;"></div>
+                <div class="rl-stat-bar-fill" id="rl-bar-weight" style="width: 65%;"></div>
               </div>
             </div>
           </div>
@@ -1879,40 +2154,11 @@
           <!-- Center Stage Bottom Thumbnail Strip -->
           <div class="rl-garage-center">
             <div class="rl-thumb-carousel" id="rl-car-strip">
-              <!-- Car Thumb 1 -->
-              <div class="rl-car-thumb-item is-selected" onclick="rlSelectCar(0, 'APEX GT-R', 'TIER 4', 650, 328, 2.9, 1.24, 1340, '#ff4733')">
-                <svg viewBox="0 0 80 35"><path d="M5 25 C15 24 20 18 35 15 C50 14 65 20 75 25 Z" fill="#e0412f"/><circle cx="20" cy="25" r="5" fill="#333"/><circle cx="60" cy="25" r="5" fill="#333"/></svg>
-                <span>APEX GT-R</span>
-              </div>
-              <!-- Car Thumb 2 -->
-              <div class="rl-car-thumb-item" onclick="rlSelectCar(1, 'PHANTOM S9', 'TIER 4', 720, 345, 2.7, 1.30, 1290, '#00e5ff')">
-                <svg viewBox="0 0 80 35"><path d="M5 25 C15 24 22 17 38 14 C52 14 65 20 75 25 Z" fill="#00e5ff"/><circle cx="20" cy="25" r="5" fill="#333"/><circle cx="60" cy="25" r="5" fill="#333"/></svg>
-                <span>PHANTOM S9</span>
-              </div>
-              <!-- Car Thumb 3 -->
-              <div class="rl-car-thumb-item" onclick="rlSelectCar(2, 'VIPER R3', 'TIER 3', 540, 305, 3.4, 1.18, 1420, '#f59e0b')">
-                <svg viewBox="0 0 80 35"><path d="M5 25 C15 24 20 18 35 16 C50 15 65 20 75 25 Z" fill="#f59e0b"/><circle cx="20" cy="25" r="5" fill="#333"/><circle cx="60" cy="25" r="5" fill="#333"/></svg>
-                <span>VIPER R3</span>
-              </div>
-              <!-- Car Thumb 4 -->
-              <div class="rl-car-thumb-item" onclick="rlSelectCar(3, 'TARMAC EVO', 'TIER 2', 420, 275, 4.0, 1.12, 1480, '#10b981')">
-                <svg viewBox="0 0 80 35"><path d="M5 25 C15 24 20 19 35 17 C50 16 65 21 75 25 Z" fill="#10b981"/><circle cx="20" cy="25" r="5" fill="#333"/><circle cx="60" cy="25" r="5" fill="#333"/></svg>
-                <span>TARMAC EVO</span>
-              </div>
-              <!-- Car Thumb 5 -->
-              <div class="rl-car-thumb-item" onclick="rlSelectCar(4, 'MONZA SPIDER', 'TIER 3', 580, 318, 3.1, 1.21, 1380, '#a855f7')">
-                <svg viewBox="0 0 80 35"><path d="M5 25 C15 24 20 18 35 15 C50 14 65 20 75 25 Z" fill="#a855f7"/><circle cx="20" cy="25" r="5" fill="#333"/><circle cx="60" cy="25" r="5" fill="#333"/></svg>
-                <span>MONZA SPIDER</span>
-              </div>
-              <!-- Car Thumb 6 -->
-              <div class="rl-car-thumb-item" onclick="rlSelectCar(5, 'SILVIA S15', 'TIER 2', 390, 260, 4.3, 1.10, 1260, '#38bdf8')">
-                <svg viewBox="0 0 80 35"><path d="M5 25 C15 24 20 18 35 17 C50 16 65 21 75 25 Z" fill="#38bdf8"/><circle cx="20" cy="25" r="5" fill="#333"/><circle cx="60" cy="25" r="5" fill="#333"/></svg>
-                <span>SILVIA S15</span>
-              </div>
+              <!-- Dynamically populated from CAR_ROSTER -->
             </div>
           </div>
 
-          <!-- Right Category Jump Buttons -->
+          <!-- Right Category Jump Buttons (Strictly >= 48px) -->
           <div class="rl-category-tabs">
             <button class="rl-cat-tab-btn" onclick="rlNav('customize')">
               <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
@@ -1941,7 +2187,7 @@
     <section class="rl-screen" id="screen-customize">
       <div class="rl-screen-body">
         <div class="rl-customize-body">
-          <!-- 3D Leader Line Hotspot Pins -->
+          <!-- 3D Leader Line Hotspot Pins (>= 48px touch targets) -->
           <div class="rl-hotspot-container">
             <!-- Hotspot: Front Wheels -->
             <div class="rl-hotspot-pin rl-pin-wheels is-active" onclick="rlSetHotspot('wheels')">
@@ -1972,20 +2218,20 @@
           <div class="rl-parts-drawer">
             <div class="rl-drawer-top">
               <div class="rl-drawer-title">
-                <span data-i18n="custom_category_title">WHEELS & BRAKES</span>
+                <span data-i18n="custom_category_title" id="rl-custom-title">WHEELS & BRAKES</span>
                 <small style="color:var(--rl-text-secondary);font-size:11px;font-weight:600">STAGE 3 PERFORMANCE</small>
               </div>
               <div class="rl-part-deltas">
-                <span class="rl-delta-pos">+45 HP</span>
-                <span class="rl-delta-pos">-12 KG</span>
-                <span class="rl-delta-pos">+0.08 G</span>
+                <span class="rl-delta-pos" id="rl-delta-hp">+45 HP</span>
+                <span class="rl-delta-pos" id="rl-delta-wt">-12 KG</span>
+                <span class="rl-delta-pos" id="rl-delta-g">+0.08 G</span>
               </div>
             </div>
 
             <!-- Part Selection Carousel -->
             <div class="rl-parts-grid">
               <!-- Tile 1: Stock Wheels -->
-              <div class="rl-part-tile is-equipped" onclick="rlSelectPart(this, 0, 0, 0)">
+              <div class="rl-part-tile is-equipped" onclick="rlSelectPart(this, 0, 0, 0, 0)">
                 <div class="rl-part-tier-bar rare"></div>
                 <div class="rl-part-name">FORGED R18</div>
                 <div class="rl-part-footer">
@@ -1995,7 +2241,7 @@
               </div>
 
               <!-- Tile 2: Carbon Fiber Wheels -->
-              <div class="rl-part-tile is-active" onclick="rlSelectPart(this, 18500, 45, 12)">
+              <div class="rl-part-tile is-active" onclick="rlSelectPart(this, 18500, 45, -12, 0.08)">
                 <div class="rl-part-tier-bar epic"></div>
                 <div class="rl-part-name">CARBON R20</div>
                 <div class="rl-part-footer">
@@ -2005,7 +2251,7 @@
               </div>
 
               <!-- Tile 3: Magnesium Ultralight -->
-              <div class="rl-part-tile" onclick="rlSelectPart(this, 32000, 60, 20)">
+              <div class="rl-part-tile" onclick="rlSelectPart(this, 32000, 60, -20, 0.12)">
                 <div class="rl-part-tier-bar legendary"></div>
                 <div class="rl-part-name">MAGNESIUM GT</div>
                 <div class="rl-part-footer">
@@ -2015,7 +2261,7 @@
               </div>
 
               <!-- Tile 4: Aero Dish Spec -->
-              <div class="rl-part-tile" onclick="rlSelectPart(this, 24000, 30, 8)">
+              <div class="rl-part-tile" onclick="rlSelectPart(this, 24000, 30, -8, 0.06)">
                 <div class="rl-part-tier-bar epic"></div>
                 <div class="rl-part-name">AERO TURBINE</div>
                 <div class="rl-part-footer">
@@ -2059,18 +2305,26 @@
         </svg>
       </div>
 
-      <!-- Topbar Telemetry & Mini-Map -->
+      <!-- Topbar Telemetry & Mini-Map (Corner buttons >= 48px) -->
       <div class="rl-hud-topbar">
-        <!-- Lap Counter & Time -->
-        <div class="rl-hud-timer-card">
-          <div class="rl-hud-lap">LAP <b>2/3</b> · POS <b>1/8</b></div>
-          <div class="rl-hud-time">01:14.280</div>
-          <div class="rl-hud-split">-0.34s BEST SPLIT</div>
+        <!-- Top-Left: Pause & Camera Toggle -->
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="rl-quick-btn" onclick="rlNav('home')" title="Pause Race">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          </button>
+          <button class="rl-quick-btn" onclick="rlToggleCamera()" title="Switch Camera">
+            CAM
+          </button>
+          <!-- Lap Counter & Time -->
+          <div class="rl-hud-timer-card">
+            <div class="rl-hud-lap">LAP <b>2/3</b> · POS <b>1/8</b></div>
+            <div class="rl-hud-time">01:14.280</div>
+            <div class="rl-hud-split">-0.34s BEST SPLIT</div>
+          </div>
         </div>
 
         <!-- Center Tachometer & Speed Digits -->
         <div class="rl-hud-center-cluster">
-          <!-- Segmented Tachometer LED Bar -->
           <div class="rl-tach-arc">
             <div class="rl-tach-led green is-lit"></div>
             <div class="rl-tach-led green is-lit"></div>
@@ -2081,13 +2335,12 @@
             <div class="rl-tach-led red is-lit"></div>
             <div class="rl-tach-led blue is-lit"></div>
           </div>
-          <!-- Speed Readout -->
           <div class="rl-speed-digits" id="rl-hud-speed">214</div>
           <div class="rl-speed-unit">KM / H</div>
           <div class="rl-gear-indicator">4</div>
         </div>
 
-        <!-- Right Mini-Map & Pause -->
+        <!-- Top-Right: Mini-Map & Audio Mute -->
         <div style="display:flex;gap:10px;align-items:flex-start">
           <div class="rl-hud-minimap">
             <svg viewBox="0 0 100 100">
@@ -2096,8 +2349,8 @@
               <circle cx="55" cy="80" r="3" fill="#38bdf8"/>
             </svg>
           </div>
-          <button class="rl-quick-btn" onclick="rlNav('home')" title="Pause Race">
-            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          <button class="rl-quick-btn" onclick="rlToggleAudio()" title="Sound">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
           </button>
         </div>
       </div>
@@ -2113,7 +2366,7 @@
           </div>
         </div>
 
-        <!-- Right Stacked Vertical Pedals -->
+        <!-- Right Stacked Vertical Pedals (>= 48px) -->
         <div class="rl-pedals-stack">
           <!-- Brake Pedal -->
           <button class="rl-pedal-btn brake" id="rl-btn-brake" data-i18n="pedal_brake">
@@ -2142,10 +2395,139 @@
       <div class="rl-portrait-desc" data-i18n="rotate_desc">Landscape mode is required for high-performance precision driving and full cockpit telemetry.</div>
       <button class="rl-portrait-override-btn" onclick="rlDismissPortrait()" data-i18n="rotate_dismiss">Continue anyway (Preview)</button>
     </div>
+
+    <!-- Universal Toast Notification Pill -->
+    <div class="rl-toast" id="rl-toast">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="var(--rl-accent-gold)"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <span id="rl-toast-msg">Achievement Unlocked: Apex Predator (+5,000 CR)</span>
+    </div>
+
+    <!-- Universal Confirmation / Info Dialog -->
+    <div class="rl-dialog-backdrop" id="rl-dialog">
+      <div class="rl-dialog-card">
+        <div class="rl-dialog-title" id="rl-dialog-title">CONFIRM PURCHASE</div>
+        <div class="rl-dialog-desc" id="rl-dialog-desc">Are you sure you want to purchase and install Carbon R20 wheels for $18,500 CR?</div>
+        <div class="rl-dialog-actions">
+          <button class="rl-dialog-btn cancel" onclick="rlCloseDialog()">Cancel</button>
+          <button class="rl-dialog-btn confirm" id="rl-dialog-confirm" onclick="rlConfirmDialog()">Confirm</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Interactive Mockup Logic -->
   <script>
+    /* ==========================================================================
+       CAR ROSTER (12 Real Models from 53 Shapes Library)
+       ========================================================================== */
+    var CAR_ROSTER = [
+      { id: 'porsche-911-992', make: 'Porsche', name: '911 GT3', tier: 'TIER 4', hp: 502, speed: 318, accel: 3.2, grip: 1.28, weight: 1435, color: '#c8102e' },
+      { id: 'bmw-m4-g82', make: 'BMW', name: 'M4 Competition', tier: 'TIER 3', hp: 503, speed: 290, accel: 3.8, grip: 1.20, weight: 1725, color: '#0066b1' },
+      { id: 'toyota-gr-supra-a90', make: 'Toyota', name: 'GR Supra RZ', tier: 'TIER 3', hp: 382, speed: 250, accel: 3.9, grip: 1.18, weight: 1520, color: '#ea580c' },
+      { id: 'ferrari-sf90-stradale', make: 'Ferrari', name: 'SF90 Stradale', tier: 'TIER 4', hp: 986, speed: 340, accel: 2.5, grip: 1.34, weight: 1570, color: '#d40000' },
+      { id: 'mclaren-p1', make: 'McLaren', name: 'P1 Hypercar', tier: 'TIER 4', hp: 903, speed: 350, accel: 2.8, grip: 1.32, weight: 1395, color: '#ff6f00' },
+      { id: 'bugatti-chiron', make: 'Bugatti', name: 'Chiron Pur Sport', tier: 'TIER 4', hp: 1479, speed: 380, accel: 2.3, grip: 1.35, weight: 1980, color: '#0f2b5c' },
+      { id: 'nissan-skyline-gtr-r34', make: 'Nissan', name: 'Skyline GT-R R34', tier: 'TIER 3', hp: 327, speed: 250, accel: 4.8, grip: 1.15, weight: 1560, color: '#1a4480' },
+      { id: 'nissan-silvia-s15', make: 'Nissan', name: 'Silvia Spec-R S15', tier: 'TIER 2', hp: 247, speed: 235, accel: 5.5, grip: 1.08, weight: 1240, color: '#f5c518' },
+      { id: 'mazda-rx7-fd3s', make: 'Mazda', name: 'RX-7 Spirit R', tier: 'TIER 2', hp: 276, speed: 250, accel: 5.1, grip: 1.12, weight: 1280, color: '#c41212' },
+      { id: 'chevrolet-corvette-c8', make: 'Chevrolet', name: 'Corvette Stingray C8', tier: 'TIER 3', hp: 495, speed: 312, accel: 2.9, grip: 1.25, weight: 1530, color: '#d62226' },
+      { id: 'koenigsegg-jesko', make: 'Koenigsegg', name: 'Jesko Attack', tier: 'TIER 4', hp: 1600, speed: 400, accel: 2.4, grip: 1.40, weight: 1420, color: '#0a72cc' },
+      { id: 'lamborghini-huracan-evo', make: 'Lamborghini', name: 'Huracán EVO', tier: 'TIER 4', hp: 631, speed: 325, accel: 2.9, grip: 1.30, weight: 1422, color: '#39b54a' }
+    ];
+
+    var currentCarIdx = 0;
+
+    /* ==========================================================================
+       HARDWARE HAPTICS (Vibration API)
+       ========================================================================== */
+    function rlHaptic(type) {
+      if (!('vibrate' in navigator)) return;
+      try {
+        if (type === 'tap') navigator.vibrate(15);
+        else if (type === 'nav') navigator.vibrate(20);
+        else if (type === 'select') navigator.vibrate(30);
+        else if (type === 'cta') navigator.vibrate([25, 40, 25]);
+      } catch (e) {}
+    }
+
+    /* ==========================================================================
+       SUBTLE SYNTHESIZED WEB AUDIO & MUTE
+       ========================================================================== */
+    var audioCtx = null;
+    var isMuted = false;
+
+    function getAudioCtx() {
+      if (!audioCtx && typeof window.AudioContext !== 'undefined') {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      return audioCtx;
+    }
+
+    function rlPlaySound(type) {
+      if (isMuted) return;
+      var ctx = getAudioCtx();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') ctx.resume();
+
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      var now = ctx.currentTime;
+      if (type === 'tap') {
+        osc.frequency.setValueAtTime(750, now);
+        osc.frequency.exponentialRampToValueAtTime(300, now + 0.035);
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.linearRampToValueAtTime(0.001, now + 0.035);
+        osc.start(now);
+        osc.stop(now + 0.035);
+      } else if (type === 'nav') {
+        osc.frequency.setValueAtTime(450, now);
+        osc.frequency.exponentialRampToValueAtTime(600, now + 0.045);
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.linearRampToValueAtTime(0.001, now + 0.045);
+        osc.start(now);
+        osc.stop(now + 0.045);
+      } else if (type === 'select') {
+        osc.frequency.setValueAtTime(950, now);
+        osc.frequency.setValueAtTime(1200, now + 0.02);
+        gain.gain.setValueAtTime(0.09, now);
+        gain.gain.linearRampToValueAtTime(0.001, now + 0.06);
+        osc.start(now);
+        osc.stop(now + 0.06);
+      }
+    }
+
+    function rlToggleAudio() {
+      isMuted = !isMuted;
+      rlHaptic('tap');
+      var icon = document.getElementById('rl-audio-icon');
+      if (icon) {
+        if (isMuted) {
+          icon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>';
+          rlShowToast('Audio Muted', 'warn');
+        } else {
+          icon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>';
+          rlPlaySound('select');
+          rlShowToast('Audio Enabled', 'good');
+        }
+      }
+    }
+
+    /* ==========================================================================
+       REDUCED MOTION TOGGLE
+       ========================================================================== */
+    var isReducedMotion = false;
+    function rlToggleMotion() {
+      isReducedMotion = !isReducedMotion;
+      document.body.classList.toggle('reduced-motion', isReducedMotion);
+      var btn = document.getElementById('rl-motion-btn');
+      if (btn) btn.textContent = isReducedMotion ? '🛑' : '⚡';
+      rlHaptic('tap');
+      rlShowToast(isReducedMotion ? 'Reduced Motion: ON' : 'Reduced Motion: OFF', 'info');
+    }
+
     /* ==========================================================================
        I18N BILINGUAL TRANSLATION DICTIONARY (ENGLISH & BANGLA)
        ========================================================================== */
@@ -2161,7 +2543,7 @@
         hero_class: 'S-CLASS · TIER 4',
         btn_play: 'PLAY',
         modes_title: 'SELECT GAME MODE',
-        modes_subtitle: 'Swipe to explore 8 competitive racing disciplines',
+        modes_subtitle: 'Swipe to explore 10 competitive racing disciplines',
         badge_circuit: 'CIRCUIT',
         mode_race: 'QUICK RACE',
         mode_race_desc: '8-car sprint on Dhaka Grand Prix circuit.',
@@ -2177,6 +2559,18 @@
         badge_drag: '1/4 MILE',
         mode_drag: 'DRAG STRIP',
         mode_drag_desc: 'Christmas tree light launch & manual shift timings.',
+        badge_f1: 'GRAND PRIX',
+        mode_f1: 'FORMULA 1',
+        mode_f1_desc: 'Open-wheel apex speeds, tire wear & DRS zones.',
+        badge_timetrial: 'SOLO',
+        mode_timetrial: 'TIME TRIAL',
+        mode_timetrial_desc: 'Chase personal bests against translucent ghost telemetry.',
+        badge_challenges: 'ACADEMY',
+        mode_challenges: 'CHALLENGES',
+        mode_challenges_desc: 'Master slalom maneuvers, threshold braking & hairpin apexes.',
+        badge_online: 'ONLINE',
+        mode_online: 'MULTIPLAYER',
+        mode_online_desc: 'Live competitive lobbies with room codes & real-time sync.',
         badge_career: 'SEASON 3',
         mode_career: 'PRO CAREER',
         mode_career_desc: 'Climb from Rookie Cup to the Redline World Masters.',
@@ -2213,7 +2607,7 @@
         hero_class: 'এস-ক্লাস · টায়ার ৪',
         btn_play: 'শুরু করুন',
         modes_title: 'গেম মোড নির্বাচন করুন',
-        modes_subtitle: '৮টি রোমাঞ্চকর রেসিং মোড অন্বেষণ করতে সোয়াইপ করুন',
+        modes_subtitle: '১০টি রোমাঞ্চকর রেসিং মোড অন্বেষণ করতে সোয়াইপ করুন',
         badge_circuit: 'সার্কিট',
         mode_race: 'দ্রুত রেস',
         mode_race_desc: 'ঢাকা গ্র্যান্ড প্রিক্সে ৮-গাড়ির গতিশীল রেস প্রতিযোগিতা।',
@@ -2229,6 +2623,18 @@
         badge_drag: '১/৪ মাইল',
         mode_drag: 'ড্র্যাগ স্ট্রিপ',
         mode_drag_desc: 'ক্রিসমাস ট্রি সিগন্যাল ও নিখুঁত গিয়ার শিফট টাইমিং।',
+        badge_f1: 'গ্র্যান্ড প্রিক্স',
+        mode_f1: 'ফর্মুলা ১',
+        mode_f1_desc: 'ওপেন-হুইল সর্বোচ্চ গতি, টায়ার ক্ষয় ও ডিআরএস জোন।',
+        badge_timetrial: 'একক ল্যাপ',
+        mode_timetrial: 'টাইম ট্রায়াল',
+        mode_timetrial_desc: 'ঘোস্ট গাড়ির সাথে ব্যক্তিগত সেরা ল্যাপ টাইম রেকর্ড গড়ুন।',
+        badge_challenges: 'অ্যাকাডেমি',
+        mode_challenges: 'চ্যালেঞ্জসমূহ',
+        mode_challenges_desc: 'স্লালম ড্রাইভ, থ্রেশহোল্ড ব্রেকিং ও কঠিন বাঁকে দক্ষতা অর্জন।',
+        badge_online: 'অনলাইন',
+        mode_online: 'মাল্টিপ্লেয়ার',
+        mode_online_desc: 'রুম কোড ও রিয়েল-টাইম রেসিং লবিতে বন্ধুদের সাথে খেলুন।',
         badge_career: 'সিজন ৩',
         mode_career: 'প্রো ক্যারিয়ার',
         mode_career_desc: 'রুকি কাপ থেকে শুরু করে রেডলাইন ওয়ার্ল্ড মাস্টার্স জয় করুন।',
@@ -2268,22 +2674,29 @@
           elements[i].textContent = dict[key];
         }
       }
+      rlHaptic('tap');
+      rlPlaySound('tap');
     }
 
     /* Screen Navigation Handler */
     function rlNav(screenId) {
-      // Hide all screens
+      rlHaptic('nav');
+      rlPlaySound('nav');
+
       var screens = document.querySelectorAll('.rl-screen, .rl-hud-screen');
       screens.forEach(function(s) { s.classList.remove('is-active'); });
 
-      // Deactivate rail items
       var railItems = document.querySelectorAll('.rl-nav-item');
       railItems.forEach(function(r) { r.classList.remove('is-active'); });
 
-      // Back button visibility
       var backBtn = document.getElementById('rl-btn-back');
       var stageCar = document.getElementById('rl-stage-car');
       var stageBackdrop = document.getElementById('rl-stage');
+      var arrowPrev = document.getElementById('rl-arrow-prev');
+      var arrowNext = document.getElementById('rl-arrow-next');
+
+      if (arrowPrev) arrowPrev.style.display = (screenId === 'garage') ? 'flex' : 'none';
+      if (arrowNext) arrowNext.style.display = (screenId === 'garage') ? 'flex' : 'none';
 
       if (screenId === 'home') {
         document.getElementById('screen-home').classList.add('is-active');
@@ -2318,6 +2731,8 @@
 
     /* Mode Selection Carousel Card Click */
     function rlSelectModeCard(card, target) {
+      rlHaptic('select');
+      rlPlaySound('select');
       document.querySelectorAll('.rl-mode-card').forEach(function(c) { c.classList.remove('is-focused'); });
       card.classList.add('is-focused');
       if (target) {
@@ -2326,53 +2741,158 @@
     }
 
     /* Garage Car Selection */
-    function rlSelectCar(idx, name, tier, hp, speed, accel, grip, weight, color) {
+    function rlSelectCar(idx) {
+      currentCarIdx = idx;
+      var c = CAR_ROSTER[idx];
+      if (!c) return;
+
+      rlHaptic('select');
+      rlPlaySound('select');
+
       document.querySelectorAll('.rl-car-thumb-item').forEach(function(t) { t.classList.remove('is-selected'); });
       var strip = document.getElementById('rl-car-strip');
       if (strip && strip.children[idx]) {
         strip.children[idx].classList.add('is-selected');
+        strip.children[idx].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
       }
 
-      document.getElementById('rl-garage-car-name').textContent = name;
-      document.getElementById('rl-garage-car-tier').textContent = tier;
-      document.getElementById('rl-val-power').textContent = hp + ' HP';
-      document.getElementById('rl-val-speed').textContent = speed + ' KM/H';
-      document.getElementById('rl-val-accel').textContent = accel + ' SEC';
-      document.getElementById('rl-val-grip').textContent = grip + ' G';
-      document.getElementById('rl-val-weight').textContent = weight.toLocaleString() + ' KG';
+      document.getElementById('rl-garage-car-name').textContent = (c.make + ' ' + c.name).toUpperCase();
+      document.getElementById('rl-garage-car-tier').textContent = (idx + 1) + ' / 53 · ' + c.tier;
+      document.getElementById('rl-val-power').textContent = c.hp + ' HP';
+      document.getElementById('rl-val-speed').textContent = c.speed + ' KM/H';
+      document.getElementById('rl-val-accel').textContent = c.accel + ' SEC';
+      document.getElementById('rl-val-grip').textContent = c.grip + ' G';
+      document.getElementById('rl-val-weight').textContent = c.weight.toLocaleString() + ' KG';
 
-      document.getElementById('rl-bar-power').style.width = Math.min(100, (hp / 800) * 100) + '%';
-      document.getElementById('rl-bar-speed').style.width = Math.min(100, (speed / 400) * 100) + '%';
-      document.getElementById('rl-bar-accel').style.width = Math.min(100, (1 - (accel - 2) / 4) * 100) + '%';
-      document.getElementById('rl-bar-grip').style.width = Math.min(100, (grip / 1.5) * 100) + '%';
-      document.getElementById('rl-bar-weight').style.width = Math.min(100, (1 - (weight - 1000) / 1000) * 100) + '%';
+      document.getElementById('rl-bar-power').style.width = Math.min(100, (c.hp / 1600) * 100) + '%';
+      document.getElementById('rl-bar-speed').style.width = Math.min(100, (c.speed / 420) * 100) + '%';
+      document.getElementById('rl-bar-accel').style.width = Math.min(100, (1 - (c.accel - 2) / 4) * 100) + '%';
+      document.getElementById('rl-bar-grip').style.width = Math.min(100, (c.grip / 1.5) * 100) + '%';
+      document.getElementById('rl-bar-weight').style.width = Math.min(100, (1 - (c.weight - 1000) / 1200) * 100) + '%';
 
       var carPath = document.querySelector('#paintGrad stop:nth-child(2)');
-      if (carPath) carPath.setAttribute('stop-color', color);
+      if (carPath) carPath.setAttribute('stop-color', c.color);
+
+      // Slide-in animation on car
+      var stageCar = document.getElementById('rl-stage-car');
+      if (stageCar) {
+        stageCar.style.transform = 'translateX(-45%) scale(0.92) translateY(10px)';
+        setTimeout(function() {
+          stageCar.style.transform = 'translateX(-50%) scale(0.92) translateY(10px)';
+        }, 80);
+      }
+    }
+
+    function rlCycleCar(delta) {
+      var nextIdx = (currentCarIdx + delta + CAR_ROSTER.length) % CAR_ROSTER.length;
+      rlSelectCar(nextIdx);
+    }
+
+    /* Populate 12 Real Cars from Roster into Garage Strip */
+    function initGarageStrip() {
+      var strip = document.getElementById('rl-car-strip');
+      if (!strip) return;
+      strip.innerHTML = '';
+      CAR_ROSTER.forEach(function(c, i) {
+        var item = document.createElement('div');
+        item.className = 'rl-car-thumb-item' + (i === 0 ? ' is-selected' : '');
+        item.onclick = function() { rlSelectCar(i); };
+        item.innerHTML = '<svg viewBox="0 0 80 35"><path d="M5 25 C15 24 20 18 35 15 C50 14 65 20 75 25 Z" fill="' + c.color + '"/><circle cx="20" cy="25" r="5" fill="#333"/><circle cx="60" cy="25" r="5" fill="#333"/></svg><span>' + c.name + '</span>';
+        strip.appendChild(item);
+      });
+    }
+
+    /* Swipe gestures on 3D turntable */
+    var touchStartX = 0;
+    var stageEl = document.getElementById('rl-stage');
+    if (stageEl) {
+      stageEl.addEventListener('pointerdown', function(e) {
+        touchStartX = e.clientX;
+      });
+      stageEl.addEventListener('pointerup', function(e) {
+        var dx = e.clientX - touchStartX;
+        if (Math.abs(dx) > 40) {
+          rlCycleCar(dx > 0 ? -1 : 1);
+        }
+      });
     }
 
     /* Hotspot Navigation in Customization */
     function rlSetHotspot(type) {
+      rlHaptic('tap');
+      rlPlaySound('tap');
       document.querySelectorAll('.rl-hotspot-pin').forEach(function(p) { p.classList.remove('is-active'); });
       var target = document.querySelector('.rl-pin-' + type);
       if (target) target.classList.add('is-active');
+
+      var catTitles = {
+        wheels: 'WHEELS & BRAKES',
+        aero: 'AERODYNAMICS & SPOILERS',
+        engine: 'TWIN TURBOCHARGERS',
+        paint: 'BODY FINISH & PAINT'
+      };
+      var tEl = document.getElementById('rl-custom-title');
+      if (tEl && catTitles[type]) tEl.textContent = catTitles[type];
     }
 
     /* Part Selection in Customization */
-    function rlSelectPart(tile, price, hpDelta, wtDelta) {
+    function rlSelectPart(tile, price, hpDelta, wtDelta, gDelta) {
+      rlHaptic('select');
+      rlPlaySound('select');
       document.querySelectorAll('.rl-part-tile').forEach(function(t) { t.classList.remove('is-active'); });
       tile.classList.add('is-active');
       document.getElementById('rl-custom-price').textContent = '$' + price.toLocaleString() + ' CR';
+      document.getElementById('rl-delta-hp').textContent = (hpDelta >= 0 ? '+' : '') + hpDelta + ' HP';
+      document.getElementById('rl-delta-wt').textContent = (wtDelta >= 0 ? '+' : '') + wtDelta + ' KG';
+      document.getElementById('rl-delta-g').textContent = (gDelta >= 0 ? '+' : '') + gDelta + ' G';
     }
 
     function rlApplyCustomization() {
-      alert('Customization installed! +45 HP applied to Apex GT-R.');
+      rlHaptic('cta');
+      rlPlaySound('select');
+      rlOpenDialog('Install Customization', 'Purchase and install selected performance parts for $18,500 CR onto your 911 GT3?');
+    }
+
+    /* Toast Notification */
+    var toastTimer = null;
+    function rlShowToast(msg, type) {
+      var toast = document.getElementById('rl-toast');
+      var toastMsg = document.getElementById('rl-toast-msg');
+      if (!toast || !toastMsg) return;
+      toastMsg.textContent = msg;
+      toast.classList.add('is-visible');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(function() {
+        toast.classList.remove('is-visible');
+      }, 3200);
+    }
+
+    /* Dialog Handlers */
+    function rlOpenDialog(title, desc) {
+      document.getElementById('rl-dialog-title').textContent = title;
+      document.getElementById('rl-dialog-desc').textContent = desc;
+      document.getElementById('rl-dialog').classList.add('is-open');
+    }
+
+    function rlCloseDialog() {
+      document.getElementById('rl-dialog').classList.remove('is-open');
+    }
+
+    function rlConfirmDialog() {
+      rlCloseDialog();
+      rlShowToast('Customization installed! +45 HP added to 911 GT3.');
     }
 
     /* Dismiss portrait prompt for testing */
     function rlDismissPortrait() {
       document.getElementById('rl-portrait-overlay').classList.remove('auto-detect');
       document.getElementById('rl-portrait-overlay').style.display = 'none';
+    }
+
+    function rlToggleCamera() {
+      rlHaptic('tap');
+      rlPlaySound('tap');
+      rlShowToast('Camera: CHASE VIEW', 'info');
     }
 
     // Interactive pedal press simulation
@@ -2383,6 +2903,7 @@
 
     if (gasBtn) {
       gasBtn.addEventListener('pointerdown', function() {
+        rlHaptic('tap');
         gasTimer = setInterval(function() {
           spd = Math.min(340, spd + 2);
           if (speedEl) speedEl.textContent = spd;
@@ -2394,6 +2915,9 @@
         });
       });
     }
+
+    // Initialize car roster on boot
+    initGarageStrip();
   </script>
 </body>
 </html>
