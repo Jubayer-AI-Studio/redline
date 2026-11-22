@@ -23,29 +23,32 @@
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="css/styles.css?v=install_refresh_orient_v1">
-  <style>head, meta, link, title, style, script { display: none !important; }</style>
+  <link rel="stylesheet" href="css/ui2.css">
 </head>
 <body>
-  <!-- Boot screen: painted as soon as the stylesheet arrives, while the ~90 classic scripts below download and run
-       (several seconds on a phone network). Self-contained styles; removed after DOMContentLoaded. -->
+  <!-- Boot screen: painted as soon as the stylesheet arrives, while the classic scripts below download and run.
+       Self-contained styles; removed after router completes boot. -->
   <div id="cb-boot" role="status" aria-live="polite" data-scripts="158">
     <script>try{var t=JSON.parse(localStorage.getItem("forge.theme.v1")||"null");if(t!=="light"&&t!=="dark")t="light";document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
-    <style>#cb-boot{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:var(--bg,#0b0b0d);color:var(--text,#ecebe6);font:600 var(--fs-sm,12.5px)/1.4 var(--font,system-ui,sans-serif);letter-spacing:.04em;transition:opacity .35s ease;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}#cb-boot.is-done{opacity:0;pointer-events:none}#cb-boot .cbb{display:flex;flex-direction:column;align-items:center;gap:14px;width:min(260px,70vw)}#cb-boot .cbb-bar{width:100%;height:4px;border-radius:var(--pill,999px);background:var(--line,#2b2c33);overflow:hidden}#cb-boot .cbb-bar i{display:block;height:100%;width:3%;background:var(--accent-grad,var(--accent,#c9a56b));border-radius:inherit;transition:width .2s ease}#cb-boot .cbb-t{color:var(--text-dim,#9b9890);font-variant-numeric:tabular-nums}#cb-boot svg{opacity:.9}#cb-boot .g{stroke:var(--accent,#c9a56b)}#cb-boot .r{stroke:var(--race,#e0412f)}#cb-boot .n{stroke:var(--text,#ecebe6);fill:var(--text,#ecebe6)}@media (prefers-reduced-motion:reduce){#cb-boot,#cb-boot .cbb-bar i{transition:none}}</style>
+    <style>#cb-boot{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:var(--bg,#0b0b0d);color:var(--text,#ecebe6);font:600 var(--fs-sm,12.5px)/1.4 var(--font,system-ui,sans-serif);letter-spacing:.04em;transition:opacity .35s ease;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}#cb-boot.is-done{opacity:0;pointer-events:none}#cb-boot .cbb{display:flex;flex-direction:column;align-items:center;gap:14px;width:min(260px,70vw)}#cb-boot .cbb-bar{width:100%;height:4px;border-radius:var(--pill,999px);background:var(--line,#2b2c33);overflow:hidden}#cb-boot .cbb-bar i{display:block;height:100%;width:3%;background:var(--accent-grad,var(--accent,#c9a56b));border-radius:inherit;transition:width .2s ease}#cb-boot .cbb-t{color:var(--text-dim,#9b9890);font-variant-numeric:tabular-nums}#cb-boot svg{opacity:.9}#cb-boot .g{stroke:var(--accent,#c9a56b)}#cb-boot .r{stroke:var(--race,#e0412f)}#cb-boot .n{stroke:var(--text,#ecebe6);fill:var(--text,#ecebe6)}#cb-boot-error{display:none;margin-top:10px;text-align:center}#cb-boot-retry{background:#e0412f;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-weight:700;cursor:pointer;margin-top:6px}@media (prefers-reduced-motion:reduce){#cb-boot,#cb-boot .cbb-bar i{transition:none}}</style>
     <div class="cbb">
       <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true"><path class="g" d="M8 44a24 24 0 0 1 40.4-17.6" fill="none" stroke="#c9a56b" stroke-width="5" stroke-linecap="round"/><path class="r" d="M51.4 30.3A24 24 0 0 1 56 44" fill="none" stroke="#e0412f" stroke-width="5" stroke-linecap="round"/><path class="n" d="M32 44l12-14" stroke="#ecebe6" stroke-width="4" stroke-linecap="round"/><circle class="n" cx="32" cy="44" r="4" fill="#ecebe6"/></svg>
       <div class="cbb-bar"><i id="cb-boot-bar"></i></div>
       <div class="cbb-t" id="cb-boot-text">Loading… 0%</div>
+      <div id="cb-boot-error">
+        <div style="color:#ef4444;font-size:12px;margin-bottom:4px;">Slow network or loading issue</div>
+        <button id="cb-boot-retry" onclick="window.location.reload(true)">Retry</button>
+      </div>
     </div>
     <script>
     (function () {
-      var boot = document.getElementById('cb-boot'), bar = document.getElementById('cb-boot-bar'), txt = document.getElementById('cb-boot-text');
+      var boot = document.getElementById('cb-boot'), bar = document.getElementById('cb-boot-bar'), txt = document.getElementById('cb-boot-text'), err = document.getElementById('cb-boot-error');
       var total = +boot.getAttribute('data-scripts') || 158, n = 0, done = false;
-      function show() { if (done) return; var p = Math.min(97, Math.round(n / total * 100)); bar.style.width = Math.max(5, p) + '%'; txt.textContent = 'Loading… ' + Math.max(5, p) + '%'; }
+      function show() { if (done) return; var p = Math.min(96, Math.round(n / total * 100)); bar.style.width = Math.max(5, p) + '%'; txt.textContent = 'Loading… ' + Math.max(5, p) + '%'; }
       function onLoad(e) { var t = e && e.target; if (t && t.tagName === 'SCRIPT' && t.src) { n++; show(); } }
       document.addEventListener('load', onLoad, true);
       document.addEventListener('error', function (e) { n++; show(); }, true);
 
-      // Smooth progression ticker fallback so the progress bar never gets stuck at 0%
       var progressTicker = setInterval(function () {
         if (done) { clearInterval(progressTicker); return; }
         if (n < total * 0.9) { n = Math.min(total * 0.9, n + Math.max(2, Math.floor(total * 0.04))); show(); }
@@ -54,15 +57,29 @@
       function finish() {
         if (done) return; done = true;
         clearInterval(progressTicker);
+        if (errTimeout) clearTimeout(errTimeout);
         document.removeEventListener('load', onLoad, true);
         bar.style.width = '100%'; txt.textContent = 'Loading… 100%';
         var raf = window.requestAnimationFrame || function (f) { return setTimeout(f, 16); };
         raf(function () { raf(function () { boot.className = 'is-done'; setTimeout(function () { if (boot.parentNode) boot.parentNode.removeChild(boot); }, 400); }); });
       }
-      document.addEventListener('DOMContentLoaded', finish);
-      window.addEventListener('load', finish);
-      // Hard timeout guarantee: boot screen NEVER blocks user interaction for more than 2.8s
-      setTimeout(finish, 2800);
+
+      window.addEventListener('cb:router-ready', finish);
+      document.addEventListener('cb:router-ready', finish);
+      document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(function () {
+          if (window.CB && CB.router && typeof CB.router.isBooted === 'function' && CB.router.isBooted()) {
+            finish();
+          }
+        }, 100);
+      });
+
+      // Show real error screen with retry button if loading stalls for over 14s
+      var errTimeout = setTimeout(function () {
+        if (!done) {
+          if (err) err.style.display = 'block';
+        }
+      }, 14000);
     })();
     </script>
   </div>
@@ -442,6 +459,8 @@
   <script src="js/input/camwheel-hands.js" charset="utf-8"></script>
   <script src="js/input/camwheel.js" charset="utf-8"></script>
   <script src="js/input/camwheel-ui.js" charset="utf-8"></script>
+  <!-- Redline UI v2.0 mobile-first presentation layer (Step 3: ?ui=2, fallback ?ui=1) -->
+  <script src="js/ui2/ui2.js" charset="utf-8"></script>
   <!-- The single entry point's router (docs/UNIFY-SPEC.md): loads last, boots to #/menu on DOMContentLoaded. -->
   <script src="js/router.js" charset="utf-8"></script>
 
