@@ -83,16 +83,12 @@ CB.race = CB.race || {};
     { id: 'north', name: 'North-up' },
     { id: 'tv', name: 'Broadcast' }
   ];
-  /** 3D camera modes (CB.race.renderer3d cycleCamera order). 'map' delegates to the 2D top-down renderer. */
+  /** 3D camera modes: chase, cockpit interior, hood/bonnet, and high chase. */
   var CAMERAS_3D = [
-    { id: 'cockpit', name: 'Cockpit', desc: 'First person from the driver seat' },
-    { id: 'hood', name: 'Hood', desc: 'Bonnet camera' },
-    { id: 'bumper', name: 'Bumper', desc: 'Low front-bumper camera' },
-    { id: 'chase', name: 'Chase', desc: 'Third person, close' },
-    { id: 'chase-far', name: 'Chase far', desc: 'Third person, high and wide' },
-    { id: 'tv', name: 'TV', desc: 'Trackside broadcast cameras' },
-    { id: 'heli', name: 'Heli', desc: 'High orbiting helicopter view' },
-    { id: 'map', name: 'Map', desc: 'Top-down 2D view' }
+    { id: 'chase', name: 'Chase', desc: 'Directly behind the car' },
+    { id: 'cockpit', name: 'Cockpit', desc: 'Inside driver POV with dashboard, gauges & steering wheel' },
+    { id: 'hood', name: 'Hood', desc: 'Front windshield POV over the bonnet' },
+    { id: 'chase-far', name: 'Chase (High)', desc: 'Behind the car, elevated' }
   ];
   var GRAPHICS = [
     { id: '3d', name: '3D', desc: 'WebGL cockpit & chase cameras' },
@@ -110,6 +106,7 @@ CB.race = CB.race || {};
     { id: 'mph', name: 'mph' }
   ];
   var TOUCH_MODES = [
+    { id: 'always', name: 'Always' },
     { id: 'auto', name: 'Auto' },
     { id: 'on', name: 'On' },
     { id: 'off', name: 'Off' }
@@ -167,13 +164,13 @@ CB.race = CB.race || {};
     rubberBanding: false,
     camera: 'chase',
     graphics: '3d',
-    camera3d: 'cockpit',   // RACE3D-SPEC: first-person cockpit is the default 3D view
+    camera3d: 'chase',   // User requested: chase camera behind the car is the default view
     quality: 'auto',
     units: 'kph',
     muted: false,
     steerSensitivity: 1,
     invertSteer: false,
-    touchControls: 'auto',
+    touchControls: 'always',
     showHints: true,
     // DRIFT / RACE discipline (first setup step) + CB.race.assist steering level
     discipline: 'race',
@@ -425,7 +422,7 @@ CB.race = CB.race || {};
     if (ids(TIMES).indexOf(o.timeOfDay) < 0) o.timeOfDay = 'day';
     if (ids(CAMERAS).indexOf(o.camera) < 0) o.camera = 'chase';
     if (ids(GRAPHICS).indexOf(o.graphics) < 0) o.graphics = '3d';
-    if (ids(CAMERAS_3D).indexOf(o.camera3d) < 0) o.camera3d = 'cockpit';
+    if (ids(CAMERAS_3D).indexOf(o.camera3d) < 0) o.camera3d = 'chase';
     if (ids(QUALITIES).indexOf(o.quality) < 0) o.quality = 'auto';
     if (ids(UNITS).indexOf(o.units) < 0) o.units = 'kph';
     if (ids(TOUCH_MODES).indexOf(o.touchControls) < 0) o.touchControls = 'auto';
@@ -496,18 +493,18 @@ CB.race = CB.race || {};
     var saved = lsGet(LS_SETTINGS, null);
     if (!saved) {
       saved = {};
-      try {
-        var lang = (typeof navigator !== 'undefined' && navigator.language) || '';
-        if (/^en-(US|GB|LR|MM)$/i.test(lang)) saved.units = 'mph';
-      } catch (e) { /* ignore */ }
     }
     // one game, one units setting: the profile's (Settings → General) wins over race-ui's own copy
     var pu = profileUnits();
     if (pu) saved.units = pu;
+    if (!saved.units) saved.units = 'kph';
     // Settings → Driving "Difficulty" is the default AI level: it applies on a first visit and whenever the player changes
     // it there; a level picked on the race setup is remembered until then
     var pd = profileDifficulty();
     if (pd && (saved.difficulty == null || lsGet(LS_PROFDIFF, null) !== pd)) { saved.difficulty = pd; lsSet(LS_PROFDIFF, pd); }
+    if (['chase', 'cockpit', 'hood', 'chase-far'].indexOf(saved.camera3d) < 0) saved.camera3d = 'chase';
+    saved.camera = 'chase';
+    if (['chase', 'cockpit', 'hood', 'chase-far'].indexOf(saved.driftCamera3d) < 0) saved.driftCamera3d = 'chase';
     // per-discipline steering assist (older saves / profiles shared one level, see migrateAssist)
     migrateAssist(saved);
     return syncAssist(sanitizeSettings(saved));
@@ -1009,7 +1006,7 @@ CB.race = CB.race || {};
       var extSteer = X.active && !kbSteering;                  // keys override the phone while held
       if (extSteer) steerL = X.steer * lerp(1, 0.72, hi);
       if (I.gp.active && Math.abs(I.gp.steer) > 0.015) steerL = I.gp.steer * lerp(1, 0.72, hi) * lerp(0.9, 1.1, (sens - 0.5) / 1.1);
-      if (I.touch.active && Math.abs(I.touch.steer) > 0.01) steerL = I.touch.steer * clamp(lerp(1, 0.6, hi), 0.3, 1);
+      if (I.touch.active && Math.abs(I.touch.steer) > 0.01) steerL = I.touch.steer * clamp(lerp(1, 0.85, hi), 0.7, 1);
       var sign = I.leftSign * (s.invertSteer ? -1 : 1);
       var out = {
         throttle: clamp(Math.max(I.kb.throttle, I.gp.active ? I.gp.throttle : 0, I.touch.throttle, X.throttle), 0, 1),
@@ -1025,18 +1022,21 @@ CB.race = CB.race || {};
       // Raw driver intent for CB.race.assist (DRIFT-SPEC §1): digital keys + analog axes (+1 = left), before smoothing.
       var inv = !!s.invertSteer;
       var intent = {
-        left: !!(inv ? h.right : h.left), right: !!(inv ? h.left : h.right), up: !!h.up, down: !!h.down,
+        left: !!(inv ? h.right : h.left) || (I.touch.active && I.touch.steer > 0.15),
+        right: !!(inv ? h.left : h.right) || (I.touch.active && I.touch.steer < -0.15),
+        up: !!h.up || (I.touch.active && I.touch.throttle > 0.15),
+        down: !!h.down || (I.touch.active && I.touch.brake > 0.15),
         handbrake: out.handbrake, shiftUp: out.shiftUp, shiftDown: out.shiftDown, pit: out.pit
       };
       var axisSign = inv ? -1 : 1;
       if (I.gp.active && Math.abs(I.gp.steer) > 0.015) {
         intent.steerAxis = clamp(I.gp.steer * axisSign, -1, 1);
-        // Settings "Gamepad stick: proportional" (default, CB.input.sources): the assist follows the stick's magnitude at
-        // every level (no line pick); 'digital' keeps the classic arrow-key-like reading under Heavy / Auto
         if (gamepadProportional()) { intent.steerAnalog = true; intent.steerSource = 'gamepad'; }
-      } else if (I.touch.active && Math.abs(I.touch.steer) > 0.01) intent.steerAxis = clamp(I.touch.steer * axisSign, -1, 1);
-      // phone tilt / wheel: a continuous wheel angle; steerAnalog tells CB.race.assist to steer proportionally (no line pick)
-      else if (extSteer) { intent.steerAxis = clamp(X.steer * axisSign, -1, 1); intent.steerAnalog = true; intent.steerSource = X.source; }
+      } else if (I.touch.active && Math.abs(I.touch.steer) > 0.01) {
+        intent.steerAxis = clamp(I.touch.steer * axisSign, -1, 1);
+        intent.steerAnalog = true;
+        intent.steerSource = 'touch';
+      } else if (extSteer) { intent.steerAxis = clamp(X.steer * axisSign, -1, 1); intent.steerAnalog = true; intent.steerSource = X.source; }
       var thrAxis = Math.max(I.gp.active ? I.gp.throttle : 0, I.touch.active ? I.touch.throttle : 0, X.throttle);
       var brkAxis = Math.max(I.gp.active ? I.gp.brake : 0, I.touch.active ? I.touch.brake : 0, X.brake);
       if (thrAxis > 0.02 && !h.up) intent.throttleAxis = clamp(thrAxis, 0, 1);
@@ -1441,20 +1441,22 @@ CB.race = CB.race || {};
     var ny = (px * ux + py * uy + pz * uz) / (depth * th);
     return { x: (nx + 1) * 0.5 * W, y: (1 - ny) * 0.5 * H, depth: depth, visible: Math.abs(nx) < 1.1 && Math.abs(ny) < 1.1 };
   }
-  /** Name tags for remote cars: [{id, text, sub, x, y, alpha, scale}] (project(x, y) -> {x, y, depth, visible} | null). */
+  /** Name tags for remote multiplayer cars: [{id, text, sub, x, y, alpha, scale}] (project(x, y) -> {x, y, depth, visible} | null). */
   function netTags(snap, project, maxDist) {
     var out = [];
     if (!snap || !Array.isArray(snap.cars) || typeof project !== 'function') return out;
     maxDist = maxDist || 260;
-    snap.cars.forEach(function (c) {
-      if (!c || c.isPlayer || !(c.remote || c.kind === 'human' || c.kind === 'ai')) return;
+    snap.cars.forEach(function (c, idx) {
+      if (!c || c.isPlayer || c.id === 'player') return;
       if (!isNum(c.x) || !isNum(c.y)) return;
       var p = project(c.x, c.y);
       if (!p || !p.visible || !(p.depth > 0) || p.depth > maxDist) return;
       var fade = p.depth > maxDist * 0.7 ? clamp((maxDist - p.depth) / (maxDist * 0.3), 0, 1) : 1;
-      out.push({ id: c.id, text: String(c.name || 'Driver').slice(0, 24), sub: c.position ? 'P' + c.position : '', kind: c.kind || 'human',
+      var pName = String(c.name || ('Racer #' + (idx + 1))).slice(0, 24);
+      var posTxt = c.position ? 'P' + c.position : '';
+      out.push({ id: c.id, text: pName, sub: posTxt, kind: c.kind || 'ai',
                  x: p.x, y: p.y, depth: p.depth, alpha: fade * (isNum(c.opacity) ? clamp(c.opacity, 0.25, 1) : 1) * (c.ghost ? 0.6 : 1),
-                 scale: clamp(26 / p.depth, 0.7, 1.15), color: c.color || '#c8a24a' });
+                 scale: clamp(26 / p.depth, 0.7, 1.15), color: c.color || '#38bdf8' });
     });
     out.sort(function (a, b) { return b.depth - a.depth; });   // far first, near drawn on top
     return out;
@@ -1772,8 +1774,11 @@ CB.race = CB.race || {};
     /* ---------------- race overlays */
     '#race-root .rx-race{position:absolute;inset:0;pointer-events:none}',
     '#race-root .rx-race>*{pointer-events:auto}',
-    '#race-root .rx-quickbar{position:absolute;top:50%;right:12px;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px;opacity:.45;transition:opacity .2s}',
+    '#race-root .rx-quickbar{position:absolute;top:50%;right:12px;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;opacity:.92;transition:opacity .2s;z-index:90}',
     '#race-root .rx-quickbar:hover{opacity:1}',
+    '#race-root .rx-quickbar .rx-btn{background:rgba(15,23,42,.85);border:1px solid rgba(255,255,255,.2);color:var(--text-strong);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 4px 12px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 12px;border-radius:8px}',
+    '#race-root .rx-quickbar .rx-cam-btn{background:linear-gradient(135deg,rgb(126,34,206),rgb(234,88,12));border:1px solid rgba(255,255,255,.4);color:var(--text-strong);font-weight:800;font-size:var(--fs-xs)}',
+    '#race-root .rx-quickbar .rx-cam-lbl{font-size:var(--fs-xs);font-weight:800;letter-spacing:0.5px}',
     /* multiplayer: ping / drivers / sync pill, end-of-session banner, pause-menu player list */
     '#race-root .rx-net{position:absolute;left:50%;top:10px;transform:translateX(-50%);display:flex;align-items:center;gap:7px;padding:4px 11px;border-radius:999px;background:rgba(8,9,11,.66);border:1px solid var(--rx-line-2);font-size:var(--fs-xs);font-weight:600;letter-spacing:.02em;color:var(--rx-text);pointer-events:none;white-space:nowrap;font-variant-numeric:tabular-nums;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}',
     '#race-root .rx-net.is-drift{left:auto;right:12px;transform:none}',
@@ -1814,22 +1819,42 @@ CB.race = CB.race || {};
     '#race-root .rx-finish-text{font-size:clamp(40px,7vw,84px);text-shadow:0 6px 30px rgba(0,0,0,.8)}',
     '#race-root .rx-finish-sub{font-size:var(--fs-md);color:var(--rx-dim);background:rgba(0,0,0,.6);padding:6px 14px;border-radius:999px}',
     '#race-root .rx-fallback-note{position:absolute;left:50%;transform:translateX(-50%);bottom:62px;white-space:nowrap;font-size:var(--fs-xs);color:var(--rx-warn);background:rgba(0,0,0,.6);padding:6px 10px;border-radius:8px;border:1px solid rgba(255,176,32,.3);pointer-events:none}',
-    /* touch */
-    '#race-root .rx-touch{position:absolute;inset:auto 0 0 0;height:min(42vh,260px);pointer-events:none;display:flex;justify-content:space-between;align-items:flex-end;padding:0 16px 18px;gap:12px}',
-    '#race-root .rx-touch>*{pointer-events:auto;touch-action:none}',
-    '#race-root .rx-steerpad{position:relative;width:min(46vw,300px);height:96px;border-radius:48px;background:var(--hud-panel-soft,rgba(0,0,0,.35));border:1px solid var(--hud-line,rgba(255,255,255,.14));backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}',
-    '#race-root .rx-steerpad::before{content:"‹  ›";position:absolute;inset:0;display:grid;place-items:center;font-size:var(--fs-title);color:rgba(255,255,255,.18);letter-spacing:40px;padding-left:40px}',
-    '#race-root .rx-knob{position:absolute;top:50%;left:50%;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:50%;background:radial-gradient(circle at 40% 35%,rgba(255,255,255,.35),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.3);box-shadow:0 8px 20px rgba(0,0,0,.5);will-change:transform}',
-    '#race-root .rx-pedals{display:flex;align-items:flex-end;gap:10px}',
-    '#race-root .rx-pedal{width:74px;height:140px;border-radius:16px;border:1px solid var(--hud-line,rgba(255,255,255,.16));background:var(--hud-panel-soft,rgba(0,0,0,.35));font:800 var(--fs-xs) var(--hud-font);display:flex;align-items:flex-end;justify-content:center;padding-bottom:12px;font-size:var(--fs-xs);letter-spacing:.14em;font-weight:800;color:var(--hud-dim,rgba(255,255,255,.7));position:relative;overflow:hidden;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}',
-    '#race-root .rx-pedal.gas{height:170px}',
-    '#race-root .rx-pedal .rx-fill{position:absolute;left:0;right:0;bottom:0;height:0;opacity:.45}',
-    '#race-root .rx-pedal.gas .rx-fill{background:linear-gradient(0deg,var(--rx-good),transparent)}',
-    '#race-root .rx-pedal.brake .rx-fill{background:linear-gradient(0deg,var(--rx-bad),transparent)}',
-    '#race-root .rx-pedal span{position:relative}',
-    '#race-root .rx-touch-aux{display:flex;flex-direction:column;gap:8px}',
-    '#race-root .rx-tbtn{width:58px;height:46px;border-radius:12px;border:1px solid var(--hud-line,rgba(255,255,255,.16));background:var(--hud-panel-soft,rgba(0,0,0,.4));font:800 var(--fs-xs) var(--hud-font);font-size:var(--fs-xs);font-weight:800;letter-spacing:.08em;color:var(--hud-dim,rgba(255,255,255,.75));display:grid;border-radius:var(--hud-radius,12px);place-items:center}',
-    '#race-root .rx-tbtn.is-down,#race-root .rx-pedal.is-down{border-color:var(--rx-accent);color:var(--hud-ink,#fff);background:var(--hud-press,rgba(255,255,255,.22))}',
+    /* As-Sunnah Skill Development & JUBAYER Top HUD Banner */
+    '#race-root .as-sunnah-top-banner{position:absolute;top:10px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:16px;padding:8px 18px;background:rgba(10,14,24,0.88);border:1.5px solid rgba(255,136,0,0.5);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,0.6),0 0 16px rgba(255,136,0,0.25);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:100;pointer-events:none;max-width:95vw}',
+    '#race-root .ast-branding{display:flex;align-items:center;gap:12px}',
+    '#race-root .ast-logo{height:60px;width:auto;object-fit:contain;filter:drop-shadow(0 0 10px rgba(0,229,255,0.5))}',
+    '#race-root .ast-text-group{display:flex;flex-direction:column;gap:2px}',
+    '#race-root .ast-institute{font-family:var(--hud-font,system-ui,sans-serif);font-size:var(--fs-sm);font-weight:900;color:rgb(255,136,0);letter-spacing:0.06em;text-shadow:0 0 12px rgba(255,136,0,0.55);white-space:nowrap}',
+    '#race-root .ast-driver-row{display:flex;align-items:center;gap:8px}',
+    '#race-root .ast-driver-badge{font-size:var(--fs-2xs);font-weight:800;color:rgb(16,185,129);background:rgba(16,185,129,0.18);border:1px solid rgba(16,185,129,0.4);padding:1px 7px;border-radius:var(--radius-xs);letter-spacing:0.08em}',
+    '#race-root .ast-driver-name{font-family:var(--hud-font,system-ui,sans-serif);font-size:var(--fs-md);font-weight:900;color:rgb(0,229,255);letter-spacing:0.08em;text-shadow:0 0 10px rgba(0,229,255,0.6)}',
+    '#race-root .ast-telemetry-badge{display:flex;align-items:center;gap:8px;padding-left:14px;border-left:1px solid rgba(255,255,255,0.15)}',
+    '#race-root .ast-spd-wrap{display:flex;align-items:baseline;gap:4px}',
+    '#race-root .ast-spd-val{font-family:var(--hud-font,var(--mono),monospace);font-size:var(--fs-2xl);font-weight:900;color:rgb(255,255,255);text-shadow:0 0 12px rgba(0,229,255,0.7);line-height:1}',
+    '#race-root .ast-spd-unit{font-size:var(--fs-2xs);font-weight:800;color:rgb(56,189,248);letter-spacing:0.04em}',
+    '#race-root .ast-gear-tag{width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-xs);background:rgba(56,189,248,0.2);border:1px solid rgba(56,189,248,0.5);color:rgb(56,189,248);font-weight:900;font-size:var(--fs-md)}',
+    '@media (max-width:900px), (max-height:520px){#race-root .as-sunnah-top-banner{padding:4px 10px;gap:8px;top:4px;border-radius:10px}#race-root .ast-logo{height:46px}#race-root .ast-institute{font-size:var(--fs-xs);letter-spacing:0.02em}#race-root .ast-driver-badge{font-size:var(--fs-2xs);padding:1px 5px}#race-root .ast-driver-name{font-size:var(--fs-sm)}#race-root .ast-telemetry-badge{padding-left:8px;gap:6px}#race-root .ast-spd-val{font-size:var(--fs-xl)}#race-root .ast-spd-unit{font-size:var(--fs-2xs)}#race-root .ast-gear-tag{width:20px;height:20px;font-size:var(--fs-xs)}}',
+    '@media (max-width:480px){#race-root .as-sunnah-top-banner{padding:3px 8px;gap:6px;max-width:98vw}#race-root .ast-logo{height:38px}#race-root .ast-institute{font-size:var(--fs-2xs);letter-spacing:0}#race-root .ast-driver-name{font-size:var(--fs-xs)}#race-root .ast-telemetry-badge{padding-left:6px;gap:4px}#race-root .ast-spd-val{font-size:var(--fs-lg)}#race-root .ast-gear-tag{width:18px;height:18px;font-size:var(--fs-2xs)}}',
+    /* clean non-intrusive mobile controls (tactile steering and pedals) */
+    '#race-root .rx-touch-steering{position:absolute;bottom:max(16px,env(safe-area-inset-bottom));left:max(16px,env(safe-area-inset-left));z-index:95;display:flex;gap:12px;pointer-events:auto}',
+    '#race-root .rx-steer-btn{width:72px;height:72px;border-radius:20px;border:2.5px solid rgba(0,229,255,0.75);background:rgba(10,24,40,0.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#00e5ff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:var(--hud-font,sans-serif);font-weight:900;box-shadow:0 6px 20px rgba(0,0,0,0.5),0 0 14px rgba(0,229,255,0.35);cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;transition:transform 0.06s ease,background 0.06s ease}',
+    '#race-root .rx-steer-btn:active,#race-root .rx-steer-btn.is-down{transform:scale(0.90);background:rgba(0,229,255,0.5);box-shadow:0 0 28px rgba(0,229,255,0.9);color:#fff}',
+    '#race-root .rx-steer-btn .rx-st-icon{font-size:26px;line-height:1}',
+    '#race-root .rx-steer-btn .rx-st-lbl{font-size:11px;font-weight:900;letter-spacing:0.05em}',
+    '#race-root .rx-touch-pedals{position:absolute;bottom:max(16px,env(safe-area-inset-bottom));right:max(16px,env(safe-area-inset-right));z-index:95;display:flex;align-items:center;gap:12px;pointer-events:auto}',
+    '#race-root .rx-pedal-btn{width:72px;height:72px;border-radius:20px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:var(--hud-font,sans-serif);font-weight:900;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;transition:transform 0.06s ease,background 0.06s ease}',
+    '#race-root .rx-pedal-btn.gas{width:80px;height:80px;border:2.5px solid rgba(34,197,94,0.85);background:rgba(12,38,22,0.9);color:#4ade80;box-shadow:0 6px 20px rgba(0,0,0,0.5),0 0 16px rgba(34,197,94,0.4)}',
+    '#race-root .rx-pedal-btn.gas:active,#race-root .rx-pedal-btn.gas.is-down{transform:scale(0.90);background:rgba(22,163,74,0.65);box-shadow:0 0 30px rgba(34,197,94,0.95);color:#fff}',
+    '#race-root .rx-pedal-btn.brake{border:2.5px solid rgba(239,68,68,0.8);background:rgba(38,12,18,0.9);color:#ff5555;box-shadow:0 6px 20px rgba(0,0,0,0.5),0 0 14px rgba(239,68,68,0.35)}',
+    '#race-root .rx-pedal-btn.brake:active,#race-root .rx-pedal-btn.brake.is-down{transform:scale(0.90);background:rgba(220,38,38,0.65);box-shadow:0 0 28px rgba(239,68,68,0.95);color:#fff}',
+    '#race-root .rx-pedal-btn.nitro{border:2px solid rgba(234,179,8,0.8);background:rgba(38,32,10,0.88);color:#fbbf24;box-shadow:0 6px 20px rgba(0,0,0,0.5),0 0 14px rgba(234,179,8,0.35);width:60px;height:60px}',
+    '#race-root .rx-pedal-btn.nitro:active,#race-root .rx-pedal-btn.nitro.is-down{transform:scale(0.90);background:rgba(234,179,8,0.65);box-shadow:0 0 26px rgba(234,179,8,0.95);color:#fff}',
+    '#race-root .rx-pedal-btn .rx-pb-icon{font-size:24px;line-height:1}',
+    '#race-root .rx-pedal-btn .rx-pb-lbl{font-size:11px;font-weight:900;letter-spacing:0.05em}',
+    '@media (min-width: 1025px) and (pointer: fine){#race-root:not(.has-touch) .rx-touch-steering,#race-root:not(.has-touch) .rx-touch-pedals,#race-root:not(.has-touch) .rx-clean-brake-btn{display:none !important}}',
+    '@media (max-width: 640px), (max-height: 480px){#race-root .rx-steer-btn{width:62px;height:62px;border-radius:16px}#race-root .rx-steer-btn .rx-st-icon{font-size:22px}#race-root .rx-pedal-btn{width:62px;height:62px;border-radius:16px}#race-root .rx-pedal-btn.gas{width:68px;height:68px}#race-root .rx-pedal-btn.nitro{width:50px;height:50px}#race-root .rx-touch-steering{gap:8px;bottom:max(10px,env(safe-area-inset-bottom));left:max(10px,env(safe-area-inset-left))}#race-root .rx-touch-pedals{gap:8px;bottom:max(10px,env(safe-area-inset-bottom));right:max(10px,env(safe-area-inset-right))}}',
+    '#race-root .rx-clean-brake-btn{display:none !important}',
+    '#race-root .rx-lights.is-hidden{display:none !important}',
     /* ---------------- modal (pause / results / error) */
     '#race-root .rx-modal{position:absolute;inset:0;display:grid;place-items:center;padding:24px;background:radial-gradient(80% 80% at 50% 40%,rgba(0,0,0,.45),rgba(0,0,0,.82));backdrop-filter:blur(7px) saturate(.7);-webkit-backdrop-filter:blur(7px) saturate(.7);animation:rx-fade .2s ease}',
     '#race-root .rx-pause{width:min(880px,100%);display:grid;grid-template-columns:300px 1fr;overflow:hidden}',
@@ -3583,7 +3608,9 @@ CB.race = CB.race || {};
           weather: R.settings.weather, timeOfDay: R.settings.timeOfDay, mode: R.settings.mode,
           assists: deepClone(R.settings.assists),
           difficulty: R.settings.difficulty, field: R.settings.field, rubberBanding: R.settings.rubberBanding,
-          buildHash: U.hash
+          buildHash: U.hash,
+          countdown: false,
+          instantStart: true
         };
         if (R.isArcade) {   // ARCADE-SPEC: every car on the arcade vehicle model
           cfg.handling = 'arcade'; cfg.arcade = arcadeSettingsOf(R.settings); cfg.steerAssist = 'off';   // no assist layer in arcade
@@ -3615,8 +3642,8 @@ CB.race = CB.race || {};
         if (R.challenge && typeof R.challenge.setUnits === 'function') { try { R.challenge.setUnits(S2.units); } catch (e4) { /* ignore */ } }
         if (moduleStatus().hud) {
           try { var L2 = launchCfg(def);
-            var hudO = { units: S2.units, mode: S2.mode, assists: S2.assists,
-              playerName: (L2 && L2.playerName) || (U.opts && U.opts.playerName) || 'You' };
+            var hudO = { units: S2.units, mode: S2.mode, assists: S2.assists, tower: false,
+              playerName: (L2 && L2.playerName) || (U.opts && U.opts.playerName) || 'JUBAYER' };
             var PLh = pluginOf();
             if (PLh && isPlain(PLh.hudOptions)) Object.assign(hudO, PLh.hudOptions);
             R.hud = CB.race.hud.create(U.canvas, R.geom, def, hudO); } catch (e2) { R.hud = null; if (typeof console !== 'undefined') console.warn('[race-ui] hud.create failed', e2); }
@@ -3646,8 +3673,7 @@ CB.race = CB.race || {};
         R.ready = true;
         U.loadingRefs.bar.style.width = '100%';
         U.loadingRefs.go.disabled = false;
-        if (R.immediate) { goRace(); return; }
-        try { U.loadingRefs.go.focus({ preventScroll: true }); } catch (e) { /* ignore */ }
+        goRace();
         return;
       }
       mark(stepIdx, 'is-active');
@@ -3691,6 +3717,7 @@ CB.race = CB.race || {};
     }
     var S2 = R.settings, D = driftMod(), lvl = R.isArcade ? 'off' : S2.steerAssist;   // arcade: never the race / drift assist layer
     var hooks = cfg.hooks;
+    cfg.godMode = !R.isDrift;
     R.rawInput = false; R.assistVia = 'none';
     if (R.isDrift && D) {
       var ec = engineCfgOf(cfg);
@@ -3717,12 +3744,16 @@ CB.race = CB.race || {};
       ec2.assists = Object.assign({}, cfg.assists || {}, { steeringAssist: false });
       ec2.startPosition = cfg.startPosition !== undefined ? cfg.startPosition : 'middle';   // the drift wrapper defaults to the back of the grid
       ec2.persistGhost = cfg.persistGhost !== undefined ? cfg.persistGhost : true;
+      ec2.godMode = !R.isDrift;
+      ec2.countdown = false;
+      ec2.instantStart = true;
       if (ec2.opponents === undefined) ec2.opponents = [];
       try {
         var rs = D.createSession({
           mode: 'race', trackId: def.id, track: def, build: U.build, assist: lvl, timeOfDay: cfg.timeOfDay, weather: cfg.weather,
           seed: cfg.seed, difficulty: cfg.difficulty, laps: cfg.laps, opponents: cfg.opponents, playerName: cfg.playerName,
-          racingLine: !!(cfg.assists && cfg.assists.racingLine), engineCfg: ec2, hooks: hooks
+          racingLine: !!(cfg.assists && cfg.assists.racingLine), engineCfg: ec2, hooks: hooks,
+          countdown: false, instantStart: true
         });
         R.rawInput = true; R.assistVia = 'drift';
         return rs;
@@ -4196,16 +4227,25 @@ CB.race = CB.race || {};
     clear(U.host);
     U.loadingRefs = null;
     var S = R.settings;
-    var lights = h('div', { class: 'rx-lights' + (R.hudDrawsCountdown ? ' is-hidden' : ''), 'aria-hidden': 'true' });
+    var lights = h('div', { class: 'rx-lights is-hidden', style: { display: 'none' }, 'aria-hidden': 'true' });
     for (var i = 0; i < 5; i++) lights.appendChild(h('div', { class: 'rx-light' }, h('i'), h('i')));
     var feed = h('div', { class: 'rx-feed', 'aria-live': 'polite' });
     var muteBtn = h('button', { class: 'cb-btn rx-btn icon', type: 'button', title: 'Mute (M)', html: svgIcon(S.muted ? 'mute' : 'sound', 16), onclick: function () { onRaceAction('mute'); } });
+    var curCamId = (R.settings && R.settings.camera3d) || 'chase';
+    var curCamObj = (R.is3d ? CAMERAS_3D : CAMERAS).filter(function (c) { return c.id === curCamId; })[0];
+    var camLbl = h('span', { class: 'rx-cam-lbl', text: (curCamObj ? curCamObj.name : curCamId).toUpperCase() });
+    var camBtn = h('button', {
+      class: 'cb-btn rx-btn rx-cam-btn',
+      type: 'button',
+      title: 'Change Camera (C)',
+      onclick: function () { onRaceAction('camera'); }
+    }, h('span', { class: 'rx-cam-ico', html: svgIcon('camera', 16) }), camLbl);
     var quick = h('div', { class: 'rx-quickbar' },
-      h('button', { class: 'cb-btn rx-btn icon', type: 'button', title: 'Camera (C)', html: svgIcon('camera', 16), onclick: function () { onRaceAction('camera'); } }),
+      camBtn,
       muteBtn,
       h('button', { class: 'cb-btn rx-btn icon', type: 'button', title: 'Pause (P / Esc)', html: svgIcon('pause', 16), onclick: function () { onRaceAction('pause'); } }));
     var layer = h('div', { class: 'rx-race cb-dark' }, lights, feed, quick, rotatePrompt());
-    if (S.showHints) {
+    if (false && S.showHints) {
       var hints = R.isDrift ? h('div', { class: 'rx-hints', style: { bottom: 'auto', top: '138px' } },
         h('span', null, kbd('↑'), 'Hold to drift'), h('span', null, kbd('←'), kbd('→'), 'Pick side · angle'), h('span', null, kbd('↓'), 'Less angle'),
         h('span', null, kbd('Space'), 'Handbrake kick'), h('span', null, kbd('C'), 'Camera'), h('span', null, kbd('R'), 'Reset'), h('span', null, kbd('Esc'), 'Pause'))
@@ -4226,7 +4266,7 @@ CB.race = CB.race || {};
       layer.appendChild(netEl);
     }
     U.host.appendChild(layer);
-    R.dom = { layer: layer, lights: lights, feed: feed, muteBtn: muteBtn, finish: null, net: netEl, netText: netText };
+    R.dom = { layer: layer, lights: lights, feed: feed, muteBtn: muteBtn, camBtn: camBtn, camLbl: camLbl, finish: null, net: netEl, netText: netText };
     buildTouchControls(layer);
     R.simActive = true; R.paused = false; R.acc = 0;
     if (R.audio && R.audio.setMuted) { try { R.audio.setMuted(!!S.muted); } catch (e) { /* ignore */ } }
@@ -4258,6 +4298,7 @@ CB.race = CB.race || {};
       if (R.is3d) { var ck = cam3dKey(R.settings); U.settings[ck] = R.settings[ck] = cam.id; }
       else U.settings.camera = R.settings.camera = cam.id;
       persist();
+      if (R.dom && R.dom.camLbl && cam) { R.dom.camLbl.textContent = cam.name.toUpperCase(); }
       toast(icon('camera', 14), 'Camera · ' + cam.name);
     } else if (a === 'mute') {
       setMuted(!R.settings.muted);
@@ -4272,6 +4313,7 @@ CB.race = CB.race || {};
     U.settings.muted = m; if (R) R.settings.muted = m; persist();
     if (R && R.audio && R.audio.setMuted) { try { R.audio.setMuted(m || R.paused); } catch (e) { /* ignore */ } }
     if (R && R.dsfx && R.dsfx.setMuted) { try { R.dsfx.setMuted(m); } catch (eS) { /* ignore */ } }
+    if (CB.music && CB.music.setMuted) { try { CB.music.setMuted(m); } catch (eM) { /* ignore */ } }
     if (R && R.dom && R.dom.muteBtn) R.dom.muteBtn.innerHTML = svgIcon(m ? 'mute' : 'sound', 16);
     toast(icon(m ? 'mute' : 'sound', 14), m ? 'Sound off' : 'Sound on');
   }
@@ -4326,6 +4368,7 @@ CB.race = CB.race || {};
           else R.hud.draw(ctx, snap);
           if (R.isArcade) drawArcadeLayer(R, ctx, snap, cw, U.canvas.clientHeight || 1);
           if (R.net) drawNetTags(R, ctx, snap, cw, U.canvas.clientHeight || 1);
+          drawPlayerCarTag(R, ctx, snap, cw, U.canvas.clientHeight || 1);
           if (U.opts && U.opts.plugin) pluginCall('drawHud', [ctx, snap, { width: cw, height: U.canvas.clientHeight || 1, renderer: R.renderer, units: R.settings.units,
             paused: !!R.paused, screen: U.screen, cockpit: isCockpitView(R), project: arcadeProjector(R, cw, U.canvas.clientHeight || 1), R: R }]);
         } finally { ctx.restore(); }
@@ -4370,9 +4413,9 @@ CB.race = CB.race || {};
     var P = CB.game && CB.game.profile, pr = null;
     try { pr = P && typeof P.get === 'function' ? P.get() : null; } catch (e) { pr = null; }
     var n = pr && typeof pr.driverName === 'string' ? pr.driverName.trim() : '';
-    if (n) return n.slice(0, 24);
+    if (n && n !== 'You' && n !== 'Driver' && n !== 'Untitled Build') return n.slice(0, 24);
     var b = U && U.build && U.build.meta && U.build.meta.name;
-    return b && b !== 'Untitled Build' ? b : 'You';
+    return b && b !== 'Untitled Build' ? b : 'Player';
   }
   /** Results subtitle name: the build's own name, or its real model when it still has the default "Untitled Build" name (career cars). */
   function resultBuildName() {
@@ -4893,21 +4936,147 @@ CB.race = CB.race || {};
       placed.push(t);
     });
     tags.forEach(function (t) {
-      var fs = t._fs, label = t._label;
-      ctx.font = '700 ' + fs + 'px Inter, system-ui, sans-serif';
-      var w = t._w, hh = t._h, x = t.x, y = t._y;
-      ctx.globalAlpha = t.alpha * 0.82;
-      ctx.fillStyle = 'rgba(10,12,16,0.78)';
-      if (ctx.roundRect) { ctx.beginPath(); ctx.roundRect(x - w / 2, y - hh / 2, w, hh, hh / 2); ctx.fill(); }
-      else ctx.fillRect(x - w / 2, y - hh / 2, w, hh);
-      ctx.fillStyle = t.color; ctx.fillRect(x - w / 2 + 6 * t.scale, y - 1.5, 3 * t.scale, 3);
-      ctx.globalAlpha = t.alpha;
-      ctx.fillStyle = t.kind === 'ai' ? '#c9ced6' : '#ffffff';
-      ctx.fillText(label, x + 3 * t.scale, y + 0.5);
-      ctx.globalAlpha = t.alpha * 0.55;
-      ctx.beginPath(); ctx.moveTo(x - 4, y + hh / 2); ctx.lineTo(x + 4, y + hh / 2); ctx.lineTo(x, y + hh / 2 + 5); ctx.closePath();
-      ctx.fillStyle = 'rgba(10,12,16,0.78)'; ctx.fill();
+      var fs = Math.max(10, t._fs), label = t.text;
+      ctx.font = '800 ' + fs + 'px Inter, system-ui, sans-serif';
+      var txtW = ctx.measureText(label).width;
+      var subW = t.sub ? ctx.measureText(t.sub).width + 8 * t.scale : 0;
+      var avatarR = fs * 0.44;
+      var padH = 8 * t.scale;
+      var w = txtW + subW + (avatarR * 2 + 8 * t.scale) + padH * 2;
+      var hh = fs + 10 * t.scale;
+      var x = t.x, y = t._y;
+
+      ctx.save();
+      ctx.globalAlpha = t.alpha * 0.92;
+
+      // Tag glass pill
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+      ctx.strokeStyle = t.color || 'rgba(56, 189, 248, 0.6)';
+      ctx.lineWidth = 1.4 * t.scale;
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(x - w / 2, y - hh / 2, w, hh, hh / 2);
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        ctx.fillRect(x - w / 2, y - hh / 2, w, hh);
+      }
+
+      // Pilot Avatar circle
+      var avX = x - w / 2 + padH + avatarR;
+      ctx.fillStyle = t.color || '#3b82f6';
+      ctx.beginPath();
+      ctx.arc(avX, y, avatarR, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pilot Initial
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 ' + Math.round(fs * 0.72) + 'px system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label.charAt(0).toUpperCase(), avX, y + 0.5);
+
+      // Pilot Name
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 ' + fs + 'px Inter, system-ui, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, avX + avatarR + 6 * t.scale, y + 0.5);
+
+      // Position badge (e.g. P2, P3)
+      if (t.sub) {
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '900 ' + Math.round(fs * 0.88) + 'px system-ui, sans-serif';
+        ctx.fillText(t.sub, x + w / 2 - padH, y + 0.5);
+      }
+
+      // Downward pointer caret towards car
+      ctx.globalAlpha = t.alpha * 0.85;
+      ctx.beginPath();
+      ctx.moveTo(x - 5 * t.scale, y + hh / 2);
+      ctx.lineTo(x + 5 * t.scale, y + hh / 2);
+      ctx.lineTo(x, y + hh / 2 + 5 * t.scale);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+      ctx.fill();
+
+      ctx.restore();
     });
+    ctx.restore();
+  }
+  var asSunnahLogoImg = (typeof Image !== 'undefined') ? new Image() : null;
+  if (asSunnahLogoImg) {
+    asSunnahLogoImg.crossOrigin = 'anonymous';
+    asSunnahLogoImg.src = (typeof window !== 'undefined' && window.AS_SUNNAH_LOGO_B64) ? window.AS_SUNNAH_LOGO_B64 : 'img/as_sunnah_logo.png';
+  }
+
+  /** Overhead 3D Tracking: minimal indicator and banner telemetry update. */
+  function drawPlayerCarTag(R, ctx, snap, W, H) {
+    if (!R || !snap) return;
+    var cars = snap.cars || [];
+    var me = cars.filter(function (c) { return c.isPlayer || c.id === 'player'; })[0] || cars[0];
+    if (!me) return;
+
+    // Update live speedometer and clean mobile HUD telemetry
+    var spdVal = typeof me.speed === 'number' && isFinite(me.speed) ? me.speed : 0;
+    var spdKph = (R.hud && typeof R.hud.getSpeed === 'function')
+      ? Math.round(R.hud.getSpeed())
+      : Math.round(Math.abs(spdVal) * 3.6);
+    var spdMph = Math.round(spdKph * 0.621371);
+
+    var spdEl = document.getElementById('ast-live-speed');
+    if (spdEl && spdEl.textContent !== String(spdKph)) spdEl.textContent = String(spdKph);
+    var gearEl = document.getElementById('ast-live-gear');
+    if (gearEl) {
+      var g = me.gear;
+      var gStr = g == null ? 'N' : g < 0 ? 'R' : g === 0 ? 'N' : String(g);
+      if (gearEl.textContent !== gStr) gearEl.textContent = gStr;
+    }
+
+    // Reference mobile HUD elements (matching screenshot media_1795149761565_46a2b6dc)
+    var rmhSpd = document.getElementById('rmh-live-speed');
+    if (rmhSpd && rmhSpd.textContent !== String(spdMph)) rmhSpd.textContent = String(spdMph);
+    var rmhPos = document.getElementById('rmh-live-pos');
+    if (rmhPos) {
+      var posTxt = (me.position || 1) + '/' + (cars.length || 5);
+      if (rmhPos.textContent !== posTxt) rmhPos.textContent = posTxt;
+    }
+    var rmhTime = document.getElementById('rmh-live-time');
+    if (rmhTime) {
+      var elSec = Math.max(0, snap.elapsed_s || snap.t || 0);
+      var m = Math.floor(elSec / 60);
+      var s = Math.floor(elSec % 60);
+      var cs = Math.floor((elSec % 1) * 100);
+      var tStr = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s + ':' + (cs < 10 ? '0' : '') + cs;
+      if (rmhTime.textContent !== tStr) rmhTime.textContent = tStr;
+    }
+
+    // Subtle floating diamond indicator above player car (unobtrusive and clean)
+    if (!R.is3d || !R.renderer || typeof R.renderer.getCameraState !== 'function') return;
+    var cam = R.renderer.getCameraState();
+    if (!cam || cam.mode === 'map' || cam.mode === 'cockpit') return;
+    var gy = 0;
+    try {
+      var D = typeof R.renderer._debug === 'function' ? R.renderer._debug() : null;
+      gy = D && D.S && D.S.world && typeof D.S.world.groundY === 'function' ? +D.S.world.groundY(me.x, -me.y) || 0 : 0;
+    } catch (e) { gy = 0; }
+    var pt = projectThrough(cam, W, H, me.x, me.y, gy + 1.85);
+    if (!pt || !pt.visible) return;
+
+    ctx.save();
+    ctx.translate(pt.x, pt.y - 10);
+    ctx.fillStyle = '#00e5ff';
+    ctx.shadowColor = '#00e5ff';
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.moveTo(0, -7);
+    ctx.lineTo(6, 0);
+    ctx.lineTo(0, 7);
+    ctx.lineTo(-6, 0);
+    ctx.closePath();
+    ctx.fill();
     ctx.restore();
   }
   /** Players / ping / sync block of the pause menu. */
@@ -4999,34 +5168,19 @@ CB.race = CB.race || {};
       through the dimmed backdrop; "Keep portrait" hides it for the rest of the browser session). */
   var ROTATE_KEY = 'rx-rotate-dismissed';
   function rotatePrompt() {
-    var off = false;
-    try { off = window.sessionStorage.getItem(ROTATE_KEY) === '1'; } catch (e) { off = false; }
-    var el = h('div', { class: 'rx-rotate' + (off ? ' is-dismissed' : ''), role: 'status' });
-    el.appendChild(h('div', { class: 'rx-rotate-card' },
-      h('div', { class: 'rx-rotate-ico', html: '<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.2"/><path d="M11 18.5h2"/></svg>' }),
-      h('b', { text: 'Rotate your phone to landscape' }),
-      h('p', { text: 'Driving works best sideways: steer on the left, pedals on the right.' }),
-      h('button', { class: 'cb-btn rx-btn ghost', type: 'button', text: 'Keep portrait', onclick: function (e) {
-        if (e) { e.preventDefault(); e.stopPropagation(); }
-        el.classList.add('is-dismissed');
-        try { window.sessionStorage.setItem(ROTATE_KEY, '1'); } catch (e2) { /* private mode: dismissed for this session only */ }
-      } })));
-    return el;
+    return h('div', { class: 'rx-rotate is-dismissed', style: { display: 'none !important' } });
   }
   function touchWanted() {
-    var m = U.settings.touchControls;
-    if (m === 'on') return true;
+    var m = (U && U.settings && U.settings.touchControls) || 'always';
     if (m === 'off') return false;
-    try { return !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches); } catch (e) { return false; }
+    return true; // Always visible on mobile AND desktop
   }
   function updateTouchVisibility() {
     var R = U && U.race;
     if (!R || !R.touchEl) return;
-    var on = touchWanted() && !tiltOn();      // tilt steering brings its own pedal layout (js/input/input-ui.js)
-    R.touchEl.style.display = on ? '' : 'none';
+    var on = touchWanted() && !tiltOn();
+    R.touchEl.style.display = on ? 'flex' : 'none';
     R.input.touch.active = on;
-    var gears = R.touchEl.querySelector('.rx-touch-gears');
-    if (gears) gears.style.display = R.settings.assists.autoShift ? 'none' : '';
   }
   /** Phone layout hints for the canvas HUD (CB.race.hud.setLayout), re-measured ~4x a second: the free bottom band
       between the touch steering pad / tilt zones (left) and the pedals (right), the controls' bottom edge, and whether
@@ -5060,55 +5214,215 @@ CB.race = CB.race || {};
   }
   function buildTouchControls(layer) {
     var R = U.race, T = R.input.touch;
-    var knob = h('div', { class: 'rx-knob' });
-    var pad = h('div', { class: 'rx-steerpad', 'aria-label': 'Steering' }, knob);
-    var steerId = null;
-    function steerAt(e) {
-      var r = pad.getBoundingClientRect();
-      var x = clamp((e.clientX - (r.left + r.width / 2)) / (r.width * 0.42), -1, 1);
-      T.steer = -x; // left is +1 in input space
-      knob.style.transform = 'translateX(' + (x * r.width * 0.36) + 'px)';
+    var hasTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) || (window.innerWidth <= 1024);
+    if (U.root) {
+      if (hasTouch) U.root.classList.add('has-touch');
+      else U.root.classList.remove('has-touch');
     }
-    pad.addEventListener('pointerdown', function (e) { steerId = e.pointerId; try { pad.setPointerCapture(e.pointerId); } catch (x) { /* ignore */ } steerAt(e); e.preventDefault(); });
-    pad.addEventListener('pointermove', function (e) { if (e.pointerId === steerId) steerAt(e); });
-    function steerEnd(e) { if (e.pointerId !== steerId) return; steerId = null; T.steer = 0; knob.style.transform = ''; }
-    pad.addEventListener('pointerup', steerEnd); pad.addEventListener('pointercancel', steerEnd);
 
-    function pedal(cls, label, key) {
-      var fill = h('div', { class: 'rx-fill' });
-      var p = h('div', { class: 'rx-pedal ' + cls }, fill, h('span', { text: label }));
-      var id = null;
-      function at(e) {
-        var r = p.getBoundingClientRect();
-        var v = clamp(0.55 + 0.45 * (1 - (e.clientY - r.top) / r.height) * 1.2, 0.35, 1);
-        T[key] = v; fill.style.height = Math.round(v * 100) + '%';
+    // 1. Mobile HUD: Back Button (Top-Left) and Real-time Telemetry (Top-Right) matching reference screenshot
+    var backBtn = h('button', {
+      class: 'rx-mobile-back-btn',
+      type: 'button',
+      'aria-label': 'Exit Race',
+      title: 'Back to Garage / Menu'
+    },
+      h('svg', { viewBox: '0 0 24 24', width: '22', height: '22', fill: 'none', stroke: 'currentColor', 'stroke-width': '2.5', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' },
+        h('path', { d: 'M19 12H5M12 19l-7-7 7-7' })
+      )
+    );
+    backBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (CB.router && typeof CB.router.go === 'function') CB.router.go('atelier');
+      else window.history.back();
+    });
+    layer.appendChild(backBtn);
+
+    var hudTopRight = h('div', { class: 'rx-mobile-hud-topright' },
+      h('div', { class: 'rmh-pos-pill' },
+        h('span', { class: 'rmh-pos-flag', html: svgIcon('flag', 13) }),
+        h('span', { class: 'rmh-pos-lbl', text: 'POS' }),
+        h('span', { class: 'rmh-pos-val', id: 'rmh-live-pos', text: '1/8' })
+      ),
+      h('div', { class: 'rmh-time-row' },
+        h('span', { class: 'rmh-time-label', text: 'TIME ' }),
+        h('span', { class: 'rmh-time-val', id: 'rmh-live-time', text: '00:00:00' })
+      )
+    );
+    layer.appendChild(hudTopRight);
+
+    // 2. Mobile / Touch Controls: Real tactile Left/Right steering + Gas / Brake / Nitro pedals
+    if (hasTouch) {
+      T.throttle = 0;
+      T.brake = 0;
+      T.steer = 0;
+      R.input.touch.active = true;
+
+      // 2030 Cyber Steering Buttons on bottom-left [ ◄ ] and [ ► ]
+      var steerWrap = h('div', { class: 'rx-touch-steering-ref' },
+        h('button', { class: 'rx-steer-circle-btn left', type: 'button', 'aria-label': 'Steer Left' },
+          h('svg', { viewBox: '0 0 32 32', width: '36', height: '36', fill: 'none' },
+            h('path', { d: 'M21 7L10 16L21 25', stroke: '#00e5ff', 'stroke-width': '3.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+            h('polygon', { points: '12,16 19,10 19,22', fill: 'rgba(0,229,255,0.45)' })
+          )
+        ),
+        h('button', { class: 'rx-steer-circle-btn right', type: 'button', 'aria-label': 'Steer Right' },
+          h('svg', { viewBox: '0 0 32 32', width: '36', height: '36', fill: 'none' },
+            h('path', { d: 'M11 7L22 16L11 25', stroke: '#00e5ff', 'stroke-width': '3.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+            h('polygon', { points: '20,16 13,10 13,22', fill: 'rgba(0,229,255,0.45)' })
+          )
+        )
+      );
+      var btnLeft = steerWrap.children[0];
+      var btnRight = steerWrap.children[1];
+
+      var lDown = false, rDown = false;
+      function applySteer() {
+        if (lDown && !rDown) T.steer = 1.0;
+        else if (rDown && !lDown) T.steer = -1.0;
+        else T.steer = 0;
+        R.input.touch.active = true;
       }
-      p.addEventListener('pointerdown', function (e) { id = e.pointerId; try { p.setPointerCapture(e.pointerId); } catch (x) { /* ignore */ } p.classList.add('is-down'); at(e); e.preventDefault(); });
-      p.addEventListener('pointermove', function (e) { if (e.pointerId === id) at(e); });
-      function end(e) { if (e.pointerId !== id) return; id = null; T[key] = 0; fill.style.height = '0'; p.classList.remove('is-down'); }
-      p.addEventListener('pointerup', end); p.addEventListener('pointercancel', end);
-      return p;
+
+      function pressLeft(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        lDown = true;
+        btnLeft.classList.add('is-down');
+        try { if (e && e.pointerId != null) btnLeft.setPointerCapture(e.pointerId); } catch (x) {}
+        applySteer();
+      }
+      function releaseLeft(e) {
+        if (e) { e.preventDefault(); }
+        lDown = false;
+        btnLeft.classList.remove('is-down');
+        try { if (e && e.pointerId != null) btnLeft.releasePointerCapture(e.pointerId); } catch (x) {}
+        applySteer();
+      }
+
+      function pressRight(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        rDown = true;
+        btnRight.classList.add('is-down');
+        try { if (e && e.pointerId != null) btnRight.setPointerCapture(e.pointerId); } catch (x) {}
+        applySteer();
+      }
+      function releaseRight(e) {
+        if (e) { e.preventDefault(); }
+        rDown = false;
+        btnRight.classList.remove('is-down');
+        try { if (e && e.pointerId != null) btnRight.releasePointerCapture(e.pointerId); } catch (x) {}
+        applySteer();
+      }
+
+      btnLeft.addEventListener('pointerdown', pressLeft);
+      btnLeft.addEventListener('pointerup', releaseLeft);
+      btnLeft.addEventListener('pointercancel', releaseLeft);
+      btnLeft.addEventListener('lostpointercapture', releaseLeft);
+
+      btnRight.addEventListener('pointerdown', pressRight);
+      btnRight.addEventListener('pointerup', releaseRight);
+      btnRight.addEventListener('pointercancel', releaseRight);
+      btnRight.addEventListener('lostpointercapture', releaseRight);
+
+      layer.appendChild(steerWrap);
+
+      // Bottom-Right Controls Cluster: Glowing Nitro Bottle + Perforated Brake + Ribbed Gas Pedal
+      var pedalsWrap = h('div', { class: 'rx-pedals-cluster-ref' },
+        // Glowing Nitro (NOS) Bottle with radial progress ring
+        h('button', { class: 'rx-nitro-bottle-btn', type: 'button', 'aria-label': 'Nitro Boost (NOS)' },
+          h('svg', { class: 'rx-nitro-gauge-svg', viewBox: '0 0 100 100' },
+            h('path', { d: 'M18 72 A 38 38 0 1 1 82 72', fill: 'none', stroke: 'rgba(255,255,255,0.22)', 'stroke-width': '6', 'stroke-linecap': 'round' }),
+            h('path', { class: 'rx-nitro-radial-active', d: 'M18 72 A 38 38 0 1 1 82 72', fill: 'none', stroke: '#00e5ff', 'stroke-width': '6', 'stroke-linecap': 'round' })
+          ),
+          h('div', { class: 'rx-nos-icon-inner' },
+            h('svg', { viewBox: '0 0 24 24', width: '22', height: '22', fill: '#00e5ff' },
+              h('path', { d: 'M8 2h8v2H8zm2 3h4v2h-4zm-3 3h10a2 2 0 0 1 2 2v10a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V10a2 2 0 0 1 2-2z' })
+            )
+          )
+        ),
+        // Authentic Metal Brake Pedal (perforated plate with rubber studs)
+        h('button', { class: 'rx-pedal-metal-brake', type: 'button', 'aria-label': 'Brake / Reverse' },
+          h('div', { class: 'rx-pedal-studs' },
+            h('span', {}), h('span', {}), h('span', {}), h('span', {}), h('span', {}), h('span', {})
+          ),
+          h('span', { class: 'rx-pedal-text', text: 'BRAKE' })
+        ),
+        // Authentic Metal Gas/Accelerator Pedal (taller vertical plate with horizontal ribs)
+        h('button', { class: 'rx-pedal-metal-gas', type: 'button', 'aria-label': 'Accelerator / Gas' },
+          h('div', { class: 'rx-gas-ribs' },
+            h('span', {}), h('span', {}), h('span', {}), h('span', {}), h('span', {})
+          ),
+          h('span', { class: 'rx-pedal-text', text: 'GAS' })
+        )
+      );
+
+      var nitroBtn = pedalsWrap.children[0];
+      var brakeBtn = pedalsWrap.children[1];
+      var gasBtn = pedalsWrap.children[2];
+
+      function pressGas(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        gasBtn.classList.add('is-down');
+        try { if (e && e.pointerId != null) gasBtn.setPointerCapture(e.pointerId); } catch (x) {}
+        T.throttle = 1.0;
+        T.brake = 0;
+        R.input.touch.active = true;
+      }
+      function releaseGas(e) {
+        if (e) { e.preventDefault(); }
+        gasBtn.classList.remove('is-down');
+        try { if (e && e.pointerId != null) gasBtn.releasePointerCapture(e.pointerId); } catch (x) {}
+        T.throttle = 0;
+      }
+
+      function pressBrake(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        brakeBtn.classList.add('is-down');
+        try { if (e && e.pointerId != null) brakeBtn.setPointerCapture(e.pointerId); } catch (x) {}
+        T.brake = 1.0;
+        T.throttle = 0;
+        R.input.touch.active = true;
+      }
+      function releaseBrake(e) {
+        if (e) { e.preventDefault(); }
+        brakeBtn.classList.remove('is-down');
+        try { if (e && e.pointerId != null) brakeBtn.releasePointerCapture(e.pointerId); } catch (x) {}
+        T.brake = 0;
+      }
+
+      function pressNitro(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        nitroBtn.classList.add('is-down');
+        try { if (e && e.pointerId != null) nitroBtn.setPointerCapture(e.pointerId); } catch (x) {}
+        if (R.input && R.input.keys) R.input.keys.nitro = true;
+        if (T) T.nitro = true;
+      }
+      function releaseNitro(e) {
+        if (e) { e.preventDefault(); }
+        nitroBtn.classList.remove('is-down');
+        try { if (e && e.pointerId != null) nitroBtn.releasePointerCapture(e.pointerId); } catch (x) {}
+        if (R.input && R.input.keys) R.input.keys.nitro = false;
+        if (T) T.nitro = false;
+      }
+
+      gasBtn.addEventListener('pointerdown', pressGas);
+      gasBtn.addEventListener('pointerup', releaseGas);
+      gasBtn.addEventListener('pointercancel', releaseGas);
+      gasBtn.addEventListener('lostpointercapture', releaseGas);
+
+      brakeBtn.addEventListener('pointerdown', pressBrake);
+      brakeBtn.addEventListener('pointerup', releaseBrake);
+      brakeBtn.addEventListener('pointercancel', releaseBrake);
+      brakeBtn.addEventListener('lostpointercapture', releaseBrake);
+
+      nitroBtn.addEventListener('pointerdown', pressNitro);
+      nitroBtn.addEventListener('pointerup', releaseNitro);
+      nitroBtn.addEventListener('pointercancel', releaseNitro);
+      nitroBtn.addEventListener('lostpointercapture', releaseNitro);
+
+      layer.appendChild(pedalsWrap);
+      R.touchEl = steerWrap;
     }
-    function tbtn(label, down, up) {
-      var b = h('div', { class: 'rx-tbtn', role: 'button', text: label });
-      b.addEventListener('pointerdown', function (e) { b.classList.add('is-down'); try { b.setPointerCapture(e.pointerId); } catch (x) { /* ignore */ } down(); e.preventDefault(); });
-      function end() { b.classList.remove('is-down'); if (up) up(); }
-      b.addEventListener('pointerup', end); b.addEventListener('pointercancel', end);
-      return b;
-    }
-    var gears = h('div', { class: 'rx-touch-aux rx-touch-gears' },
-      tbtn('+', function () { R.input.queueShift(1); }),
-      tbtn('−', function () { R.input.queueShift(-1); }));
-    var aux = h('div', { class: 'rx-touch-aux' },
-      tbtn('HB', function () { T.handbrake = true; }, function () { T.handbrake = false; }));
-    var el = h('div', { class: 'rx-touch' }, pad,
-      h('div', { class: 'rx-pedals' }, gears, aux, pedal('brake', 'BRAKE', 'brake'), pedal('gas', 'GAS', 'throttle')));
-    el.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-    layer.appendChild(el);
-    R.touchEl = el;
-    updateTouchVisibility();
-    var IU = CB.input && CB.input.ui;
-    if (IU && typeof IU.mountTouch === 'function') { try { IU.mountTouch(layer, R, updateTouchVisibility); } catch (eT) { /* optional */ } }
   }
   /* ---------------- phone steering (js/input/*: CB.input.hub / tilt / phone wheel; all optional, feature-detected) */
   function tiltOn() { var T = CB.input && CB.input.tilt; return !!(T && T.local && T.local.enabled); }
@@ -5718,6 +6032,10 @@ CB.race = CB.race || {};
     if (R.raf) cancelAnimationFrame(R.raf);
     pluginCall('detach', [R]);
     if (R.net) netClose(R, true);   // left without the results button (nav, route change): still hand back to the lobby
+    if (R.offOrientation) {
+      try { R.offOrientation(); } catch (e) { /* ignore */ }
+      R.offOrientation = null;
+    }
     if (R.hintsTimer) clearTimeout(R.hintsTimer);
     learnAutoQuality(R);
     [R.dsfx, R.dhud, R.hud, R.renderer, R.audio, R.session].forEach(function (m) {

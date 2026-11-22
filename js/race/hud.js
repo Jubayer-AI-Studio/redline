@@ -536,9 +536,9 @@ CB.race = CB.race || {};
       var cars = snap.cars || [];
 
       // countdown "GO" moment
-      if (snap.phase === 'countdown' || snap.phase === 'grid') S.countdownSeen = true;
+      if (snap.phase === 'countdown' || snap.phase === 'grid' || snap.phase === 'racing') S.countdownSeen = true;
       var lightsOut = snap.countdown && snap.countdown.lightsOut;
-      if (S.countdownSeen && S.goAt == null && (lightsOut || snap.phase === 'racing')) S.goAt = now();
+      if (S.goAt == null && (lightsOut || snap.phase === 'racing')) S.goAt = now();
       if (snap.phase === 'grid' && S.lastPhase && S.lastPhase !== 'grid') {
         // session restarted
         S.goAt = null; S.trace = []; S.prev = null; S.prevFastest = null; S.lapFlash = null;
@@ -869,9 +869,10 @@ CB.race = CB.race || {};
 
         // name
         font(ctx, isMe ? '800' : '600', (compact ? 12 : 13.5) * k);
-        var nm = isMe && opts.playerName ? (compact ? tla(opts.playerName) : String(opts.playerName).toUpperCase()) : compact ? tla(car.name) : surname(car.name);
-        var nameMax = compact ? 34 * k : 88 * k;
-        text(ctx, fitText(ctx, nm, nameMax), nx, ry + rowH / 2 + 0.5 * k, car.dnf ? PAL.inkFaint : PAL.ink);
+        var pName = (typeof window !== 'undefined' && ((window.sessionStorage && window.sessionStorage.getItem('cb.pilot.name')) || (window.localStorage && window.localStorage.getItem('cb.pilot.name')))) || 'JUBAYER';
+        var nm = isMe ? pName.toUpperCase() : compact ? tla(car.name) : surname(car.name);
+        var nameMax = compact ? 42 * k : 92 * k;
+        text(ctx, fitText(ctx, nm, nameMax), nx, ry + rowH / 2 + 0.5 * k, isMe ? '#00e5ff' : (car.dnf ? PAL.inkFaint : PAL.ink));
 
         // icons zone
         var ix = nx + nameMax + 4 * k;
@@ -1265,28 +1266,47 @@ CB.race = CB.race || {};
       ctx.fillStyle = '#fff'; ctx.shadowColor = '#fff'; ctx.shadowBlur = 6 * k; ctx.fill();
       ctx.restore();
 
-      // speed digits
-      font(ctx, '800', R * 0.42, FONT_UI);
+      // speed digits (always prominent, large, crystal clear)
+      font(ctx, '900', R * 0.50, FONT_UI);
       var sStr = String(Math.round(S.speedDisp));
-      text(ctx, sStr, cx, cy - R * 0.02, PAL.ink, 'center');
-      font(ctx, '600', R * 0.12);
-      text(ctx, units === 'mph' ? 'MPH' : 'KM/H', cx, cy + R * 0.24, PAL.inkDim, 'center');
-      font(ctx, '600', R * 0.085, FONT_NUM);
+      ctx.save();
+      ctx.shadowColor = 'rgba(0, 229, 255, 0.65)';
+      ctx.shadowBlur = 10 * k;
+      text(ctx, sStr, cx, cy - R * 0.02, '#ffffff', 'center');
+      ctx.restore();
+      font(ctx, '800', R * 0.15);
+      text(ctx, units === 'mph' ? 'MPH' : 'KM/H', cx, cy + R * 0.24, '#38bdf8', 'center');
+      font(ctx, '700', R * 0.09, FONT_NUM);
       text(ctx, 'x1000 RPM', cx, cy - R * 0.36, PAL.inkFaint, 'center');
 
-      // gear box
+      // gear box (Futuristic 2030 cyber-badge)
       var gear = player.gear;
       var gStr = gear == null ? 'N' : gear < 0 ? 'R' : gear === 0 ? 'N' : (num(player.maxGear, 2) <= 1 && gear === 1 ? 'D' : String(gear));
-      var gw = R * 0.42, gh = R * 0.38, gx = cx - gw / 2, gy = cy + R * 0.38;
-      rr(ctx, gx, gy, gw, gh, R * 0.06);
-      ctx.fillStyle = inRed ? (Math.floor(tnow / 90) % 2 ? PAL.blue : '#1b2030') : 'rgba(255,255,255,0.08)';
+      var gw = R * 0.44, gh = R * 0.40, gx = cx - gw / 2, gy = cy + R * 0.38;
+      rr(ctx, gx, gy, gw, gh, R * 0.08);
+      ctx.fillStyle = inRed ? (Math.floor(tnow / 90) % 2 ? PAL.blue : '#1b2030') : 'rgba(10, 18, 30, 0.88)';
       ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,0.18)'; ctx.lineWidth = 1; ctx.stroke();
-      font(ctx, '800', R * 0.32);
-      text(ctx, gStr, cx, gy + gh / 2 + R * 0.01, gStr === 'R' ? PAL.red : PAL.ink, 'center');
+      ctx.strokeStyle = inRed ? '#ff2a4b' : 'rgba(0, 229, 255, 0.55)'; ctx.lineWidth = 1.5; ctx.stroke();
+      font(ctx, '700', R * 0.08);
+      text(ctx, 'GEAR', cx, gy + gh * 0.28, 'rgba(0, 229, 255, 0.8)', 'center');
+      font(ctx, '900', R * 0.25);
+      text(ctx, gStr, cx, gy + gh * 0.82, gStr === 'R' ? PAL.red : '#ffffff', 'center');
       if (player.maxGear && !compact) {
         font(ctx, '600', R * 0.07, FONT_NUM);
         text(ctx, '/' + player.maxGear, gx + gw + R * 0.03, gy + gh - R * 0.07, PAL.inkFaint, 'left');
+      }
+
+      // Central live race timer display directly visible in the car cluster
+      var curTime_s = snap.raceTime_s || player.raceTime_s || snap.elapsed_s || 0;
+      if (curTime_s > 0) {
+        var tmStr = fmtTime(curTime_s);
+        var tw = R * 0.68, th = R * 0.18, tx = cx - tw / 2, ty = cy - R * 0.68;
+        rr(ctx, tx, ty, tw, th, R * 0.06);
+        ctx.fillStyle = 'rgba(8, 14, 26, 0.85)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(0, 229, 255, 0.35)'; ctx.lineWidth = 1; ctx.stroke();
+        font(ctx, '800', R * 0.11, FONT_NUM);
+        text(ctx, tmStr, cx, ty + th * 0.72, '#00e5ff', 'center');
       }
       ctx.restore();
     }
@@ -1310,18 +1330,39 @@ CB.race = CB.race || {};
       var gStr = gear == null ? 'N' : gear < 0 ? 'R' : gear === 0 ? 'N' : (num(player.maxGear, 2) <= 1 && gear === 1 ? 'D' : String(gear));
       var pad = 4 * k, gs = h - pad * 2;
       rr(ctx, x + pad, y + pad, gs, gs, 5 * k);
-      ctx.fillStyle = inRed ? (Math.floor(tnow / 90) % 2 ? PAL.blue : '#1b2030') : 'rgba(255,255,255,0.08)'; ctx.fill();
+      ctx.fillStyle = inRed ? (Math.floor(tnow / 90) % 2 ? PAL.blue : '#1b2030') : 'rgba(10, 18, 30, 0.88)'; ctx.fill();
+      ctx.strokeStyle = inRed ? '#ff2a4b' : 'rgba(0, 229, 255, 0.55)'; ctx.lineWidth = 1.2; ctx.stroke();
       font(ctx, '800', gs * 0.72);
-      text(ctx, gStr, x + pad + gs / 2, y + h / 2 + 1, gStr === 'R' ? PAL.red : PAL.ink, 'center');
+      text(ctx, gStr, x + pad + gs / 2, y + h / 2 + 1, gStr === 'R' ? PAL.red : '#ffffff', 'center');
+
+      // central race timer above strip if race active
+      var curTime_s = snap.raceTime_s || player.raceTime_s || snap.elapsed_s || 0;
+      if (curTime_s > 0) {
+        var tmStr = fmtTime(curTime_s);
+        var tmH = Math.max(14, h * 0.45);
+        var tmY = y - tmH - 4 * k;
+        var tmW = 84 * k;
+        var tmX = x + (w - tmW) / 2;
+        rr(ctx, tmX, tmY, tmW, tmH, 4 * k);
+        ctx.fillStyle = 'rgba(10, 18, 30, 0.88)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(0, 229, 255, 0.45)'; ctx.lineWidth = 1; ctx.stroke();
+        font(ctx, '800', tmH * 0.72, FONT_NUM);
+        text(ctx, tmStr, x + w / 2, tmY + tmH * 0.74, '#00e5ff', 'center');
+      }
       // speed + unit
       var bx = x + pad * 2 + gs + 2 * k, bw = x + w - pad - 2 * k - bx;
       var row = y + h * 0.36;
-      font(ctx, '800', h * 0.5, FONT_UI);
+      font(ctx, '900', h * 0.58, FONT_UI);
       var sStr = String(Math.round(S.speedDisp));
-      text(ctx, sStr, bx, row, PAL.ink, 'left');
+      ctx.save();
+      ctx.shadowColor = 'rgba(0, 229, 255, 0.65)';
+      ctx.shadowBlur = 8 * k;
+      text(ctx, sStr, bx, row, '#ffffff', 'left');
+      ctx.restore();
       var sw = ctx.measureText(sStr).width;
-      font(ctx, '600', h * 0.2);
-      text(ctx, units === 'mph' ? 'MPH' : 'KM/H', bx + sw + 3 * k, row + h * 0.06, PAL.inkDim, 'left');
+      font(ctx, '800', h * 0.24);
+      text(ctx, units === 'mph' ? 'MPH' : 'KM/H', bx + sw + 4 * k, row + h * 0.04, '#38bdf8', 'left');
       drawAssists(ctx, snap, player, x + w - pad - 1 * k, y + pad, k * 0.78, true);
       // rpm bar (10 segments = the shift lights)
       var n = 10, st = shiftLights(S.rpmDisp || player.rpm, player.redline, n);
@@ -1580,85 +1621,21 @@ CB.race = CB.race || {};
       var cd = snap.countdown || {};
       var tnow = now();
       var phase = snap.phase;
-      var goAge = S.goAt != null ? tnow - S.goAt : null;
-      var showLights = phase === 'grid' || phase === 'countdown' || (goAge != null && goAge < 1600);
-      if (!showLights) return;
-      var lightsOn = clamp(num(cd.lightsOn, 0), 0, 5);
       var out = !!cd.lightsOut || phase === 'racing';
-      if (out) lightsOn = 0;
+      var goAge = S.goAt != null ? tnow - S.goAt : null;
+      // 5-light gantry removed: only flash instant "GO!" for 800ms
+      if (!out || goAge == null || goAge >= 800) return;
 
-      var pods = 5;
-      var podW = 46 * k, podH = 108 * k, gap = 12 * k;
-      var totalW = pods * podW + (pods - 1) * gap;
-      var x0 = W / 2 - totalW / 2;
-      var y0 = countdownTop(W, H, k, avoid);
-      // drop-in / lift-out animation
-      var enter = S.cdEnterAt == null ? (S.cdEnterAt = tnow) : S.cdEnterAt;
-      var ein = easeOutBack(clamp((tnow - enter) / 450, 0, 1));
-      var lift = goAge != null ? easeInCubic(clamp((goAge - 900) / 600, 0, 1)) : 0;
-      var dy = (1 - ein) * -(podH + y0) - lift * (podH + y0 + 40 * k);
-
+      var gs = 1 + 0.35 * (1 - easeOutCubic(clamp(goAge / 250, 0, 1)));
+      var ga = 1 - clamp((goAge - 400) / 400, 0, 1);
       ctx.save();
-      ctx.translate(0, dy);
-      // gantry bar
-      ctx.fillStyle = '#15171c';
-      ctx.fillRect(x0 - 20 * k, y0 - 14 * k, totalW + 40 * k, 10 * k);
-      ctx.fillStyle = '#2a2d35';
-      ctx.fillRect(x0 - 20 * k, y0 - 14 * k, totalW + 40 * k, 2 * k);
-      for (var i = 0; i < pods; i++) {
-        var px = x0 + i * (podW + gap);
-        rr(ctx, px, y0, podW, podH, 8 * k);
-        var pg = ctx.createLinearGradient(px, 0, px + podW, 0);
-        pg.addColorStop(0, '#0b0c0f'); pg.addColorStop(0.5, '#1d2026'); pg.addColorStop(1, '#0b0c0f');
-        ctx.fillStyle = pg; ctx.fill();
-        ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1; ctx.stroke();
-        for (var j = 0; j < 2; j++) {
-          var lx = px + podW / 2, ly = y0 + podH * (0.3 + j * 0.42), lr = podW * 0.34;
-          var lit = i < lightsOn;
-          ctx.beginPath(); ctx.arc(lx, ly, lr, 0, Math.PI * 2);
-          if (lit) {
-            ctx.save();
-            ctx.shadowColor = PAL.red; ctx.shadowBlur = 26 * k;
-            var lg = ctx.createRadialGradient(lx - lr * 0.3, ly - lr * 0.3, lr * 0.1, lx, ly, lr);
-            lg.addColorStop(0, '#ffd0d0'); lg.addColorStop(0.35, '#ff3344'); lg.addColorStop(1, '#a30010');
-            ctx.fillStyle = lg; ctx.fill();
-            ctx.restore();
-          } else {
-            ctx.fillStyle = '#2a0b0e'; ctx.fill();
-            ctx.beginPath(); ctx.arc(lx - lr * 0.3, ly - lr * 0.3, lr * 0.25, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(255,255,255,0.05)'; ctx.fill();
-          }
-        }
-      }
+      ctx.globalAlpha = ga;
+      ctx.translate(W / 2, H * 0.16);
+      ctx.scale(gs, gs);
+      font(ctx, '900', 68 * k);
+      ctx.shadowColor = PAL.green; ctx.shadowBlur = 28 * k;
+      text(ctx, 'GO!', 0, 0, PAL.green, 'center');
       ctx.restore();
-
-      // caption
-      var capY = y0 + podH + 40 * k + dy * 0.2;
-      if (out && goAge != null) {
-        var gs = 1 + 0.5 * (1 - easeOutCubic(goAge / 300));
-        var ga = 1 - clamp((goAge - 900) / 700, 0, 1);
-        ctx.save();
-        ctx.globalAlpha = ga;
-        ctx.translate(W / 2, capY + 10 * k);
-        ctx.scale(gs, gs);
-        font(ctx, '900', 72 * k);
-        ctx.shadowColor = PAL.green; ctx.shadowBlur = 30 * k;
-        text(ctx, 'GO!', 0, 0, PAL.green, 'center');
-        ctx.restore();
-      } else if (phase === 'grid' || phase === 'countdown') {
-        font(ctx, '700', 15 * k);
-        ctx.save();
-        ctx.globalAlpha = 0.6 + 0.4 * Math.sin(tnow / 300);
-        var cap = lightsOn > 0 ? (lightsOn >= 5 ? 'WAIT FOR LIGHTS OUT' : 'REV UP · HELD ON THE LINE') : 'GET READY';
-        if ((snap.mode || 'race') !== 'race') cap = lightsOn > 0 ? 'GET READY' : 'PREPARE TO LAUNCH';
-        // dark backing pill so the caption stays readable over bright track/scenery
-        var capW = ctx.measureText(cap).width + 34 * k, capH = 26 * k;
-        rr(ctx, W / 2 - capW / 2, capY - capH / 2, capW, capH, capH / 2);
-        ctx.fillStyle = 'rgba(8,9,12,0.72)'; ctx.fill();
-        ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1; ctx.stroke();
-        text(ctx, cap, W / 2, capY, PAL.ink, 'center');
-        ctx.restore();
-      }
     }
 
     // --- banners -------------------------------------------------------------
@@ -1818,8 +1795,10 @@ CB.race = CB.race || {};
       // --- top-right: timing
       var timingW = (compact ? 178 : 268) * k;
       var tx = W - M - timingW;
-      // opts.timing / tower / cluster === false: a mode HUD draws its own (F1: js/f1/f1-hud.js, docs/F1-SPEC.md §6)
-      var th = opts.timing === false ? 0 : drawTiming(ctx, snap, player, tx, M, k, compact, !!strip);
+      // On mobile / touch screens or compact landscape, keep timing slim (P1 / 8, lap, minimal time)
+      var isSlimMobile = !!strip;
+      var hasTouchHud = (typeof document !== 'undefined') && (document.getElementById('rmh-live-pos') || document.querySelector('.rx-mobile-hud-topright'));
+      var th = (opts.timing === false || hasTouchHud) ? 0 : drawTiming(ctx, snap, player, tx, M, k, compact, isSlimMobile);
       var stripY = M + th;
       if (opts.timing !== false) {
         stripY += drawTrackLimitsStrip(ctx, player, tx, stripY, k);
@@ -1853,10 +1832,10 @@ CB.race = CB.race || {};
       }
       if (mmW > 0 && opts.minimap !== false) drawMinimap(ctx, snap, player, mmX, mmY, mmW, mmH, k);
 
-      // --- bottom cluster
-      var R = compact ? clamp(Math.min(W, H) * 0.16, 46, 90) : 104 * k;
+      // --- bottom cluster (speedometer / tachometer)
+      var R = compact ? clamp(Math.min(W, H) * 0.18, 56, 92) : 104 * k;
       var cx, cy;
-      if (compact) { cx = W / 2; cy = H - M - R * 1.0; }
+      if (compact) { cx = W / 2; cy = H - M - R * 1.12; }
       else { cx = W - M - R * 1.12; cy = H - M - R * 1.0; }
       var kk = compact ? R / 104 : k;
       if (opts.cluster === false) {
@@ -1908,6 +1887,12 @@ CB.race = CB.race || {};
         layout.band = o.band && isNum(o.band.l) && isNum(o.band.r) && o.band.r > o.band.l ? { l: o.band.l, r: o.band.r } : null;
       },
       getLayout: function () { return layout; },
+      getSpeed: function () { return Math.round(S.speedDisp); },
+      getRpm: function () { return Math.round(S.rpmDisp); },
+      getGear: function () {
+        var me = S.lastSnap && playerCar(S.lastSnap);
+        return me ? me.gear : 1;
+      },
       isCockpit: function () { return cockpitView; },
       getUnits: function () { return units; },
       /** Optional: renderer/UI may push a banner (e.g. 'PIT LIMITER'). */
@@ -1927,7 +1912,9 @@ CB.race = CB.race || {};
    */
   function stripLayout(W, H, L, k) {
     L = L || {};
-    if (!L.touch || !(W < 760 || H < 480) || H > 500 || W < H * 1.3) return null;
+    if (W <= H || H > 500) return null;
+    var isTouch = L.touch === true || (L.touch !== false && (typeof window !== 'undefined' && ('ontouchstart' in window || (navigator && navigator.maxTouchPoints > 0))));
+    if (!isTouch) return null;
     k = isNum(k) ? k : clamp(Math.min(W / 420, H / 420), 0.62, 1.05);
     var h = Math.round(clamp(H * 0.105, 34, 46));
     var l = L.band ? L.band.l : 0, r = L.band ? L.band.r : W;
