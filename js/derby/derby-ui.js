@@ -44,7 +44,8 @@ CB.derby = CB.derby || {};
     if (Array.isArray(s.accessories)) o.accessories = AC() ? AC().sanitize(s.accessories) : s.accessories.filter(function (x) { return typeof x === 'string'; });
     if (QUALS.indexOf(s.quality) >= 0) o.quality = s.quality;
     if (s.touch === 'auto' || s.touch === 'on' || s.touch === 'off') o.touch = s.touch;
-    if (typeof s.camera === 'string') o.camera = s.camera;
+    if (s.camera === 'far' || s.camera === 'chase-far') o.camera = 'far';
+    else o.camera = 'chase';
     o.muted = !!s.muted; o.slowmo = s.slowmo !== false; o.replays = s.replays !== false; o.haptics = s.haptics !== false; o.showFps = !!s.showFps;
     return o;
   }
@@ -565,13 +566,54 @@ CB.derby = CB.derby || {};
   /** sticky footer (like the race setup's .rx-footer): session summary + Quick derby + the gold Start CTA, always reachable */
   function footer() {
     var S = U.S, v = AC().validate(S.accessories);
+    if (!v.ok) {
+      S.accessories = AC().sanitize(S.accessories);
+      v = AC().validate(S.accessories);
+      APP.persist();
+    }
     U.footSum = h('div', { class: 'mx-foot-sum' });
+    var startArmed = false;
+    function triggerStart(e) {
+      if (e) {
+        if (typeof e.preventDefault === 'function') e.preventDefault();
+        if (typeof e.stopPropagation === 'function') e.stopPropagation();
+      }
+      if (startArmed) return;
+      startArmed = true;
+      setTimeout(function () { startArmed = false; }, 600);
+      try {
+        if (!AC().validate(S.accessories).ok) {
+          S.accessories = AC().sanitize(DEFAULTS_ACC());
+          APP.persist();
+        }
+      } catch (err) {}
+      startMatch();
+    }
+    var quickArmed = false;
+    function triggerQuick(e) {
+      if (e) {
+        if (typeof e.preventDefault === 'function') e.preventDefault();
+        if (typeof e.stopPropagation === 'function') e.stopPropagation();
+      }
+      if (quickArmed) return;
+      quickArmed = true;
+      setTimeout(function () { quickArmed = false; }, 600);
+      try {
+        var ids = AR().ids();
+        if (!AC().validate(S.accessories).ok) S.accessories = AC().sanitize(DEFAULTS_ACC());
+        S.arenaId = ids[Math.floor(Math.random() * ids.length)] || S.arenaId;
+        persist();
+      } catch (err) {}
+      startMatch();
+    }
+    var bQuick = h('button', { class: 'cb-btn ghost large', type: 'button', 'data-dd': 'quick', html: icon('bolt', 16) + '<span>Quick derby</span>', title: 'Your last car and loadout on a random arena' });
+    bQuick.addEventListener('pointerup', triggerQuick);
+    bQuick.addEventListener('click', triggerQuick);
+    var bStart = h('button', { class: 'cb-btn primary large', type: 'button', 'data-dd': 'start', html: icon('play', 16) + '<span>Start derby</span>' });
+    bStart.addEventListener('pointerup', triggerStart);
+    bStart.addEventListener('click', triggerStart);
     return h('footer', { class: 'dd-foot mx-foot' }, U.footSum,
-      h('div', { class: 'mx-cta' },
-        h('button', { class: 'cb-btn ghost large', type: 'button', 'data-dd': 'quick', html: icon('bolt', 16) + '<span>Quick derby</span>', title: 'Your last car and loadout on a random arena', onclick: function () {
-          var ids = AR().ids(); if (!AC().validate(S.accessories).ok) S.accessories = AC().sanitize(DEFAULTS_ACC());
-          S.arenaId = ids[Math.floor(Math.random() * ids.length)] || S.arenaId; persist(); startMatch(); } }),
-        h('button', { class: 'cb-btn primary large', type: 'button', disabled: v.ok ? null : true, 'data-dd': 'start', html: icon('play', 16) + '<span>Start derby</span>', onclick: function () { startMatch(); } })));
+      h('div', { class: 'mx-cta' }, bQuick, bStart));
   }
   function updateSum() {
     if (!U.sumEl) return;
@@ -597,6 +639,15 @@ CB.derby = CB.derby || {};
       U.noGL = true;
     }
     if (U.preview) { safe(function () { U.preview.update(opts); }); return; }
+    if (!cv.getContext('2d')) {
+      var parent = cv.parentNode;
+      if (parent) {
+        var ncv = h('canvas', { class: 'dd-prev-cv', 'aria-label': 'Car preview' });
+        parent.replaceChild(ncv, cv);
+        U.prevCanvas = ncv;
+        cv = ncv;
+      }
+    }
     draw2DPreview(cv, opts);
   }
   /** fallback: top-down car with its accessories */
@@ -626,7 +677,7 @@ CB.derby = CB.derby || {};
   }
   function toast(msg) { if (CB.ui && typeof CB.ui.toast === 'function') CB.ui.toast(msg, 'info'); else if (typeof console !== 'undefined') console.info('[derby] ' + msg); }
 
-  CB.derby.ui._app = { U: U, h: h, showSetup: showSetup, safe: safe, setDriving: setDriving, toast: toast, persist: persist, seg: seg, router: router, refreshPreview: refreshPreview, teardownPlay: function () { teardownPlay(); } };
+  CB.derby.ui._app = { U: U, h: h, showSetup: showSetup, safe: safe, setDriving: setDriving, toast: toast, persist: persist, seg: seg, router: router, refreshPreview: refreshPreview, music: music, teardownPlay: function () { teardownPlay(); } };
   function teardownPlay() { if (CB.derby.ui._app.teardown) CB.derby.ui._app.teardown(); }
   function startMatch(o) { CB.derby.ui._app.startMatch(o); }
 })();
@@ -639,13 +690,20 @@ CB.derby = CB.derby || {};
   var P = CB.derby.ui._parts, X = CB.derby.ui._, APP = CB.derby.ui._app;
   if (!P || !P.hasDOM || !APP) return;
   var clamp = P.clamp, num = P.num, esc = P.esc, icon = P.icon, AC = P.AC, AR = P.AR, h = APP.h, safe = APP.safe, U = APP.U;
+  var music = APP.music || function (fn, a, b) { var Mu = CB.music; if (Mu && typeof Mu[fn] === 'function') { try { Mu[fn](a, b); } catch (e) { /* ignore */ } } };
 
   function quality() {
     var q = U.S.quality;
     if (q === 'auto') q = CB.device && typeof CB.device.resolveQuality === 'function' ? safe(function () { return CB.device.resolveQuality('auto'); }) || 'high' : 'high';
     return ['low', 'medium', 'high', 'ultra'].indexOf(q) >= 0 ? q : 'high';
   }
-  function coarse() { try { return !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches); } catch (e) { return false; } }
+  function coarse() {
+    try {
+      return !!((window.matchMedia && window.matchMedia('(pointer: coarse)').matches) ||
+        ('ontouchstart' in window) ||
+        (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0));
+    } catch (e) { return false; }
+  }
   function touchOn() { return U.S.touch === 'on' || (U.S.touch === 'auto' && coarse()); }
   function safeInsets() {
     var p = document.createElement('div');
@@ -658,52 +716,59 @@ CB.derby = CB.derby || {};
 
   /* ================================================================== START */
   function startMatch(o) {
-    o = o || {};
-    APP.teardown();
-    if (U.preview) { safe(function () { U.preview.destroy(); }); U.preview = null; }
-    var S = U.S;
-    var car = X.playerCar(S);
-    var cfg = {
-      arenaId: S.arenaId, seed: num(o.seed, (Date.now() & 0x7fffffff) || 1), difficulty: S.difficulty, opponents: S.opponents,
-      rules: { timeLimit_s: S.timeLimit_s, lives: S.lives, teams: false },
-      player: { build: car.build, presetId: car.presetId, name: 'You', color: P.paintOf(car.build), accessories: S.accessories.slice() }
-    };
-    U.screen = 'play';
-    APP.setDriving(true);
-    music('cue', 'derby', { screen: 'play' });
-    var root = U.root; root.innerHTML = '';
-    var play = h('div', { class: 'dd-play' });
-    var cv = h('canvas', { class: 'dd-hud' });
-    var load = h('div', { class: 'dd-load', text: 'LOADING ' + (AR().get(S.arenaId) || {}).name.toUpperCase() + '…' });
-    play.appendChild(cv); play.appendChild(load);
-    root.appendChild(play);
-    var R = U.R = {
-      cfg: cfg, play: play, canvas: cv, ctx2d: null, session: null, renderer: null, hud: CB.derby.hud.create(), sfx: null, raf: 0, last: 0, paused: false,
-      followId: 'player', spectating: false, ended: false, reported: false, launches: 0, frames: 0, fpsEma: 60, tLoad: performance.now(), lastSnap: null, cam2d: null, fx2d: [],
-      phoneT: 0, touchEl: null, touch: false, lastLayout: 0, quality: quality(), offs: [], carName: car.name,
-      juice: CB.derby.hud.createJuice ? CB.derby.hud.createJuice() : null, hitStop: 0, flash: null, toasts: [], rb: [], replay: null, replayPending: null, lastReplayT: -99, stats: { hitStops: 0, replays: 0 }
-    };
-    R.input = X.createInput({ onAction: onAction });
-    try { R.session = CB.derby.session.create(cfg); } catch (e) { load.textContent = 'Could not start: ' + (e && e.message); return; }
-    if (o.autopilot) R.session.setPlayerAutopilot(true);
-    R.sfx = CB.derby.sfx ? CB.derby.sfx.create({ muted: S.muted, mobile: R.quality === 'low' || coarse() }) : null;
-    if (R.sfx) R.sfx.start();
-    bindInput(R);
-    // the renderer builds 12 car models: give the loading text a frame to paint first
-    setTimeout(function () {
-      if (U.R !== R) return;
-      var DR = CB.derby.renderer;
-      if (DR && typeof DR.create === 'function' && (!DR.isSupported || DR.isSupported()) && !o.force2d) {
-        R.renderer = safe(function () { return DR.create(cv, R.session, { quality: R.quality, camera: S.camera }); });
-      }
-      if (!R.renderer) R.ctx2d = cv.getContext('2d');
-      else R.ctx2d = cv.getContext('2d');
-      if (load.parentNode) load.parentNode.removeChild(load);
-      R.touch = touchOn();
-      if (R.touch) buildTouch(R);
-      R.last = 0;
-      R.raf = requestAnimationFrame(frame);
-    }, 30);
+    try {
+      o = o || {};
+      APP.teardown();
+      if (U.preview) { safe(function () { U.preview.destroy(); }); U.preview = null; }
+      var S = U.S;
+      var car = X.playerCar(S);
+      var arObj = AR().get(S.arenaId) || {};
+      var arenaName = arObj.name || S.arenaId || 'ARENA';
+      var cfg = {
+        arenaId: S.arenaId, seed: num(o.seed, (Date.now() & 0x7fffffff) || 1), difficulty: S.difficulty, opponents: S.opponents,
+        rules: { timeLimit_s: S.timeLimit_s, lives: S.lives, teams: false },
+        player: { build: car.build, presetId: car.presetId, name: 'You', color: P.paintOf(car.build), accessories: (S.accessories || []).slice() }
+      };
+      U.screen = 'play';
+      APP.setDriving(true);
+      music('cue', 'derby', { screen: 'play' });
+      var root = U.root; root.innerHTML = '';
+      var play = h('div', { class: 'dd-play' });
+      var cv = h('canvas', { class: 'dd-hud' });
+      var load = h('div', { class: 'dd-load', text: 'LOADING ' + String(arenaName).toUpperCase() + '…' });
+      play.appendChild(cv); play.appendChild(load);
+      root.appendChild(play);
+      var R = U.R = {
+        cfg: cfg, play: play, canvas: cv, ctx2d: null, session: null, renderer: null, hud: CB.derby.hud.create(), sfx: null, raf: 0, last: 0, paused: false,
+        followId: 'player', spectating: false, ended: false, reported: false, launches: 0, frames: 0, fpsEma: 60, tLoad: performance.now(), lastSnap: null, cam2d: null, fx2d: [],
+        phoneT: 0, touchEl: null, touch: false, lastLayout: 0, quality: quality(), offs: [], carName: car.name,
+        juice: CB.derby.hud.createJuice ? CB.derby.hud.createJuice() : null, hitStop: 0, flash: null, toasts: [], rb: [], replay: null, replayPending: null, lastReplayT: -99, stats: { hitStops: 0, replays: 0 }
+      };
+      R.input = X.createInput({ onAction: onAction });
+      try { R.session = CB.derby.session.create(cfg); } catch (e) { load.textContent = 'Could not start: ' + (e && e.message); return; }
+      if (o.autopilot) R.session.setPlayerAutopilot(true);
+      R.sfx = CB.derby.sfx ? CB.derby.sfx.create({ muted: S.muted, mobile: R.quality === 'low' || coarse() }) : null;
+      if (R.sfx) R.sfx.start();
+      bindInput(R);
+      // the renderer builds 12 car models: give the loading text a frame to paint first
+      setTimeout(function () {
+        if (U.R !== R) return;
+        var DR = CB.derby.renderer;
+        if (DR && typeof DR.create === 'function' && (!DR.isSupported || DR.isSupported()) && !o.force2d) {
+          R.renderer = safe(function () { return DR.create(cv, R.session, { quality: R.quality, camera: S.camera }); });
+        }
+        if (!R.renderer) R.ctx2d = cv.getContext('2d');
+        else R.ctx2d = cv.getContext('2d');
+        if (load.parentNode) load.parentNode.removeChild(load);
+        R.touch = touchOn();
+        if (R.touch) buildTouch(R);
+        R.last = 0;
+        R.raf = requestAnimationFrame(frame);
+      }, 30);
+    } catch (err) {
+      console.error('[derby] startMatch error:', err);
+      APP.toast('Derby error: ' + (err && err.message));
+    }
   }
 
   /* ================================================================== input binding */
@@ -732,7 +797,7 @@ CB.derby = CB.derby || {};
     var R = U.R; if (!R) return;
     if (a === 'pause') { if (R.ended) return; if (R.paused) resume(); else pause(); }
     else if (a === 'camera') { if (R.renderer && R.renderer.cycleCamera) { var m = R.renderer.cycleCamera(); U.S.camera = m; APP.persist(); } }
-    else if (a === 'mute') { U.S.muted = !U.S.muted; APP.persist(); if (R.sfx) R.sfx.setMuted(U.S.muted); }
+    else if (a === 'mute') { U.S.muted = !U.S.muted; APP.persist(); if (R.sfx) R.sfx.setMuted(U.S.muted); if (CB.music && CB.music.setMuted) CB.music.setMuted(U.S.muted); }
     else if (a === 'confirm') { if (R.spectating || (R.lastSnap && R.lastSnap.phase === 'over')) finish(true); }
     else if (a === 'specPrev') { if (R.spectating) cycleSpectate(-1); }
     else if (a === 'specNext' || a === 'spectate') { if (R.spectating) cycleSpectate(1); }
@@ -755,13 +820,31 @@ CB.derby = CB.derby || {};
     var T = R.input.touch; T.active = true;
     var el = h('div', { class: 'dd-touch' });
     function btn(cls, label) { var b = h('div', { class: 'mx-touch dd-t ' + cls, role: 'button', 'aria-label': label }); b.innerHTML = label; el.appendChild(b); return b; }
-    var steer = btn('steer', ''), knob = h('div', { class: 'knob' }); steer.appendChild(knob); steer.setAttribute('aria-label', 'Steering');
-    var sid = null;
-    function sAt(e) { var r = steer.getBoundingClientRect(); var x = clamp((e.clientX - (r.left + r.width / 2)) / (r.width * 0.42), -1, 1); T.steer = -x; knob.style.transform = 'translateX(' + (x * r.width * 0.36) + 'px)'; }
-    steer.addEventListener('pointerdown', function (e) { sid = e.pointerId; try { steer.setPointerCapture(sid); } catch (x) { /* ignore */ } sAt(e); e.preventDefault(); });
-    steer.addEventListener('pointermove', function (e) { if (e.pointerId === sid) sAt(e); });
-    function sEnd(e) { if (e.pointerId !== sid) return; sid = null; T.steer = 0; knob.style.transform = ''; }
-    steer.addEventListener('pointerup', sEnd); steer.addEventListener('pointercancel', sEnd);
+    var steer = btn('steer', '');
+    steer.innerHTML = '<button type="button" class="dd-steer-btn dd-left" aria-label="Steer Left"><span>◄</span><b>LEFT</b></button>' +
+                      '<button type="button" class="dd-steer-btn dd-right" aria-label="Steer Right"><span>►</span><b>RIGHT</b></button>';
+    var btnLeft = steer.children[0];
+    var btnRight = steer.children[1];
+    var lDown = false, rDown = false;
+    function applySteer() {
+      T.steer = lDown ? 1.0 : (rDown ? -1.0 : 0);
+      btnLeft.classList.toggle('is-down', lDown);
+      btnRight.classList.toggle('is-down', rDown);
+    }
+    btnLeft.addEventListener('pointerdown', function (e) {
+      lDown = true; applySteer();
+      try { btnLeft.setPointerCapture(e.pointerId); } catch (x) {}
+      e.preventDefault(); e.stopPropagation();
+    });
+    btnLeft.addEventListener('pointerup', function (e) { lDown = false; applySteer(); });
+    btnLeft.addEventListener('pointercancel', function (e) { lDown = false; applySteer(); });
+    btnRight.addEventListener('pointerdown', function (e) {
+      rDown = true; applySteer();
+      try { btnRight.setPointerCapture(e.pointerId); } catch (x) {}
+      e.preventDefault(); e.stopPropagation();
+    });
+    btnRight.addEventListener('pointerup', function (e) { rDown = false; applySteer(); });
+    btnRight.addEventListener('pointercancel', function (e) { rDown = false; applySteer(); });
     function pedal(cls, label, key) {
       var b = btn(cls, label), fill = h('div', { class: 'fill' }); b.insertBefore(fill, b.firstChild); var id = null;
       function at(e) { var r = b.getBoundingClientRect(); var v = clamp(0.55 + 0.45 * (1 - (e.clientY - r.top) / r.height) * 1.2, 0.4, 1); T[key] = v; fill.style.height = Math.round(v * 100) + '%'; }

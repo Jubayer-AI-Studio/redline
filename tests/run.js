@@ -44,6 +44,7 @@ function ciSkip(t) {
 }
 
 async function run(filter) {
+  const filters = Array.isArray(filter) ? filter.filter(Boolean) : (filter ? [String(filter)] : []);
   const dir = __dirname;
   const files = fs.readdirSync(dir).filter((f) => f.endsWith('.test.js')).sort();
   for (const f of files) {
@@ -60,7 +61,7 @@ async function run(filter) {
   let lastFile = null;
   const t0 = Date.now();
   for (const t of registry) {
-    if (filter && !(t.name + ' ' + t.file).includes(filter)) continue;
+    if (filters.length && !filters.some((f) => (t.name + ' ' + t.file).includes(f))) continue;
     if (t.file !== lastFile) { console.log('\n\x1b[1m' + t.file + '\x1b[0m'); lastFile = t.file; }
     if (t.skip) { skip++; console.log('  \x1b[33m-\x1b[0m ' + t.name + ' (skipped)'); continue; }
     const why = ciSkip(t);
@@ -88,7 +89,7 @@ async function run(filter) {
 module.exports = { test, assert, run };
 
 if (require.main === module) {
-  run(process.argv[2]).then((fails) => {
+  run(process.argv.slice(2)).then((fails) => {
     // pending debounced timers (autosave etc.) must not keep the process alive
     process.exit(fails ? 1 : 0);
   }, (err) => { console.error(err); process.exit(1); });

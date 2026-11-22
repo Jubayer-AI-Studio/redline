@@ -25,8 +25,8 @@ CB.derby = CB.derby || {};
 (function () {
   'use strict';
   var PI = Math.PI, TAU = PI * 2, DEG = PI / 180;
-  var MODES = ['chase', 'far', 'hood', 'overhead'];
-  var LABELS = { chase: 'Chase', far: 'Chase (far)', hood: 'Hood', overhead: 'Overhead' };
+  var MODES = ['chase', 'far'];
+  var LABELS = { chase: 'Chase (Near)', far: 'Chase (High)' };
   var QUALITY = {
     low: { dpr: 1, scale: 0.75, shadow: 0, post: false, particles: 420, aiLod: 'low', far: 900, shake: false, debris: 16, subHero: 1, subAI: 1, deformBudget: 1, deformMs: 2, decals: 0, fx: 0 },
     medium: { dpr: 1.25, scale: 1, shadow: 1024, post: true, particles: 1100, aiLod: 'high', far: 1200, shake: true, debris: 44, subHero: 2, subAI: 1, deformBudget: 2, deformMs: 3, decals: 40, fx: 1 },
@@ -1519,15 +1519,15 @@ CB.derby = CB.derby || {};
       } else R.shakeRoll = 0;
       R.shakeA = Math.max(0, R.shakeA - dt * 2.4);
       R.fovKick = Math.max(0, R.fovKick - dt * 14);
-      var fovT = 62 + clamp01((spd - 10) / 30) * 8 + (c.boosting ? 7 : 0);
+      var fovT = 58 + clamp01((spd - 10) / 40) * 5 + (c.boosting ? 4 : 0);
       R.fov += (fovT - R.fov) * (1 - Math.exp(-dt * 4));
       var fov = R.fov + R.fovKick;
       var back = R.lookBack ? -1 : 1, up = [0, 1, 0], eye, tgt;
       if (R.mode === 'chase' || R.mode === 'far') {
         var far = R.mode === 'far';
-        var dist = far ? 13.5 : 7.6, ht = far ? 6.2 : 2.9;
+        var dist = far ? 11.0 : 4.8, ht = far ? 4.8 : 1.75;
         eye = add(add(rig.pos, mul(fwd, -dist * back)), [0, ht, 0]);
-        tgt = add(add(rig.pos, [0, 1.0, 0]), mul(fwd, 4 * back));
+        tgt = add(add(rig.pos, [0, 0.9, 0]), mul(fwd, 3.2 * back));
         if (c.out) { eye[1] += 2; }
         // never inside a pillar / statue / wall: march from the car to the eye, pull in in front of the first solid
         var piv = add(rig.pos, [0, 1.3, 0]), fr0 = camClear(piv, eye, camBlocked, 16);
@@ -2140,7 +2140,12 @@ CB.derby = CB.derby || {};
         R.rings.length = 0; R.cine = null; R.boom = null; if (fx && fx.reset) try { fx.reset(); } catch (eR) { /* ignore */ } DEB.forEach(freeDebris); DEB.length = 0; DEC.length = 0; DEC.dirty = true;
         Object.keys(R.cars).forEach(function (k) { var e = R.cars[k]; e.prev = null; if (e.model && e.model._deform && e.dkey) { deformModel(e.model, {}); } e.seq = -1; e.dkey = null; e._dark = null; e._tk = null; e.char = 0; e.dirt = 0; e.vparts = {}; e.roof = 0; e.soot = 0; e.glass = 0; e.scrapes = []; e.wasRolled = false; e.outT = 0; });
       },
-      setCamera: function (m) { if (m === 'chase-far') m = 'far'; if (m === 'tv' || m === 'heli') m = 'overhead'; if (m === 'cockpit' || m === 'bumper') m = 'hood'; if (MODES.indexOf(m) >= 0) { R.mode = m; R.rig.init = false; } return R.mode; },
+      setCamera: function (m) {
+        if (m === 'chase-far' || m === 'far') m = 'far';
+        else m = 'chase';
+        R.mode = m; R.rig.init = false;
+        return R.mode;
+      },
       cycleCamera: function () { R.mode = MODES[(MODES.indexOf(R.mode) + 1) % MODES.length]; R.rig.init = false; return R.mode; },
       getCamera: function () { return R.mode; },
       cameraLabel: function () { return LABELS[R.mode]; },

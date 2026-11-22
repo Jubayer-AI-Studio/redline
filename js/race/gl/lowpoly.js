@@ -71,16 +71,17 @@ var CB = (globalThis.CB = globalThis.CB || {});
     white: [0.86, 0.86, 0.84], tyre: [0.026, 0.026, 0.028], disc: [0.28, 0.28, 0.29], hat: [0.09, 0.09, 0.1],
     interior: [0.02, 0.02, 0.022],
     // unlit tail-lamp lens (red housing around the LED graphics) and smoked / dark-tinted lens: glossy, not emissive
-    lens: [0.11, 0.005, 0.007], smoke: [0.022, 0.006, 0.007]
+    lens: [0.11, 0.005, 0.007], smoke: [0.022, 0.006, 0.007],
+    asBlue: [0.015, 0.055, 0.42], asOrange: [0.88, 0.32, 0.04], asGold: [0.94, 0.62, 0.06]
   };
   var MATS = ['paint', 'paint2', 'glass', 'black', 'gloss', 'chrome', 'rubber', 'light', 'drl', 'tail', 'indicator', 'grille',
-    'carbon', 'plate', 'badge', 'rev', 'well', 'under', 'white', 'mirror', 'interior', 'stripe', 'accent', 'caliper', 'rim', 'lens', 'smoke'];
+    'carbon', 'plate', 'badge', 'rev', 'well', 'under', 'white', 'mirror', 'interior', 'stripe', 'accent', 'caliper', 'rim', 'lens', 'smoke', 'asBlue', 'asOrange', 'asGold'];
   // material key -> geometry bucket
   var BUCKET = {
     paint: 'body', paint2: 'roof', glass: 'glass', black: 'trim', rubber: 'trim', grille: 'trim', plate: 'trim', well: 'trim',
     under: 'trim', white: 'trim', interior: 'trim', gloss: 'gloss', badge: 'gloss', indicator: 'gloss', chrome: 'chrome',
     carbon: 'carbon', light: 'head', drl: 'drl', tail: 'tail', rev: 'rev', stripe: 'body', accent: 'body', caliper: 'gloss', rim: 'chrome',
-    lens: 'gloss', smoke: 'gloss'
+    lens: 'gloss', smoke: 'gloss', asBlue: 'body', asOrange: 'body', asGold: 'gloss'
   };
   var BADGE_DARK = [0.012, 0.012, 0.014];
   var FINISH = {
@@ -161,7 +162,7 @@ var CB = (globalThis.CB = globalThis.CB || {});
         if (v === 'lowpoly' || v === 'detailed') return v;
       }
     } catch (e) { /* no profile */ }
-    return 'lowpoly';
+    return 'detailed';
   }
 
   /* ================================================================ 2D helpers */
@@ -2268,20 +2269,68 @@ var CB = (globalThis.CB = globalThis.CB || {});
       });
     }
     void SH;
-    // ---- race number roundels on the doors
-    if (S.number) {
-      var xd = lerp(aR.x + aR.r, aF.x - aF.r, 0.6), yTop = Math.max(aF.cy + aF.r, aR.cy + aR.r), yd = lerp(yTop, Sh.beltY, 0.45);
-      var rad = clamp(Math.min((Sh.beltY - yTop) * 0.42, (aF.x - aF.r - (aR.x + aR.r)) * 0.22), 0.1, 0.24);
-      var zd = Sh.sideZ(xd, yd);
-      if (zd !== null && rad > 0.05) {
-        [1, -1].forEach(function (s) {
-          var nz = s, zz = s * (zd + 0.012), disc = [];
-          for (var k = 0; k < 12; k++) { var a = (k + 0.5) / 12 * TAU; disc.push([xd + Math.cos(a) * rad, yd + Math.sin(a) * rad, zz]); }
-          B.poly('white', disc, [0, 0, nz]);
-          digits(B, String(S.number), xd, yd, rad * 1.1, s * (zd + 0.016), s);
-        });
-      }
+    // ---- Official As-Sunnah Racing Livery on Doors and Hood
+    var xd = lerp(aR.x + aR.r, aF.x - aF.r, 0.58), yTop = Math.max(aF.cy + aF.r, aR.cy + aR.r), yd = lerp(yTop, Sh.beltY, 0.48);
+    var hBox = clamp((Sh.beltY - yTop) * 0.38, 0.11, 0.22);
+    var wBox = hBox * 2.3;
+    var zd = Sh.sideZ(xd, yd);
+    if (zd !== null && hBox > 0.05) {
+      [1, -1].forEach(function (s) {
+        var nz = s, zz = s * (zd + 0.009);
+        // 1. Door Racing Plate (White)
+        var p0 = [xd - wBox, yd - hBox, zz], p1 = [xd + wBox, yd - hBox, zz],
+            p2 = [xd + wBox, yd + hBox, zz], p3 = [xd - wBox, yd + hBox, zz];
+        if (s > 0) B.poly('white', [p0, p1, p2, p3], [0, 0, nz]);
+        else B.poly('white', [p1, p0, p3, p2], [0, 0, nz]);
+
+        // Top blue stripe & bottom orange stripe
+        var tStripH = hBox * 0.15, zz2 = s * (zd + 0.012);
+        var sT0 = [xd - wBox, yd + hBox - tStripH, zz2], sT1 = [xd + wBox, yd + hBox - tStripH, zz2],
+            sT2 = [xd + wBox, yd + hBox, zz2], sT3 = [xd - wBox, yd + hBox, zz2];
+        if (s > 0) B.poly('asBlue', [sT0, sT1, sT2, sT3], [0, 0, nz]);
+        else B.poly('asBlue', [sT1, sT0, sT3, sT2], [0, 0, nz]);
+
+        var sB0 = [xd - wBox, yd - hBox, zz2], sB1 = [xd + wBox, yd - hBox, zz2],
+            sB2 = [xd + wBox, yd - hBox + tStripH, zz2], sB3 = [xd - wBox, yd - hBox + tStripH, zz2];
+        if (s > 0) B.poly('asOrange', [sB0, sB1, sB2, sB3], [0, 0, nz]);
+        else B.poly('asOrange', [sB1, sB0, sB3, sB2], [0, 0, nz]);
+
+        // As-Sunnah Circular Crest (Left on door plate)
+        var cX = xd - wBox * 0.52 * s, cY = yd, cR = hBox * 0.58;
+        var zz3 = s * (zd + 0.014), disc = [], discIn = [];
+        for (var k = 0; k < 12; k++) {
+          var a = (k + 0.5) / 12 * TAU;
+          disc.push([cX + Math.cos(a) * cR, cY + Math.sin(a) * cR, zz3]);
+          discIn.push([cX + Math.cos(a) * cR * 0.65, cY + Math.sin(a) * cR * 0.65, zz3 + s * 0.002]);
+        }
+        if (s > 0) {
+          B.poly('asOrange', disc, [0, 0, nz]);
+          B.poly('asBlue', discIn, [0, 0, nz]);
+        } else {
+          B.poly('asOrange', disc.reverse(), [0, 0, nz]);
+          B.poly('asBlue', discIn.reverse(), [0, 0, nz]);
+        }
+
+        // Racing number badge
+        var tX = xd + wBox * 0.18 * s, tY = yd;
+        digits(B, String(S.number || '7'), tX, tY, hBox * 0.95, s * (zd + 0.016), s);
+      });
     }
+
+    // Hood (Bonnet) As-Sunnah Crest Emblem
+    var xFA_safe = (f.wheels && f.wheels.front && f.wheels.front.x) || (aF.x || 1.3);
+    var xF_safe = (f.body && f.body.noseX) || (xFA_safe + 0.7);
+    var xH = lerp(xFA_safe, xF_safe, 0.45);
+    var yH = (Sh.noseY ? lerp(Sh.noseY, Sh.beltY, 0.65) : 0.70) + 0.006;
+    var rH = clamp(hBox * 0.85, 0.10, 0.20);
+    var hDisc = [], hDiscIn = [];
+    for (var k2 = 0; k2 < 12; k2++) {
+      var a2 = (k2 + 0.5) / 12 * TAU;
+      hDisc.push([xH + Math.cos(a2) * rH, yH, Math.sin(a2) * rH]);
+      hDiscIn.push([xH + Math.cos(a2) * rH * 0.65, yH + 0.002, Math.sin(a2) * rH * 0.65]);
+    }
+    B.poly('asGold', hDisc, [0, 1, 0]);
+    B.poly('asBlue', hDiscIn, [0, 1, 0]);
   }
   // seven-segment digits as flat quads in the z plane (s: +1 right flank reading front->rear... x flips for the left)
   var SEG = { 0: 'abcdef', 1: 'bc', 2: 'abged', 3: 'abgcd', 4: 'fgbc', 5: 'afgcd', 6: 'afgedc', 7: 'abc', 8: 'abcdefg', 9: 'abfgcd' };

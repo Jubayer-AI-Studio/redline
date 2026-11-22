@@ -398,6 +398,7 @@
   /* ===================================================== sponsors (logos) */
   var SPONSORS = [
     { id: 'forge', name: 'REDLINE', tagline: 'BUILD  \u00b7  RACE  \u00b7  DRIFT', bg: ['#0c0c0e', '#22201c'], fg: '#f2ead8', accent: '#e0412f', logo: 'forge' },
+    { id: 'assunnah', name: 'AS-SUNNAH', tagline: 'SKILL DEVELOPMENT INSTITUTE', bg: ['#042617', '#085334'], fg: '#ffffff', accent: '#4ade80', logo: 'assunnah' },
     { id: 'veloce', name: 'VELOCE OIL', tagline: 'SYNTHETIC RACING LUBRICANTS', bg: ['#0a2e78', '#1450b8'], fg: '#ffffff', accent: '#ffcc00', logo: 'drop' },
     { id: 'kronos', name: 'KRONOS', tagline: 'OFFICIAL TIMEKEEPER', bg: ['#f4f4f2', '#d9d9d6'], fg: '#111111', accent: '#d81e2c', logo: 'watch' },
     { id: 'apex', name: 'APEX TYRES', tagline: 'GRIP IS EVERYTHING', bg: ['#ffd100', '#ffb800'], fg: '#111111', accent: '#111111', logo: 'tyre' },
@@ -1332,13 +1333,33 @@
     g.save(); g.translate(x, y);
     g.lineJoin = 'round'; g.lineCap = 'round';
     switch (kind) {
-      case 'forge': { // the Redline mark: tachometer arc ending in the red zone, needle pinned into it
-        g.lineWidth = s * 0.1;
-        g.strokeStyle = fg; g.beginPath(); g.arc(0, s * 0.12, s * 0.36, PI, PI * 1.72); g.stroke();
-        g.strokeStyle = ac; g.beginPath(); g.arc(0, s * 0.12, s * 0.36, PI * 1.8, PI * 2); g.stroke();
-        g.strokeStyle = fg; g.lineWidth = s * 0.08;
-        g.beginPath(); g.moveTo(0, s * 0.12); g.lineTo(s * 0.27, -s * 0.07); g.stroke();
-        g.fillStyle = fg; g.beginPath(); g.arc(0, s * 0.12, s * 0.08, 0, PI * 2); g.fill();
+      case 'assunnah':
+      case 'forge': { // As-Sunnah emblem mark: upper & lower sweeping ribbon with central upward arrow
+        g.fillStyle = sp.accent || '#10b981';
+        g.beginPath();
+        g.moveTo(-s * 0.18, -s * 0.38);
+        g.bezierCurveTo(s * 0.32, -s * 0.44, s * 0.38, -s * 0.12, s * 0.15, s * 0.02);
+        g.bezierCurveTo(s * 0.02, -s * 0.05, -s * 0.08, -s * 0.12, -s * 0.18, -s * 0.38);
+        g.closePath();
+        g.fill();
+        g.fillStyle = '#f59e0b';
+        g.beginPath();
+        g.moveTo(s * 0.18, s * 0.38);
+        g.bezierCurveTo(-s * 0.32, s * 0.44, -s * 0.38, s * 0.12, -s * 0.15, -s * 0.02);
+        g.bezierCurveTo(-s * 0.02, s * 0.05, s * 0.08, s * 0.12, s * 0.18, s * 0.38);
+        g.closePath();
+        g.fill();
+        g.fillStyle = '#ffffff';
+        g.beginPath();
+        g.moveTo(0, -s * 0.16);
+        g.lineTo(s * 0.11, s * 0.04);
+        g.lineTo(s * 0.04, s * 0.04);
+        g.lineTo(s * 0.04, s * 0.18);
+        g.lineTo(-s * 0.04, s * 0.18);
+        g.lineTo(-s * 0.04, s * 0.04);
+        g.lineTo(-s * 0.11, s * 0.04);
+        g.closePath();
+        g.fill();
         break;
       }
       case 'drop': {
@@ -1600,38 +1621,142 @@
        'plain'   bare number in opts.color with a dark outline + white keyline.
      opts.sdf: alpha holds a signed distance field instead of coverage (0.5 = edge,
      tex.meta.sdfSpread texels per 0.5) for smoothstep(0.5 - w, 0.5 + w, a) magnification.  */
-  GEN.carNumber = function (o) {
-    var W = o.size || S(512, 64), c = makeCanvas(W, W), g = ctx2d(c), sc = W / 256;
-    var num = String(o.number == null ? 7 : o.number), ring = parseColor(o.color || '#d01818'), style = o.style || 'roundel';
-    g.clearRect(0, 0, W, W);
-    var cx = W / 2, R0 = W * 0.47, fs;
-    g.textAlign = 'center'; g.textBaseline = 'middle';
-    if (style === 'panel') {
-      var pw = W * 0.92, ph = W * 0.66, x0 = (W - pw) / 2, y0 = (W - ph) / 2;
-      g.fillStyle = css(ring); roundRect(g, x0, y0, pw, ph, 14 * sc); g.fill();
-      g.fillStyle = '#f7f7f4'; roundRect(g, x0 + 7 * sc, y0 + 7 * sc, pw - 14 * sc, ph - 14 * sc, 9 * sc); g.fill();
-      fs = fitFont(g, num, pw - 34 * sc, ph * 0.86, '900', FONT_HEAVY);
-      g.font = '900 ' + fs + 'px ' + FONT_HEAVY;
-      g.fillStyle = '#0d0d0f'; g.fillText(num, cx, cx + 5 * sc);
-    } else if (style === 'plain') {
-      fs = fitFont(g, num, W * 0.9, W * 0.78, '900', FONT_HEAVY);
-      g.font = '900 ' + fs + 'px ' + FONT_HEAVY; g.lineJoin = 'round';
-      g.strokeStyle = '#0d0d0f'; g.lineWidth = 16 * sc; g.strokeText(num, cx, cx + 4 * sc);
-      g.strokeStyle = '#f7f7f4'; g.lineWidth = 7 * sc; g.strokeText(num, cx, cx + 4 * sc);
-      g.fillStyle = css(ring); g.fillText(num, cx, cx + 4 * sc);
-    } else {
-      g.fillStyle = css(ring); g.beginPath(); g.arc(cx, cx, R0, 0, TAU); g.fill();
-      g.fillStyle = css(scaleC(ring, 0.6)); g.beginPath(); g.arc(cx, cx, R0, 0, TAU); g.arc(cx, cx, R0 - 3 * sc, 0, TAU, true); g.fill();
-      g.fillStyle = '#f7f7f4'; g.beginPath(); g.arc(cx, cx, R0 - 16 * sc, 0, TAU); g.fill();
-      fs = fitFont(g, num, (R0 - 22 * sc) * 1.7, 150 * sc, '900', FONT_HEAVY);
-      g.font = '900 ' + fs + 'px ' + FONT_HEAVY;
-      g.fillStyle = 'rgba(0,0,0,0.18)'; g.fillText(num, cx + 3 * sc, cx + 9 * sc);
-      g.fillStyle = '#0d0d0f'; g.fillText(num, cx, cx + 6 * sc);
+  var _asDoorImg = null, _asEmblemImg = null;
+  function getAsSunnahImages() {
+    if (typeof Image === 'undefined') return { door: null, emblem: null };
+    if (!_asDoorImg) {
+      _asDoorImg = new Image();
+      _asDoorImg.crossOrigin = 'anonymous';
+      _asDoorImg.src = (typeof window !== 'undefined' && window.AS_SUNNAH_DOOR_DECAL_B64) ? window.AS_SUNNAH_DOOR_DECAL_B64 : 'img/as_sunnah_door_decal.png';
     }
-    var px = readPixels(g, W, W), meta = { style: style };
+    if (!_asEmblemImg) {
+      _asEmblemImg = new Image();
+      _asEmblemImg.crossOrigin = 'anonymous';
+      _asEmblemImg.src = (typeof window !== 'undefined' && window.AS_SUNNAH_EMBLEM_B64) ? window.AS_SUNNAH_EMBLEM_B64 : 'img/as_sunnah_emblem.png';
+    }
+    return { door: _asDoorImg, emblem: _asEmblemImg };
+  }
+  try { getAsSunnahImages(); } catch (e) { /* ignore */ }
+
+  GEN.carNumber = function (o) {
+    var W = o.size || S(1024, 256), c = makeCanvas(W, W), g = ctx2d(c);
+    g.clearRect(0, 0, W, W); // transparent background
+
+    var pilotName = (typeof window !== 'undefined' && (window.CURRENT_PILOT_NAME || (window.localStorage && window.localStorage.getItem('redline_pilot_name')))) || (o && o.pilotName) || 'JUBAYER';
+
+    // 0. Synchronous High-Definition As-Sunnah Livery Rendering (Door & Bonnet)
+    // Top Half [0, 0, W, W * 0.5]: Official Door Decal
+    g.save();
+    // Background pill/plate
+    var dw = W * 0.94, dh = W * 0.44, dx = (W - dw) / 2, dy = W * 0.03;
+    g.fillStyle = 'rgba(255, 255, 255, 0.96)';
+    g.beginPath();
+    g.roundRect ? g.roundRect(dx, dy, dw, dh, 16) : g.rect(dx, dy, dw, dh);
+    g.fill();
+    g.strokeStyle = '#ea580c';
+    g.lineWidth = Math.max(3, Math.round(W * 0.008));
+    g.stroke();
+
+    // Blue & Orange accent stripes
+    g.fillStyle = '#2563eb';
+    g.fillRect(dx + 6, dy + 6, dw - 12, Math.max(4, W * 0.012));
+    g.fillStyle = '#ea580c';
+    g.fillRect(dx + 6, dy + dh - 6 - Math.max(4, W * 0.012), dw - 12, Math.max(4, W * 0.012));
+
+    // Logo Emblem Mark (Left icon)
+    var iconX = dx + dw * 0.14, iconY = dy + dh * 0.44, iconR = dh * 0.32;
+    g.beginPath();
+    g.arc(iconX, iconY, iconR, 0, Math.PI * 2);
+    g.fillStyle = '#f8fafc';
+    g.fill();
+    g.strokeStyle = '#6366f1';
+    g.lineWidth = 3;
+    g.stroke();
+
+    // Stylized swirl ribbons
+    g.beginPath();
+    g.arc(iconX - iconR * 0.15, iconY, iconR * 0.6, -0.6 * Math.PI, 0.6 * Math.PI);
+    g.lineWidth = iconR * 0.38;
+    g.strokeStyle = '#7c3aed';
+    g.lineCap = 'round';
+    g.stroke();
+    g.beginPath();
+    g.arc(iconX + iconR * 0.15, iconY, iconR * 0.6, 0.4 * Math.PI, 1.6 * Math.PI);
+    g.strokeStyle = '#ea580c';
+    g.stroke();
+
+    // Typography
+    var textX = dx + dw * 0.30;
+    g.textAlign = 'left';
+    g.textBaseline = 'middle';
+    g.font = '900 ' + Math.round(W * 0.060) + 'px "Arial Black", sans-serif';
+    g.fillStyle = '#1e3a8a';
+    g.fillText('AS-SUNNAH', textX, dy + dh * 0.30);
+
+    g.font = '800 ' + Math.round(W * 0.030) + 'px sans-serif';
+    g.fillStyle = '#ea580c';
+    g.fillText('SKILL DEVELOPMENT INSTITUTE', textX, dy + dh * 0.52);
+
+    // Pilot badge inside door decal
+    g.font = '900 ' + Math.round(W * 0.034) + 'px sans-serif';
+    g.fillStyle = '#0f172a';
+    g.fillText('PILOT: ' + String(pilotName).toUpperCase(), textX, dy + dh * 0.76);
+    g.restore();
+
+    // Bottom Half [0, W * 0.5, W, W * 0.5]: Official Bonnet/Hood Emblem (Circular Crest)
+    g.save();
+    var hR = W * 0.20, hX = W / 2, hY = W * 0.75;
+    g.beginPath();
+    g.arc(hX, hY, hR, 0, Math.PI * 2);
+    g.fillStyle = 'rgba(255, 255, 255, 0.96)';
+    g.fill();
+    g.strokeStyle = '#f59e0b';
+    g.lineWidth = Math.max(4, Math.round(W * 0.010));
+    g.stroke();
+
+    g.beginPath();
+    g.arc(hX, hY, hR * 0.88, 0, Math.PI * 2);
+    g.strokeStyle = '#2563eb';
+    g.lineWidth = Math.max(2, Math.round(W * 0.005));
+    g.stroke();
+
+    // Inner Crest Icon
+    g.beginPath();
+    g.arc(hX - hR * 0.15, hY, hR * 0.45, -0.6 * Math.PI, 0.6 * Math.PI);
+    g.lineWidth = hR * 0.30;
+    g.strokeStyle = '#7c3aed';
+    g.lineCap = 'round';
+    g.stroke();
+    g.beginPath();
+    g.arc(hX + hR * 0.15, hY, hR * 0.45, 0.4 * Math.PI, 1.6 * Math.PI);
+    g.strokeStyle = '#ea580c';
+    g.stroke();
+
+    g.font = '900 ' + Math.round(W * 0.032) + 'px sans-serif';
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.fillStyle = '#1e3a8a';
+    g.fillText('AS-SUNNAH', hX, hY + hR * 0.60);
+    g.restore();
+
+    // If external images are fully loaded, blend them in
+    if (typeof Image !== 'undefined') {
+      var imgs = getAsSunnahImages();
+      if (imgs.door && imgs.door.complete && imgs.door.naturalWidth > 0) {
+        g.drawImage(imgs.door, 0, 0, W, W * 0.5);
+      }
+      if (imgs.emblem && imgs.emblem.complete && imgs.emblem.naturalWidth > 0) {
+        var targetH = W * 0.40;
+        var targetW = targetH * (imgs.emblem.naturalWidth / imgs.emblem.naturalHeight);
+        var ex = (W - targetW) / 2;
+        var ey = W * 0.5 + (W * 0.5 - targetH) / 2;
+        g.drawImage(imgs.emblem, ex, ey, targetW, targetH);
+      }
+    }
+
+    var px = readPixels(g, W, W), meta = { style: 'as_sunnah' };
     dilateRGB(px.data, W, W, 4);
-    if (o.sdf) { meta.sdfSpread = alphaToSDF(px.data, W, W, Math.max(4, Math.round(4 * sc))); meta.sdf = true; }
-    else px.levels = buildMips(px.data, W, W);
+    px.levels = buildMips(px.data, W, W);
     return { source: px, wrapS: 'clamp', wrapT: 'clamp', aniso: 8, meta: meta };
   };
   /** replace alpha (coverage) with a signed distance field: 0.5 at the edge, +-0.5 at +-spread texels */

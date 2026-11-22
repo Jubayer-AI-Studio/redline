@@ -954,6 +954,8 @@ CB.race = CB.race || {};
     c.rubberBanding = !!c.rubberBanding;
     c.sandboxRandom = c.sandboxRandom !== false;
     c.persistGhost = c.persistGhost !== false;
+    c.discipline = cfgIn.discipline || (cfgIn.isDrift ? 'drift' : 'race');
+    c.godMode = !!cfgIn.godMode;
     c.playerName = c.playerName || 'You';
     c.playerTeam = c.playerTeam || 'Redline Garage';
     return c;
@@ -1942,6 +1944,7 @@ CB.race = CB.race || {};
     }
 
     function trackLimitsViolation(car, cut) {
+      if (car.isPlayer) return; // Player has complete arcade freedom
       car.tlLog.push({ t: round(sess.t, 3), lap: car.tracker.lap + 1, s: round(car.lapS, 1), cut: !!cut });
       car.tlCount++;
       car.lapValid = false;
@@ -2188,9 +2191,14 @@ CB.race = CB.race || {};
         c2.launchDelay = c2.isPlayer ? 0 : 0.14 + sess.rng() * 0.24 * (1.35 - sk);
       }
       sess.order = sess.cars.slice();
-      // countdown schedule
-      if (cfg.mode === 'practice') { startRace(0); }
-      else {
+      // countdown schedule: instant start if countdown is false, practice mode, or instantStart
+      if (cfg.mode === 'practice' || cfg.countdown === false || cfg.instantStart) {
+        startRace(0);
+        sess.gridEndT = 0;
+        sess.lightInterval = 0;
+        sess.lightsOutHold = 0;
+        sess.lightsOutT = 0;
+      } else {
         sess.gridEndT = num(cfg.gridTime_s, cfg.mode === 'race' ? 1.5 : 0.8);
         sess.lightInterval = num(cfg.lightInterval_s, cfg.mode === 'race' ? 1.0 : 0.55);
         var hold = cfg.mode === 'race' ? sess.rng.range(0.4, 2.8) : 0.45;
