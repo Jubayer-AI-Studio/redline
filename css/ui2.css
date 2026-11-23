@@ -697,6 +697,56 @@ html.rl-v2 #main-menu-shell {
       z-index: 8;
     }
 
+    .pin-aero { top: 52%; left: 36%; }
+    .pin-paint { top: 58%; left: 52%; }
+    .pin-wheels { top: 74%; left: 65%; }
+
+    .micro-label {
+      font-size: var(--fs-xs, 10px);
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .cost-summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .cost-key {
+      font-size: var(--fs-xs, 10px);
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+    .cost-val {
+      font-size: var(--fs-sm, 12px);
+      font-weight: 700;
+      color: var(--text-white);
+    }
+
+    .hud-lap-badge {
+      font-size: var(--fs-xs, 10px);
+      color: var(--text-dim);
+      font-weight: 700;
+    }
+
+    .touch-btn.touch-brk { color: var(--fail, #ef4444); }
+    .touch-btn.touch-gas { color: var(--win, #10b981); }
+
+    .swatch-btn[data-swatch="red"] { background: #b91c1c; }
+    .swatch-btn[data-swatch="blue"] { background: #1d4ed8; }
+    .swatch-btn[data-swatch="black"] { background: #111827; }
+    .swatch-btn[data-swatch="silver"] { background: #e5e7eb; }
+    .swatch-btn[data-swatch="orange"] { background: #c2410c; }
+    .swatch-btn[data-swatch="green"] { background: #047857; }
+    .swatch-btn[data-swatch="grey"] { background: #4b5563; }
+    .swatch-btn[data-swatch="gold"] { background: #d97706; }
+
     .hotspot-label {
       position: absolute;
       left: 18px;
@@ -719,6 +769,7 @@ html.rl-v2 #main-menu-shell {
     .hud-backdrop {
       position: absolute;
       inset: 0;
+      background: radial-gradient(circle at 50% 55%, #18202c 0%, #080a0f 80%);
       background-size: cover;
       background-position: center;
       z-index: 0;

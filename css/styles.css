@@ -6017,6 +6017,22 @@ html:has(.gh-title) .cb-screen {
   background: #1e40af;
 }
 
+.pg-play-anyway-btn {
+  margin-top: 10px;
+  background: var(--bg-card, rgba(255, 255, 255, 0.08));
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.22));
+  color: var(--text, #ecebe6);
+  padding: 10px 18px;
+  border-radius: var(--pill, 999px);
+  font-size: var(--fs-sm, 13px);
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  touch-action: manipulation;
+}
+
 /* Hide old empty race rotate element */
 .rx-rotate,
 #race-root .rx-rotate {

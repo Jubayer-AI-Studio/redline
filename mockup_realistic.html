@@ -662,6 +662,56 @@
       z-index: 8;
     }
 
+    .pin-aero { top: 52%; left: 36%; }
+    .pin-paint { top: 58%; left: 52%; }
+    .pin-wheels { top: 74%; left: 65%; }
+
+    .micro-label {
+      font-size: var(--fs-xs, 10px);
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .cost-summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .cost-key {
+      font-size: var(--fs-xs, 10px);
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+    .cost-val {
+      font-size: var(--fs-sm, 12px);
+      font-weight: 700;
+      color: var(--text-white);
+    }
+
+    .hud-lap-badge {
+      font-size: var(--fs-xs, 10px);
+      color: var(--text-dim);
+      font-weight: 700;
+    }
+
+    .touch-btn.touch-brk { color: var(--fail, #ef4444); }
+    .touch-btn.touch-gas { color: var(--win, #10b981); }
+
+    .swatch-btn[data-swatch="red"] { background: #b91c1c; }
+    .swatch-btn[data-swatch="blue"] { background: #1d4ed8; }
+    .swatch-btn[data-swatch="black"] { background: #111827; }
+    .swatch-btn[data-swatch="silver"] { background: #e5e7eb; }
+    .swatch-btn[data-swatch="orange"] { background: #c2410c; }
+    .swatch-btn[data-swatch="green"] { background: #047857; }
+    .swatch-btn[data-swatch="grey"] { background: #4b5563; }
+    .swatch-btn[data-swatch="gold"] { background: #d97706; }
+
     .hotspot-label {
       position: absolute;
       left: 18px;
@@ -684,6 +734,7 @@
     .hud-backdrop {
       position: absolute;
       inset: 0;
+      background: radial-gradient(circle at 50% 55%, #18202c 0%, #080a0f 80%);
       background-size: cover;
       background-position: center;
       z-index: 0;
@@ -988,7 +1039,7 @@
       <!-- SCREEN 3: GARAGE (Gran Turismo Style Telemetry & 53 Cars) -->
       <section class="screen" id="screen-garage">
         <div class="garage-telemetry">
-          <div style="font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px">TECHNICAL SPECIFICATION</div>
+          <div class="micro-label">TECHNICAL SPECIFICATION</div>
           <div class="telemetry-row">
             <span class="telemetry-key">PEAK POWER</span>
             <span class="telemetry-val" id="g-hp">502 HP @ 8,400 RPM</span>
@@ -1048,13 +1099,13 @@
       <!-- SCREEN 4: CUSTOMIZE (Photoreal Paint & Hotspots) -->
       <section class="screen" id="screen-customize">
         <!-- Hotspot pins with thin leader lines -->
-        <div class="hotspot-pin" style="top:52%;left:36%">
+        <div class="hotspot-pin pin-aero">
           <div class="hotspot-label">AERO SPOILER</div>
         </div>
-        <div class="hotspot-pin" style="top:58%;left:52%">
+        <div class="hotspot-pin pin-paint">
           <div class="hotspot-label">OEM PAINT FINISH</div>
         </div>
-        <div class="hotspot-pin" style="top:74%;left:65%">
+        <div class="hotspot-pin pin-wheels">
           <div class="hotspot-label">FORGED WHEELS & TIRES</div>
         </div>
 
@@ -1067,21 +1118,21 @@
             <button class="finish-pill" onclick="setFinish(this, 'pearl')">Pearl</button>
           </div>
 
-          <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px">OEM PALETTE</div>
+          <div class="micro-label">OEM PALETTE</div>
           <div class="swatch-grid">
-            <button class="swatch-btn selected" style="background:#b91c1c" onclick="pickColor(this, '#b91c1c')"></button>
-            <button class="swatch-btn" style="background:#1d4ed8" onclick="pickColor(this, '#1d4ed8')"></button>
-            <button class="swatch-btn" style="background:#111827" onclick="pickColor(this, '#111827')"></button>
-            <button class="swatch-btn" style="background:#e5e7eb" onclick="pickColor(this, '#e5e7eb')"></button>
-            <button class="swatch-btn" style="background:#c2410c" onclick="pickColor(this, '#c2410c')"></button>
-            <button class="swatch-btn" style="background:#047857" onclick="pickColor(this, '#047857')"></button>
-            <button class="swatch-btn" style="background:#4b5563" onclick="pickColor(this, '#4b5563')"></button>
-            <button class="swatch-btn" style="background:#d97706" onclick="pickColor(this, '#d97706')"></button>
+            <button class="swatch-btn selected" data-swatch="red" onclick="pickColor(this, '#b91c1c')"></button>
+            <button class="swatch-btn" data-swatch="blue" onclick="pickColor(this, '#1d4ed8')"></button>
+            <button class="swatch-btn" data-swatch="black" onclick="pickColor(this, '#111827')"></button>
+            <button class="swatch-btn" data-swatch="silver" onclick="pickColor(this, '#e5e7eb')"></button>
+            <button class="swatch-btn" data-swatch="orange" onclick="pickColor(this, '#c2410c')"></button>
+            <button class="swatch-btn" data-swatch="green" onclick="pickColor(this, '#047857')"></button>
+            <button class="swatch-btn" data-swatch="grey" onclick="pickColor(this, '#4b5563')"></button>
+            <button class="swatch-btn" data-swatch="gold" onclick="pickColor(this, '#d97706')"></button>
           </div>
 
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-top:8px;border-top:1px solid var(--border-subtle)">
-            <span style="font-size:10px;color:var(--text-dim);font-weight:600">INSTALLATION</span>
-            <span style="font-size:12px;font-weight:700;color:var(--text-white)">2,500 CR</span>
+          <div class="cost-summary-row">
+            <span class="cost-key">INSTALLATION</span>
+            <span class="cost-val">2,500 CR</span>
           </div>
 
           <button class="apply-btn" onclick="applyCustomization()">APPLY MODIFICATIONS</button>
@@ -1091,11 +1142,11 @@
       <!-- SCREEN 5: IN-RACE HUD (Minimalist & Unobtrusive) -->
       <section class="screen" id="screen-hud">
         <!-- Road Backdrop -->
-        <div class="hud-backdrop" style="background: radial-gradient(circle at 50% 55%, #18202c 0%, #080a0f 80%);"></div>
+        <div class="hud-backdrop"></div>
 
         <!-- Top Cluster -->
         <div class="hud-cluster-top">
-          <span style="font-size:10px;color:var(--text-dim);font-weight:700">LAP 2/3</span>
+          <span class="hud-lap-badge">LAP 2/3</span>
           <span class="hud-lap-time">01:24.89</span>
           <span class="hud-split-time">-0.34s</span>
         </div>
@@ -1134,8 +1185,8 @@
         </div>
 
         <div class="hud-touch-right">
-          <button class="touch-btn" style="color:#ef4444">BRK</button>
-          <button class="touch-btn" style="color:#10b981">GAS</button>
+          <button class="touch-btn touch-brk">BRK</button>
+          <button class="touch-btn touch-gas">GAS</button>
         </div>
       </section>
 
