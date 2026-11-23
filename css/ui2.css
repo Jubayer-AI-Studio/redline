@@ -1,88 +1,103 @@
+/* ==========================================================================
+   Redline UI v2.0 Realistic Theme (Gran Turismo & Forza Horizon Aesthetic)
+   Scoped strictly to html.rl-v2 and #rl-app so ?ui=1 is 100% pristine.
+   ========================================================================== */
+
+/* Hidden when not in UI v2 mode */
+html:not(.rl-v2) #rl-app {
+  display: none !important;
+}
+
+html.rl-v2 {
+  overflow: hidden !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+html.rl-v2 body {
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  overflow: hidden !important;
+  background-color: #090a0c !important;
+  color: #f3f4f6 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif !important;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+  touch-action: manipulation !important;
+}
+
+/* Hide original UI elements when UI v2 is active */
+html.rl-v2 #global-nav,
+html.rl-v2 #app-root,
+html.rl-v2 #garage-flow,
+html.rl-v2 #main-menu-shell {
+  display: none !important;
+}
+
+/* UI v2 App Container: Fixed 100dvh viewport, zero scroll */
+#rl-app {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 2147482000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#rl-app, #rl-app * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 
     /* ==========================================================================
-       REDLINE DESIGN SYSTEM TOKENS & SHELL
+       FORZA HORIZON & GRAN TURISMO INSPIRED DESIGN TOKENS
+       Restrained, Matte, Minimal, Photoreal-Leaning
        ========================================================================== */
     :root {
-      --rl-bg-void: #08090b;
-      --rl-bg-surface: #101216;
-      --rl-bg-elevated: #161920;
-      --rl-bg-card: rgba(22, 26, 35, 0.78);
-      --rl-bg-glass: rgba(14, 17, 23, 0.70);
-      --rl-bg-glass-heavy: rgba(10, 12, 16, 0.92);
+      --bg-base: #090a0c;
+      --bg-surface: #121418;
+      --bg-panel: rgba(18, 20, 25, 0.78);
+      --bg-card: rgba(22, 25, 32, 0.65);
+      --bg-translucent: rgba(255, 255, 255, 0.04);
+      --bg-hover: rgba(255, 255, 255, 0.07);
 
-      --rl-accent-red: #e0412f;
-      --rl-accent-red-bright: #ff4733;
-      --rl-accent-red-glow: rgba(224, 65, 47, 0.45);
-      --rl-accent-red-dark: #8f2014;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(255, 255, 255, 0.22);
+      --border-accent: #d43b2c;
 
-      --rl-accent-gold: #c9a56b;
-      --rl-accent-gold-glow: rgba(201, 165, 107, 0.40);
-      
-      --rl-accent-cyan: #00e5ff;
-      --rl-accent-cyan-glow: rgba(0, 229, 255, 0.35);
+      --text-white: #f3f4f6;
+      --text-silver: #9ca3af;
+      --text-dim: #64748b;
+      --text-dark: #090a0c;
 
-      --rl-delta-pos: #10b981;
-      --rl-delta-neg: #ef4444;
+      --accent-red: #d43b2c;
+      --accent-red-hover: #e04434;
 
-      --rl-tier-common: #9ca3af;
-      --rl-tier-rare: #38bdf8;
-      --rl-tier-epic: #a855f7;
-      --rl-tier-legendary: #f59e0b;
+      --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-      --rl-text-primary: #f9fafb;
-      --rl-text-secondary: #9ca3af;
-      --rl-text-muted: #6b7280;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-full: 9999px;
 
-      --rl-border-subtle: rgba(255, 255, 255, 0.08);
-      --rl-border-med: rgba(255, 255, 255, 0.16);
-      --rl-border-active: #e0412f;
-
-      /* Self-hosted & system-first resilient font stacks */
-      --rl-font-display: "Rajdhani", "Exo 2", "Orbitron", "Segoe UI", -apple-system, sans-serif;
-      --rl-font-body: "Inter", "Hind Siliguri", "Segoe UI", system-ui, sans-serif;
-
-      --rl-safe-top: env(safe-area-inset-top, 0px);
-      --rl-safe-right: env(safe-area-inset-right, 14px);
-      --rl-safe-bottom: env(safe-area-inset-bottom, 8px);
-      --rl-safe-left: env(safe-area-inset-left, 14px);
+      --ease-fast: cubic-bezier(0.16, 1, 0.3, 1);
+      --duration-fast: 180ms;
     }
 
-    #rl-app, #rl-app * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-user-select: none;
-      user-select: none;
-      -webkit-touch-callout: none;
-    }
+    
 
-    html:not(.rl-v2) #rl-app {
-      display: none !important;
-    }
+    
 
-    html.rl-v2 {
-      overflow: hidden !important;
-    }
-
-    html.rl-v2 body {
-      width: 100vw;
-      height: 100vh;
-      height: 100dvh;
-      overflow: hidden;
-      background-color: var(--rl-bg-void);
-      color: var(--rl-text-primary);
-      font-family: var(--rl-font-body);
-      font-size: 14px;
-      line-height: 1.4;
-      touch-action: manipulation;
-    }
-
-    html.rl-v2 #global-nav,
-    html.rl-v2 #app-root {
-      display: none !important;
-    }
-
-    /* Fixed App Shell */
+    /* Fixed App Shell - Zero Vertical Scroll */
     #rl-app {
       position: relative;
       width: 100%;
@@ -90,1658 +105,787 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      background: radial-gradient(circle at 50% 35%, #181d28 0%, #0c0e12 60%, #060709 100%);
+      background: radial-gradient(circle at 50% 40%, #15181f 0%, #0c0d10 65%, #060708 100%);
     }
 
-    /* Carbon Texture Overlay */
-    .rl-carbon-pattern {
+    /* Subtle Studio Vignette */
+    .vignette-overlay {
       position: absolute;
       inset: 0;
-      background-image: 
-        linear-gradient(45deg, rgba(0,0,0,0.2) 25%, transparent 25%), 
-        linear-gradient(-45deg, rgba(0,0,0,0.2) 25%, transparent 25%), 
-        linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.2) 75%), 
-        linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.2) 75%);
-      background-size: 6px 6px;
-      opacity: 0.45;
       pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, transparent 60%, rgba(0, 0, 0, 0.65) 100%);
       z-index: 1;
     }
 
-    /* 3D Turntable Background Simulation */
-    .rl-stage-backdrop {
+    /* 3D Turntable Scene Backdrop with Real Rendered Car */
+    .studio-stage {
       position: absolute;
       inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 2;
+      z-index: 0;
       overflow: hidden;
-      touch-action: pan-y;
-      cursor: grab;
     }
 
-    .rl-stage-backdrop:active {
-      cursor: grabbing;
-    }
-
-    .rl-stage-floor {
+    /* Soft Realistic Ground Reflection & Shadow */
+    .studio-floor-reflection {
       position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 48%;
-      background: linear-gradient(180deg, rgba(20,24,32,0.85) 0%, rgba(8,9,11,0.98) 100%);
-      border-top: 1px solid rgba(255,255,255,0.06);
-      transform-origin: bottom;
-      perspective: 800px;
+      bottom: 6%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 680px;
+      height: 140px;
+      background: radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.35) 45%, transparent 75%);
+      filter: blur(8px);
       pointer-events: none;
     }
 
-    .rl-floor-grid {
-      position: absolute;
-      inset: 0;
-      background-size: 50px 30px;
-      background-image: 
-        linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-      transform: rotateX(65deg);
-      opacity: 0.6;
-    }
-
-    .rl-floor-spotlight {
+    /* Real 3D Car Image from WebGL engine */
+    .studio-car-img {
       position: absolute;
       bottom: 12%;
       left: 50%;
       transform: translateX(-50%);
-      width: 680px;
-      height: 180px;
-      background: radial-gradient(ellipse, rgba(224, 65, 47, 0.28) 0%, rgba(201, 165, 107, 0.12) 40%, transparent 70%);
-      filter: blur(25px);
-      border-radius: 50%;
-      pointer-events: none;
-      transition: filter 0.3s ease, background 0.3s ease;
-    }
-
-    .rl-floor-shadow {
-      position: absolute;
-      bottom: 22%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 480px;
-      height: 55px;
-      background: radial-gradient(ellipse, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 55%, transparent 75%);
-      border-radius: 50%;
-      pointer-events: none;
-    }
-
-    .rl-stage-car-wrap {
-      position: absolute;
-      bottom: 18%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 520px;
-      max-width: 75vw;
-      filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8));
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
-      pointer-events: none;
-    }
-
-    .rl-stage-car-wrap svg {
-      width: 100%;
+      width: 580px;
+      max-width: 82vw;
       height: auto;
-      display: block;
-    }
-
-    /* Reflection of Car on Floor (Fake blur reflection for budget/mid, PBR for high) */
-    .rl-car-reflection {
-      position: absolute;
-      bottom: 3%;
-      left: 50%;
-      transform: translateX(-50%) scaleY(-0.45);
-      width: 520px;
-      max-width: 75vw;
-      opacity: 0.25;
-      filter: blur(2px) contrast(1.2);
-      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 65%);
-      -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 65%);
+      object-fit: contain;
+      filter: drop-shadow(0 20px 25px rgba(0,0,0,0.9));
+      transition: transform var(--duration-fast) var(--ease-fast), opacity var(--duration-fast) ease;
       pointer-events: none;
     }
 
-    /* Garage TurnTable Arrow Overlays (>= 48px touch targets) */
-    .rl-stage-arrow {
+    /* Minimalist Top Bar */
+    .topbar {
       position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: var(--rl-bg-glass-heavy);
-      border: 1px solid var(--rl-border-med);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 10;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.6);
-      transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
-    }
-
-    .rl-stage-arrow:active {
-      transform: translateY(-50%) scale(0.92);
-      border-color: var(--rl-accent-red);
-    }
-
-    .rl-stage-arrow.left { left: 88px; }
-    .rl-stage-arrow.right { right: 24px; }
-
-    /* Screen Layer Framework */
-    .rl-screen {
-      position: absolute;
-      inset: 0;
-      z-index: 10;
-      display: none;
-      flex-direction: column;
-      padding: calc(var(--rl-safe-top) + 6px) calc(var(--rl-safe-right) + 12px) calc(var(--rl-safe-bottom) + 6px) calc(var(--rl-safe-left) + 12px);
-      opacity: 0;
-      transform: scale(0.985);
-      transition: opacity 0.24s ease, transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
-      pointer-events: none;
-    }
-
-    .rl-screen.is-active {
-      display: flex;
-      opacity: 1;
-      transform: scale(1);
-      pointer-events: auto;
-    }
-
-    /* Top Universal Navigation & Currency Bar */
-    .rl-header-bar {
-      position: relative;
-      z-index: 20;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 52px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 48px;
-      padding: 0 4px;
-      margin-bottom: 4px;
-      flex-shrink: 0;
+      padding: 0 max(20px, env(safe-area-inset-right)) 0 max(20px, env(safe-area-inset-left));
+      z-index: 10;
+      background: linear-gradient(180deg, rgba(9, 10, 12, 0.85) 0%, transparent 100%);
     }
 
-    .rl-brand-group {
+    .brand-wrap {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
-    /* Touch Target strictly >= 48px */
-    .rl-back-btn {
-      width: 48px;
-      height: 48px;
-      min-width: 48px;
-      min-height: 48px;
-      border-radius: 10px;
-      background: var(--rl-bg-glass);
-      border: 1px solid var(--rl-border-med);
-      color: var(--rl-text-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
-    }
-
-    .rl-back-btn:active {
-      transform: scale(0.92);
-      border-color: var(--rl-accent-red);
-    }
-
-    .rl-brand-title {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.1;
-    }
-
-    .rl-brand-name {
-      font-family: var(--rl-font-display);
-      font-size: 20px;
-      font-weight: 800;
-      font-style: italic;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--rl-text-primary);
-      text-shadow: 0 0 12px rgba(255,255,255,0.25);
-    }
-
-    .rl-brand-name span {
-      color: var(--rl-accent-red);
-    }
-
-    .rl-brand-inst {
-      font-size: 9.5px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      color: var(--rl-accent-gold);
-      text-transform: uppercase;
-    }
-
-    /* Right Header Chips: Currencies & Controls */
-    .rl-header-chips {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .rl-chip {
-      height: 38px;
-      padding: 0 12px;
-      border-radius: 20px;
-      background: var(--rl-bg-glass-heavy);
-      border: 1px solid var(--rl-border-subtle);
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-family: var(--rl-font-display);
-      font-weight: 700;
-      font-size: 13px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    }
-
-    .rl-chip-icon {
-      width: 18px;
-      height: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .rl-chip.cr {
-      color: #34d399;
-      border-color: rgba(52, 211, 153, 0.25);
-    }
-
-    .rl-chip.gold {
-      color: var(--rl-accent-gold);
-      border-color: rgba(201, 165, 107, 0.35);
-    }
-
-    .rl-chip.lvl {
-      color: #38bdf8;
-      border-color: rgba(56, 189, 248, 0.35);
-      padding-right: 8px;
-    }
-
-    .rl-lvl-badge {
-      background: #0284c7;
-      color: #fff;
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 10px;
-      font-weight: 800;
-    }
-
-    /* Quick Action Round Buttons (Strictly >= 48px touch target) */
-    .rl-quick-btn {
-      width: 48px;
-      height: 48px;
-      min-width: 48px;
-      min-height: 48px;
-      border-radius: 50%;
-      background: var(--rl-bg-glass);
-      border: 1px solid var(--rl-border-subtle);
-      color: var(--rl-text-secondary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    .brand-title {
       font-size: 12px;
       font-weight: 700;
-      font-family: var(--rl-font-display);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-white);
     }
 
-    .rl-quick-btn:active {
-      transform: scale(0.92);
-      color: var(--rl-accent-red);
-      border-color: var(--rl-accent-red);
+    .brand-badge {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-translucent);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-silver);
     }
 
-    /* Left Ergonomic Navigation Rail (>= 48px touch targets) */
-    .rl-nav-rail {
+    .top-stats {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .stat-chip {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      padding: 4px 12px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      backdrop-filter: blur(8px);
+    }
+
+    .stat-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .stat-val {
+      font-size: 13px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-white);
+    }
+
+    /* Minimal Left Nav Rail */
+    .nav-rail {
       position: absolute;
-      left: calc(var(--rl-safe-left) + 8px);
+      left: max(16px, env(safe-area-inset-left));
       top: 50%;
       transform: translateY(-50%);
-      z-index: 25;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      padding: 8px 6px;
-      background: var(--rl-bg-glass-heavy);
-      border: 1px solid var(--rl-border-subtle);
-      border-radius: 16px;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+      gap: 6px;
+      z-index: 10;
     }
 
-    .rl-nav-item {
-      position: relative;
-      width: 48px;
-      height: 48px;
+    .nav-btn {
       min-width: 48px;
-      min-height: 48px;
-      border-radius: 12px;
-      background: transparent;
-      border: none;
-      color: var(--rl-text-secondary);
+      height: 48px;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 2px;
+      gap: 12px;
+      padding: 0 16px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-silver);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border-radius: var(--radius-sm);
       cursor: pointer;
-      transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+      transition: all var(--duration-fast) var(--ease-fast);
     }
 
-    .rl-nav-item svg {
-      width: 20px;
-      height: 20px;
+    .nav-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-white);
+    }
+
+    .nav-btn.active {
+      background: var(--bg-panel);
+      border-color: var(--border-subtle);
+      border-left: 2px solid var(--accent-red);
+      color: var(--text-white);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-icon {
+      width: 16px;
+      height: 16px;
       stroke: currentColor;
-      stroke-width: 1.8;
+      stroke-width: 1.75;
       fill: none;
     }
 
-    .rl-nav-item span {
-      font-size: 8.5px;
+    /* Screen Container */
+    .screen-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--duration-fast) ease;
+    }
+
+    .screen.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ==========================================================================
+       SCREEN 1: HOME
+       ========================================================================== */
+    .home-hero-info {
+      position: absolute;
+      left: max(180px, 24vw);
+      top: 22%;
+      max-width: 440px;
+    }
+
+    .hero-make {
+      font-size: 11px;
       font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 2px;
+    }
+
+    .hero-title {
+      font-size: 28px;
+      font-weight: 800;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      font-family: var(--rl-font-display);
+      color: var(--text-white);
+      line-height: 1.1;
+      margin-bottom: 6px;
     }
 
-    .rl-nav-item:active {
-      transform: scale(0.92);
+    .hero-subtitle {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-silver);
+      letter-spacing: 0.04em;
     }
 
-    .rl-nav-item.is-active {
-      background: rgba(224, 65, 47, 0.16);
-      color: #fff;
-    }
-
-    .rl-nav-item.is-active svg {
-      stroke: var(--rl-accent-red);
-    }
-
-    .rl-nav-item.is-active::before {
-      content: "";
+    /* Forza Horizon Restrained Primary CTA */
+    .cta-play-btn {
       position: absolute;
-      left: -6px;
-      top: 10px;
-      bottom: 10px;
-      width: 4px;
-      background: var(--rl-accent-red);
-      border-radius: 0 4px 4px 0;
-      box-shadow: 0 0 10px var(--rl-accent-red-glow);
-    }
-
-    /* Screen Main Content Shell (Strictly No vertical scroll) */
-    .rl-screen-body {
-      flex: 1;
-      position: relative;
-      display: flex;
-      overflow: hidden;
-      margin-left: 64px; /* clearance for nav rail */
-    }
-
-    /* Large Skewed Primary Action Button (>= 48px touch target) */
-    .rl-btn-cta {
-      position: relative;
+      right: max(24px, env(safe-area-inset-right));
+      bottom: max(24px, env(safe-area-inset-bottom));
+      min-width: 180px;
+      height: 48px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
-      height: 52px;
-      min-height: 48px;
-      padding: 0 32px;
-      background: linear-gradient(135deg, var(--rl-accent-red-bright) 0%, var(--rl-accent-red) 50%, var(--rl-accent-red-dark) 100%);
-      color: #ffffff;
-      font-family: var(--rl-font-display);
-      font-size: 20px;
-      font-weight: 800;
-      font-style: italic;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      border: none;
-      cursor: pointer;
-      transform: skewX(-12deg);
-      box-shadow: 0 0 25px var(--rl-accent-red-glow), 0 8px 20px rgba(0,0,0,0.6);
-      clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
-      transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
-      touch-action: manipulation;
-    }
-
-    .rl-btn-cta > * {
-      transform: skewX(12deg);
-    }
-
-    .rl-btn-cta:active {
-      transform: skewX(-12deg) scale(0.96);
-      filter: brightness(1.15);
-      box-shadow: 0 0 35px rgba(224, 65, 47, 0.75);
-    }
-
-    /* ==========================================================================
-       SCREEN 1: HOME SCREEN SPECIFICS
-       ========================================================================== */
-    .rl-home-hero {
-      position: absolute;
-      bottom: 20px;
-      left: 14px;
-      z-index: 15;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .rl-hero-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-family: var(--rl-font-display);
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--rl-accent-gold);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .rl-hero-name {
-      font-family: var(--rl-font-display);
-      font-size: 32px;
-      font-weight: 800;
-      font-style: italic;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      line-height: 1;
-      color: #fff;
-      text-shadow: 0 4px 16px rgba(0,0,0,0.8);
-    }
-
-    .rl-hero-stats-mini {
-      display: flex;
-      gap: 12px;
-      margin-top: 4px;
-      font-size: 11px;
-      color: var(--rl-text-secondary);
-    }
-
-    .rl-hero-stats-mini span b {
-      color: #fff;
-      font-family: var(--rl-font-display);
-      font-size: 13px;
-    }
-
-    .rl-home-cta-wrap {
-      position: absolute;
-      bottom: 20px;
-      right: 18px;
-      z-index: 15;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .rl-pulse-ring {
-      position: absolute;
-      inset: -4px;
-      border: 2px solid var(--rl-accent-red);
-      border-radius: 4px;
-      opacity: 0.4;
-      animation: rlPulse 2s infinite ease-out;
-      pointer-events: none;
-      transform: skewX(-12deg);
-    }
-
-    @keyframes rlPulse {
-      0% { transform: skewX(-12deg) scale(0.98); opacity: 0.8; }
-      100% { transform: skewX(-12deg) scale(1.08); opacity: 0; }
-    }
-
-    /* ==========================================================================
-       SCREEN 2: MODE SELECTION CAROUSEL (ALL 10 MODES)
-       ========================================================================== */
-    .rl-modes-wrap {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      width: 100%;
-    }
-
-    .rl-section-header {
-      display: flex;
-      align-items: baseline;
       gap: 10px;
-      margin-bottom: 8px;
-    }
-
-    .rl-section-title {
-      font-family: var(--rl-font-display);
-      font-size: 24px;
-      font-weight: 800;
-      font-style: italic;
+      background: var(--accent-red);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(212, 59, 44, 0.35);
+      transition: background var(--duration-fast) ease, transform 100ms ease;
     }
 
-    .rl-section-subtitle {
-      font-size: 11px;
-      color: var(--rl-text-secondary);
+    .cta-play-btn:active {
+      transform: scale(0.98);
+      background: var(--accent-red-hover);
     }
 
-    .rl-carousel-track {
-      flex: 1;
+    /* ==========================================================================
+       SCREEN 2: MODES (Clean Photographic Cards)
+       ========================================================================== */
+    .modes-content {
+      position: absolute;
+      inset: 0;
       display: flex;
-      gap: 16px;
-      overflow-x: auto;
-      overflow-y: hidden;
-      scroll-snap-type: x mandatory;
-      padding: 6px 12px 12px 4px;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
+      flex-direction: column;
+      justify-content: center;
+      padding-left: max(180px, 22vw);
+      padding-right: max(24px, env(safe-area-inset-right));
     }
 
-    .rl-carousel-track::-webkit-scrollbar {
+    .section-header {
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-white);
+    }
+
+    .section-desc {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .modes-carousel {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      padding-bottom: 10px;
+    }
+
+    .modes-carousel::-webkit-scrollbar {
       display: none;
     }
 
-    .rl-mode-card {
-      flex: 0 0 280px;
-      height: 100%;
-      max-height: 250px;
-      scroll-snap-align: center;
+    .mode-card {
+      flex: 0 0 210px;
+      height: 230px;
+      scroll-snap-align: start;
       position: relative;
-      border-radius: 14px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
       overflow: hidden;
-      background: var(--rl-bg-elevated);
-      border: 1px solid var(--rl-border-subtle);
-      cursor: pointer;
-      transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), border-color 0.25s ease, box-shadow 0.25s ease;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
+      padding: 14px;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-fast);
+    }
+
+    .mode-card:hover, .mode-card.selected {
+      border-color: var(--border-focus);
+      background: #181b22;
+      transform: translateY(-2px);
+    }
+
+    .mode-card.selected::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent-red);
+    }
+
+    .mode-card-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.65;
+      transition: opacity var(--duration-fast) ease;
+    }
+
+    .mode-card:hover .mode-card-img, .mode-card.selected .mode-card-img {
+      opacity: 0.85;
+    }
+
+    .mode-card-grad {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(14,16,20,0.1) 0%, rgba(14,16,20,0.92) 80%);
+    }
+
+    .mode-card-body {
+      position: relative;
+      z-index: 2;
+    }
+
+    .mode-badge {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 4px;
+    }
+
+    .mode-name {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text-white);
+      margin-bottom: 4px;
+    }
+
+    .mode-info {
+      font-size: 11px;
+      color: var(--text-silver);
+      line-height: 1.3;
+    }
+
+    /* ==========================================================================
+       SCREEN 3: GARAGE (Gran Turismo Style Telemetry Specs)
+       ========================================================================== */
+    .garage-telemetry {
+      position: absolute;
+      left: max(180px, 22vw);
+      top: 18%;
+      width: 250px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      backdrop-filter: blur(14px);
+    }
+
+    .telemetry-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--bg-translucent);
+    }
+
+    .telemetry-row:last-child {
+      border-bottom: none;
+    }
+
+    .telemetry-key {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .telemetry-val {
+      font-size: 12px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-white);
+    }
+
+    /* Clean Horizontal Thumbnail Strip */
+    .garage-roster-strip {
+      position: absolute;
+      left: max(180px, 22vw);
+      right: max(24px, env(safe-area-inset-right));
+      bottom: max(20px, env(safe-area-inset-bottom));
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 4px 0;
+    }
+
+    .roster-thumb {
+      flex: 0 0 110px;
+      height: 52px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--duration-fast) ease;
+    }
+
+    .roster-thumb:hover, .roster-thumb.active {
+      border-color: var(--border-focus);
+      background: #171920;
+    }
+
+    .roster-thumb.active {
+      border-top: 2px solid var(--accent-red);
+    }
+
+    .thumb-make {
+      font-size: 8px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .thumb-model {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-white);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .thumb-spec {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--text-silver);
+    }
+
+    /* ==========================================================================
+       SCREEN 4: CUSTOMIZE (Precision Paint & Hotspots)
+       ========================================================================== */
+    .customize-panel {
+      position: absolute;
+      right: max(24px, env(safe-area-inset-right));
+      top: 18%;
+      width: 280px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
       padding: 16px;
+      backdrop-filter: blur(14px);
     }
 
-    .rl-mode-card.is-focused {
-      transform: scale(1.03);
-      border-color: var(--rl-accent-red);
-      box-shadow: 0 0 24px var(--rl-accent-red-glow), 0 12px 30px rgba(0,0,0,0.7);
+    .customize-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-white);
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-subtle);
     }
 
-    .rl-mode-bg {
+    .swatch-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .swatch-btn {
+      height: 34px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: transform var(--duration-fast) ease, border-color var(--duration-fast) ease;
+    }
+
+    .swatch-btn.selected {
+      border-color: var(--text-white);
+      box-shadow: 0 0 0 1px #fff;
+    }
+
+    .finish-selector {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .finish-pill {
+      flex: 1;
+      height: 28px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-silver);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .finish-pill.selected {
+      background: var(--text-white);
+      color: var(--text-dark);
+      border-color: var(--text-white);
+    }
+
+    .apply-btn {
+      width: 100%;
+      height: 42px;
+      background: var(--accent-red);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    /* Hotspot Pins with Thin Leader Lines */
+    .hotspot-pin {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--text-white);
+      border: 2px solid var(--bg-base);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.8);
+      cursor: pointer;
+      z-index: 8;
+    }
+
+    .hotspot-label {
+      position: absolute;
+      left: 18px;
+      top: -3px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-white);
+      background: rgba(9, 10, 12, 0.75);
+      padding: 2px 6px;
+      border-radius: 2px;
+      white-space: nowrap;
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* ==========================================================================
+       SCREEN 5: MINIMAL REALISTIC RACE HUD (Clear View of the Road)
+       ========================================================================== */
+    .hud-backdrop {
       position: absolute;
       inset: 0;
       background-size: cover;
       background-position: center;
-      filter: brightness(0.70) saturate(1.1);
-      transition: transform 0.4s ease;
+      z-index: 0;
     }
 
-    .rl-mode-card:hover .rl-mode-bg,
-    .rl-mode-card.is-focused .rl-mode-bg {
-      transform: scale(1.05);
-      filter: brightness(0.85) saturate(1.2);
-    }
-
-    .rl-mode-gradient {
+    .hud-cluster-top {
       position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(12,14,18,0.1) 0%, rgba(12,14,18,0.45) 40%, rgba(8,9,11,0.96) 100%);
-    }
-
-    .rl-mode-content {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .rl-mode-badge {
-      align-self: flex-start;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-size: 10px;
-      font-weight: 800;
-      font-family: var(--rl-font-display);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      background: rgba(224, 65, 47, 0.85);
-      color: #fff;
-    }
-
-    .rl-mode-title {
-      font-family: var(--rl-font-display);
-      font-size: 21px;
-      font-weight: 800;
-      font-style: italic;
-      text-transform: uppercase;
-      line-height: 1.1;
-      color: #fff;
-    }
-
-    .rl-mode-desc {
-      font-size: 11px;
-      color: var(--rl-text-secondary);
-      line-height: 1.3;
-    }
-
-    .rl-mode-meta {
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-top: 6px;
-      padding-top: 6px;
-      border-top: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .rl-mode-stars {
-      color: var(--rl-accent-gold);
-      font-size: 11.5px;
-      font-weight: 700;
-      font-family: var(--rl-font-display);
-    }
-
-    /* Touch target >= 48px */
-    .rl-mode-btn-sm {
-      min-height: 48px;
-      min-width: 80px;
-      padding: 0 16px;
-      border-radius: 8px;
-      background: var(--rl-accent-red);
-      color: #fff;
-      font-family: var(--rl-font-display);
-      font-size: 13px;
-      font-weight: 800;
-      text-transform: uppercase;
-      border: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
-
-    /* ==========================================================================
-       SCREEN 3: GARAGE & VEHICLE SELECTOR
-       ========================================================================== */
-    .rl-garage-body {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 240px 1fr 130px;
-      gap: 14px;
-      height: 100%;
-      overflow: hidden;
-    }
-
-    /* Left Floating Stats Panel */
-    .rl-stat-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-      background: var(--rl-bg-card);
-      border: 1px solid var(--rl-border-subtle);
-      border-radius: 14px;
-      padding: 12px 14px;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
-      align-self: flex-start;
-      width: 100%;
-    }
-
-    .rl-stat-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--rl-border-subtle);
-      padding-bottom: 6px;
-      margin-bottom: 2px;
-    }
-
-    .rl-stat-car-title {
-      font-family: var(--rl-font-display);
-      font-size: 15px;
-      font-weight: 800;
-      font-style: italic;
-      text-transform: uppercase;
-    }
-
-    .rl-car-tier-badge {
-      font-size: 10px;
-      font-weight: 800;
-      font-family: var(--rl-font-display);
-      padding: 2px 6px;
-      border-radius: 4px;
-      background: rgba(245, 158, 11, 0.2);
-      color: #f59e0b;
-      border: 1px solid rgba(245, 158, 11, 0.4);
-    }
-
-    .rl-stat-row {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .rl-stat-label-wrap {
-      display: flex;
-      justify-content: space-between;
-      font-size: 11px;
-      color: var(--rl-text-secondary);
-    }
-
-    .rl-stat-val {
-      font-family: var(--rl-font-display);
-      font-size: 13px;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    .rl-stat-bar-bg {
-      width: 100%;
-      height: 6px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 3px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .rl-stat-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #38bdf8 0%, var(--rl-accent-red) 100%);
-      border-radius: 3px;
-      transition: width 0.4s ease;
-    }
-
-    /* Bottom Thumbnails Strip for 53 cars */
-    .rl-garage-center {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      position: relative;
-    }
-
-    .rl-thumb-carousel {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      overflow-y: hidden;
-      padding: 6px 4px;
-      scroll-snap-type: x mandatory;
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .rl-thumb-carousel::-webkit-scrollbar {
-      display: none;
-    }
-
-    .rl-car-thumb-item {
-      flex: 0 0 100px;
-      height: 68px;
-      min-height: 48px;
-      border-radius: 10px;
-      background: var(--rl-bg-glass-heavy);
-      border: 1px solid var(--rl-border-subtle);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 4px;
-      cursor: pointer;
-      scroll-snap-align: start;
-      transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
-    }
-
-    .rl-car-thumb-item svg {
-      width: 75%;
-      height: auto;
-      opacity: 0.7;
-    }
-
-    .rl-car-thumb-item span {
-      font-size: 9px;
-      font-family: var(--rl-font-display);
-      font-weight: 700;
-      text-transform: uppercase;
-      color: var(--rl-text-secondary);
-      margin-top: 2px;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-      width: 100%;
-      text-align: center;
-    }
-
-    .rl-car-thumb-item.is-selected {
-      border-color: var(--rl-accent-red);
-      background: rgba(224, 65, 47, 0.15);
-      transform: translateY(-2px);
-      box-shadow: 0 0 12px var(--rl-accent-red-glow);
-    }
-
-    .rl-car-thumb-item.is-selected svg {
-      opacity: 1;
-    }
-
-    .rl-car-thumb-item.is-selected span {
-      color: #fff;
-    }
-
-    /* Right Category Action Pills (Strictly >= 48px touch target) */
-    .rl-category-tabs {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      justify-content: center;
-    }
-
-    .rl-cat-tab-btn {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      height: 48px;
-      min-height: 48px;
-      padding: 0 14px;
-      border-radius: 10px;
-      background: var(--rl-bg-card);
-      border: 1px solid var(--rl-border-subtle);
-      color: var(--rl-text-primary);
-      cursor: pointer;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      font-family: var(--rl-font-display);
-      font-size: 13.5px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
-    }
-
-    .rl-cat-tab-btn svg {
-      width: 18px;
-      height: 18px;
-      stroke: var(--rl-accent-red);
-      stroke-width: 2;
-      fill: none;
-    }
-
-    .rl-cat-tab-btn:active {
-      transform: scale(0.95);
-      border-color: var(--rl-accent-red);
-      background: rgba(224, 65, 47, 0.2);
-    }
-
-    .rl-cat-tab-btn.primary-race {
-      background: linear-gradient(135deg, var(--rl-accent-red) 0%, var(--rl-accent-red-dark) 100%);
-      color: #fff;
-      border-color: var(--rl-accent-red-bright);
-      box-shadow: 0 0 16px var(--rl-accent-red-glow);
-    }
-
-    .rl-cat-tab-btn.primary-race svg {
-      stroke: #fff;
-    }
-
-    /* ==========================================================================
-       SCREEN 4: CUSTOMIZE & UPGRADE HOTSPOTS
-       ========================================================================== */
-    .rl-customize-body {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      position: relative;
-      height: 100%;
-      overflow: hidden;
-    }
-
-    /* Hotspots pinned on 3D Car (>= 48px touch target hit area) */
-    .rl-hotspot-container {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-
-    .rl-hotspot-pin {
-      position: absolute;
-      pointer-events: auto;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 48px;
-      min-width: 48px;
-      padding: 6px 12px;
-      border-radius: 24px;
-      transition: transform 0.2s ease;
-    }
-
-    .rl-hotspot-pin:active {
-      transform: scale(0.92);
-    }
-
-    .rl-pin-circle {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: rgba(224, 65, 47, 0.85);
-      border: 2px solid #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 15px var(--rl-accent-red-glow);
-      position: relative;
-    }
-
-    .rl-pin-circle::after {
-      content: "";
-      position: absolute;
-      inset: -6px;
-      border: 1.5px solid var(--rl-accent-red);
-      border-radius: 50%;
-      animation: rlHotspotPulse 1.8s infinite ease-out;
-    }
-
-    @keyframes rlHotspotPulse {
-      0% { transform: scale(0.8); opacity: 1; }
-      100% { transform: scale(1.6); opacity: 0; }
-    }
-
-    .rl-pin-label {
-      padding: 4px 10px;
-      background: var(--rl-bg-glass-heavy);
-      border: 1px solid var(--rl-border-subtle);
-      border-radius: 6px;
-      font-family: var(--rl-font-display);
-      font-size: 11.5px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: #fff;
+      gap: 16px;
+      background: rgba(9, 10, 12, 0.65);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 4px 14px;
       backdrop-filter: blur(8px);
     }
 
-    .rl-hotspot-pin.is-active .rl-pin-circle {
-      background: #00e5ff;
-      border-color: #fff;
-      box-shadow: 0 0 18px var(--rl-accent-cyan-glow);
-    }
-
-    .rl-hotspot-pin.is-active .rl-pin-label {
-      border-color: #00e5ff;
-      color: #00e5ff;
-    }
-
-    /* Hotspot Coordinates over the car */
-    .rl-pin-wheels { top: 58%; left: 30%; }
-    .rl-pin-aero { top: 40%; left: 76%; }
-    .rl-pin-engine { top: 42%; left: 24%; }
-    .rl-pin-paint { top: 34%; left: 50%; }
-
-    /* Customization Bottom Drawer */
-    .rl-parts-drawer {
-      z-index: 20;
-      background: var(--rl-bg-card);
-      border: 1px solid var(--rl-border-subtle);
-      border-radius: 14px 14px 0 0;
-      padding: 10px 16px;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      box-shadow: 0 -8px 30px rgba(0,0,0,0.7);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .rl-drawer-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .rl-drawer-title {
-      font-family: var(--rl-font-display);
+    .hud-lap-time {
       font-size: 15px;
       font-weight: 800;
-      font-style: italic;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .rl-drawer-title span {
-      color: var(--rl-accent-cyan);
-    }
-
-    .rl-part-deltas {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-family: var(--rl-font-display);
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .rl-delta-pos { color: var(--rl-delta-pos); }
-    .rl-delta-neg { color: var(--rl-delta-neg); }
-
-    .rl-parts-grid {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      overflow-y: hidden;
-      padding-bottom: 2px;
-      scrollbar-width: none;
-    }
-
-    .rl-parts-grid::-webkit-scrollbar {
-      display: none;
-    }
-
-    .rl-part-tile {
-      flex: 0 0 130px;
-      height: 74px;
-      min-height: 48px;
-      border-radius: 10px;
-      background: var(--rl-bg-surface);
-      border: 1px solid var(--rl-border-subtle);
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      cursor: pointer;
-      position: relative;
-      transition: border-color 0.15s ease, transform 0.15s ease;
-    }
-
-    .rl-part-tile.is-equipped {
-      border-color: #34d399;
-      background: rgba(52, 211, 153, 0.08);
-    }
-
-    .rl-part-tile.is-active {
-      border-color: var(--rl-accent-cyan);
-      box-shadow: 0 0 14px var(--rl-accent-cyan-glow);
-      transform: translateY(-2px);
-    }
-
-    .rl-part-tier-bar {
-      position: absolute;
-      top: 0;
-      left: 8px;
-      right: 8px;
-      height: 3px;
-      border-radius: 0 0 3px 3px;
-    }
-
-    .rl-part-tier-bar.epic { background: var(--rl-tier-epic); }
-    .rl-part-tier-bar.legendary { background: var(--rl-tier-legendary); }
-    .rl-part-tier-bar.rare { background: var(--rl-tier-rare); }
-
-    .rl-part-name {
-      font-family: var(--rl-font-display);
-      font-size: 13px;
-      font-weight: 700;
-      color: #fff;
-      margin-top: 2px;
-    }
-
-    .rl-part-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 11px;
-    }
-
-    .rl-part-price {
-      font-family: var(--rl-font-display);
-      font-weight: 700;
-      color: #34d399;
-    }
-
-    .rl-drawer-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-top: 1px solid var(--rl-border-subtle);
-      padding-top: 6px;
-    }
-
-    .rl-total-price-chip {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 11.5px;
-      color: var(--rl-text-secondary);
-    }
-
-    .rl-total-price-chip b {
-      color: #fff;
-      font-family: var(--rl-font-display);
-      font-size: 15px;
-    }
-
-    /* Touch target strictly >= 48px */
-    .rl-btn-apply {
-      height: 48px;
-      min-height: 48px;
-      padding: 0 24px;
-      border-radius: 8px;
-      background: var(--rl-accent-red);
-      color: #fff;
-      border: none;
-      font-family: var(--rl-font-display);
-      font-size: 14px;
-      font-weight: 800;
-      font-style: italic;
-      text-transform: uppercase;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 16px var(--rl-accent-red-glow);
-    }
-
-    /* ==========================================================================
-       SCREEN 5: IN-RACE COCKPIT & TELEMETRY HUD
-       ========================================================================== */
-    .rl-hud-screen {
-      position: absolute;
-      inset: 0;
-      display: none;
-      z-index: 30;
-      background: radial-gradient(circle at 50% 40%, rgba(14,24,36,0.3) 0%, rgba(5,7,9,0.92) 85%);
-      pointer-events: auto;
-      overflow: hidden;
-      padding: calc(var(--rl-safe-top) + 8px) calc(var(--rl-safe-right) + 12px) calc(var(--rl-safe-bottom) + 8px) calc(var(--rl-safe-left) + 12px);
-    }
-
-    .rl-hud-screen.is-active {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    /* Track 3D Canvas Mockup */
-    .rl-hud-track-bg {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-    }
-
-    /* Top Corner Controls & Telemetry (>= 48px touch targets) */
-    .rl-hud-topbar {
-      position: relative;
-      z-index: 10;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      width: 100%;
-    }
-
-    .rl-hud-timer-card {
-      background: var(--rl-bg-glass-heavy);
-      border: 1px solid var(--rl-border-subtle);
-      border-radius: 10px;
-      padding: 6px 14px;
-      display: flex;
-      flex-direction: column;
-      backdrop-filter: blur(8px);
-    }
-
-    .rl-hud-lap {
-      font-family: var(--rl-font-display);
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--rl-text-secondary);
+      font-variant-numeric: tabular-nums;
+      color: var(--text-white);
       letter-spacing: 0.05em;
     }
 
-    .rl-hud-lap b {
-      color: #fff;
-    }
-
-    .rl-hud-time {
-      font-family: var(--rl-font-display);
-      font-size: 21px;
-      font-weight: 800;
-      color: #fff;
+    .hud-split-time {
+      font-size: 11px;
+      font-weight: 700;
+      color: #10b981;
       font-variant-numeric: tabular-nums;
     }
 
-    .rl-hud-split {
-      font-family: var(--rl-font-display);
-      font-size: 11.5px;
-      font-weight: 700;
-      color: #a855f7;
-    }
-
-    /* Mini-Map Circuit */
-    .rl-hud-minimap {
-      width: 76px;
-      height: 76px;
-      background: var(--rl-bg-glass-heavy);
-      border: 1px solid var(--rl-border-subtle);
-      border-radius: 50%;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    }
-
-    .rl-hud-minimap svg {
-      width: 80%;
-      height: 80%;
-    }
-
-    /* Center Speedometer & Tachometer Cluster */
-    .rl-hud-center-cluster {
+    /* Minimal Slim Tachometer Arc & Central Speed */
+    .hud-telemetry-bottom {
       position: absolute;
-      top: calc(var(--rl-safe-top) + 8px);
+      bottom: 16px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 10;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2px;
+      z-index: 10;
+      pointer-events: none;
     }
 
-    .rl-tach-arc {
+    .speed-gauge-wrap {
+      position: relative;
+      width: 140px;
+      height: 70px;
       display: flex;
-      gap: 3px;
-      margin-bottom: 2px;
-    }
-
-    .rl-tach-led {
-      width: 8px;
-      height: 12px;
-      background: rgba(255,255,255,0.12);
-      border-radius: 2px;
-      transform: skewX(-15deg);
-    }
-
-    .rl-tach-led.green.is-lit { background: #10b981; box-shadow: 0 0 6px #10b981; }
-    .rl-tach-led.yellow.is-lit { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
-    .rl-tach-led.red.is-lit { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
-    .rl-tach-led.blue.is-lit { background: #00e5ff; box-shadow: 0 0 10px #00e5ff; animation: rlShiftFlash 0.3s infinite alternate; }
-
-    @keyframes rlShiftFlash {
-      from { opacity: 0.5; }
-      to { opacity: 1; }
-    }
-
-    .rl-speed-digits {
-      font-family: var(--rl-font-display);
-      font-size: 50px;
-      font-weight: 800;
-      font-style: italic;
-      color: #fff;
-      line-height: 0.9;
-      letter-spacing: -0.02em;
-      text-shadow: 0 0 20px rgba(255,255,255,0.4);
-    }
-
-    .rl-speed-unit {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      color: var(--rl-text-secondary);
-      text-transform: uppercase;
-      font-family: var(--rl-font-display);
-    }
-
-    .rl-gear-indicator {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      background: var(--rl-bg-glass-heavy);
-      border: 1px solid var(--rl-border-med);
-      display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      font-family: var(--rl-font-display);
+      justify-content: flex-end;
+    }
+
+    .speed-gauge-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 140px;
+      height: 70px;
+    }
+
+    .hud-speed-num {
       font-size: 26px;
       font-weight: 800;
-      font-style: italic;
-      color: var(--rl-accent-red);
-      box-shadow: 0 0 16px var(--rl-accent-red-glow);
-      margin-top: 4px;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-white);
+      line-height: 1;
     }
 
-    /* Ergonomic Touch Driving Controls */
-    .rl-hud-controls {
-      position: relative;
-      z-index: 15;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      width: 100%;
-      pointer-events: none;
-    }
-
-    .rl-hud-controls > * {
-      pointer-events: auto;
-    }
-
-    /* Left Big Virtual Steering Wheel */
-    .rl-steer-control {
-      width: 130px;
-      height: 130px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(24,28,36,0.6) 0%, rgba(10,12,16,0.92) 80%);
-      border: 2px solid rgba(255,255,255,0.15);
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 6px 25px rgba(0,0,0,0.8);
-      touch-action: none;
-    }
-
-    .rl-steer-rim {
-      position: absolute;
-      inset: 8px;
-      border: 4px solid var(--rl-accent-red);
-      border-radius: 50%;
-      border-top-color: transparent;
-      border-bottom-color: transparent;
-      transform: rotate(-25deg);
-    }
-
-    .rl-steer-spoke {
-      width: 60%;
-      height: 4px;
-      background: rgba(255,255,255,0.25);
-      border-radius: 2px;
-    }
-
-    .rl-steer-center-badge {
-      position: absolute;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--rl-bg-surface);
-      border: 1.5px solid var(--rl-border-med);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Right Stacked Vertical Pedals (>= 48px touch target) */
-    .rl-pedals-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      align-items: flex-end;
-    }
-
-    .rl-pedal-btn {
-      width: 84px;
-      border-radius: 12px;
-      border: 1px solid var(--rl-border-med);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-family: var(--rl-font-display);
-      font-weight: 800;
-      font-style: italic;
-      text-transform: uppercase;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-      transition: transform 0.08s ease, filter 0.08s ease;
-      touch-action: manipulation;
-    }
-
-    .rl-pedal-btn.brake {
-      height: 52px;
-      min-height: 48px;
-      background: linear-gradient(180deg, #b91c1c 0%, #7f1d1d 100%);
-      border-color: #ef4444;
-      color: #fff;
-    }
-
-    .rl-pedal-btn.gas {
-      height: 80px;
-      min-height: 48px;
-      background: linear-gradient(180deg, #059669 0%, #064e3b 100%);
-      border-color: #10b981;
-      color: #fff;
-    }
-
-    .rl-pedal-btn:active {
-      transform: scale(0.94) translateY(4px);
-      filter: brightness(1.25);
-    }
-
-    /* ==========================================================================
-       TOAST & MODAL DIALOG COMPONENTS
-       ========================================================================== */
-    .rl-toast {
-      position: absolute;
-      top: calc(var(--rl-safe-top) + 10px);
-      left: 50%;
-      transform: translateX(-50%) translateY(-100px);
-      z-index: 90;
-      height: 44px;
-      padding: 0 20px;
-      border-radius: 22px;
-      background: var(--rl-bg-glass-heavy);
-      border: 1px solid var(--rl-accent-gold);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-family: var(--rl-font-display);
+    .hud-speed-unit {
+      font-size: 8px;
       font-weight: 700;
-      font-size: 13px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.8), 0 0 16px var(--rl-accent-gold-glow);
-      backdrop-filter: blur(12px);
-      opacity: 0;
-      transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease;
-      pointer-events: none;
+      letter-spacing: 0.16em;
+      color: var(--text-dim);
+      margin-top: 2px;
     }
 
-    .rl-toast.is-visible {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-      pointer-events: auto;
+    .hud-gear-badge {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent-red);
+      margin-top: 2px;
     }
 
-    .rl-dialog-backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 80;
-      background: rgba(0,0,0,0.75);
-      backdrop-filter: blur(12px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .rl-dialog-backdrop.is-open {
+    /* Low-Opacity Thin Wireframe Touch Controls (Does NOT hide the road) */
+    .hud-touch-left {
+      position: absolute;
+      left: max(20px, env(safe-area-inset-left));
+      bottom: max(20px, env(safe-area-inset-bottom));
       display: flex;
-    }
-
-    .rl-dialog-card {
-      width: 420px;
-      max-width: 85vw;
-      border-radius: 16px;
-      background: var(--rl-bg-elevated);
-      border: 1px solid var(--rl-border-med);
-      box-shadow: 0 16px 40px rgba(0,0,0,0.9);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
       gap: 12px;
+      z-index: 10;
     }
 
-    .rl-dialog-title {
-      font-family: var(--rl-font-display);
-      font-size: 20px;
-      font-weight: 800;
-      font-style: italic;
-      color: #fff;
-      text-transform: uppercase;
-    }
-
-    .rl-dialog-desc {
-      font-size: 12.5px;
-      color: var(--rl-text-secondary);
-      line-height: 1.4;
-    }
-
-    .rl-dialog-actions {
+    .hud-touch-right {
+      position: absolute;
+      right: max(20px, env(safe-area-inset-right));
+      bottom: max(20px, env(safe-area-inset-bottom));
       display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      margin-top: 6px;
+      gap: 12px;
+      z-index: 10;
     }
 
-    .rl-dialog-btn {
-      min-height: 48px;
-      min-width: 90px;
-      padding: 0 18px;
-      border-radius: 8px;
-      font-family: var(--rl-font-display);
-      font-size: 13px;
-      font-weight: 800;
-      text-transform: uppercase;
+    .touch-btn {
+      min-width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
       cursor: pointer;
+      backdrop-filter: blur(4px);
+    }
+
+    .touch-btn:active {
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+    }
+
+    /* Top Corner Utility Icons */
+    .hud-top-actions {
+      position: absolute;
+      top: 14px;
+      right: max(16px, env(safe-area-inset-right));
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+    }
+
+    .hud-util-btn {
+      min-width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      background: rgba(9, 10, 12, 0.55);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-silver);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* Back Button */
+    .back-btn {
+      min-width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
       border: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .rl-dialog-btn.cancel {
-      background: var(--rl-bg-glass);
-      color: var(--rl-text-secondary);
-      border: 1px solid var(--rl-border-med);
-    }
-
-    .rl-dialog-btn.confirm {
-      background: var(--rl-accent-red);
-      color: #fff;
-      box-shadow: 0 0 14px var(--rl-accent-red-glow);
-    }
-
-    /* ==========================================================================
-       SCREEN 6: PORTRAIT ORIENTATION LOCK OVERLAY
-       ========================================================================== */
-    .rl-portrait-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 100;
-      background: rgba(8, 9, 11, 0.96);
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 32px;
-      text-align: center;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-    }
-
-    .rl-rotate-phone-anim {
-      width: 72px;
-      height: 72px;
-      margin-bottom: 24px;
-      animation: rlRotatePhone 2.4s infinite ease-in-out;
-    }
-
-    @keyframes rlRotatePhone {
-      0%, 15% { transform: rotate(0deg); }
-      50%, 75% { transform: rotate(-90deg); }
-      100% { transform: rotate(0deg); }
-    }
-
-    .rl-portrait-title {
-      font-family: var(--rl-font-display);
-      font-size: 24px;
-      font-weight: 800;
-      font-style: italic;
+      color: var(--text-silver);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #fff;
-      margin-bottom: 8px;
-    }
-
-    .rl-portrait-desc {
-      font-size: 13px;
-      color: var(--rl-text-secondary);
-      max-width: 260px;
-      line-height: 1.4;
-      margin-bottom: 20px;
-    }
-
-    .rl-portrait-override-btn {
-      min-height: 48px;
-      padding: 0 24px;
-      border-radius: 24px;
-      background: var(--rl-bg-glass);
-      border: 1px solid var(--rl-border-med);
-      color: var(--rl-text-secondary);
-      font-size: 13px;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Media Query for Automatic Portrait Display */
-    @media (orientation: portrait) {
-      .rl-portrait-overlay.auto-detect {
-        display: flex;
-      }
-    }
-
-    /* ==========================================================================
-       REDUCED MOTION COMPLIANCE
-       ========================================================================== */
-    @media (prefers-reduced-motion: reduce) {
-      *, ::before, ::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
-      .rl-pulse-ring, .rl-pin-circle::after, .rl-tach-led.blue.is-lit, .rl-rotate-phone-anim {
-        animation: none !important;
-      }
-    }
-
-    body.reduced-motion *, body.reduced-motion ::before, body.reduced-motion ::after {
-      animation: none !important;
-      transition: none !important;
     }
   
