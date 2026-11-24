@@ -259,13 +259,296 @@
       z-index: 5;
     }
 
+    
+    /* Sleek Atmospheric Carbon Subscreens (No Black Voids) */
     .screen {
       position: absolute;
       inset: 0;
       opacity: 0;
       pointer-events: none;
       transition: opacity var(--duration-fast) ease;
+      background: radial-gradient(circle at 50% 30%, rgba(15, 20, 32, 0.78) 0%, rgba(7, 9, 14, 0.94) 100%);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
     }
+
+    #screen-home {
+      background: transparent !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
+    /* Ambient Workshop Lighting Behind Subscreens */
+    .studio-stage {
+      transition: filter 0.3s ease, transform 0.3s ease;
+    }
+    .has-subscreen .studio-stage {
+      filter: brightness(0.42) blur(12px);
+      transform: scale(1.03);
+    }
+
+    /* Interactive AAA In-Game Game Modal */
+    .rk-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 99999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      animation: rkFadeIn 0.2s ease;
+    }
+    .rk-modal-overlay.open {
+      display: flex;
+    }
+    .rk-modal-dialog {
+      background: linear-gradient(145deg, #161922 0%, #0d0f15 100%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-top: 2px solid var(--accent-red, #ff2a4b);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 85vh;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 42, 75, 0.15);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: rkPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .rk-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .rk-modal-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .rk-modal-icon {
+      font-size: 20px;
+    }
+    .rk-modal-title {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #fff;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .rk-modal-close {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: #fff;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      transition: background 0.15s ease;
+    }
+    .rk-modal-close:hover {
+      background: var(--accent-red, #ff2a4b);
+    }
+    .rk-modal-body {
+      padding: 16px 18px;
+      overflow-y: auto;
+      font-size: 13px;
+      color: #ccc;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Modal Content Specifics */
+    .rk-chat-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .rk-chat-msg {
+      background: rgba(255, 255, 255, 0.04);
+      padding: 8px 12px;
+      border-radius: 6px;
+      border-left: 3px solid var(--accent-red, #ff2a4b);
+      font-size: 12px;
+    }
+    .rk-chat-sender {
+      font-weight: 800;
+      color: #ff4767;
+      margin-right: 6px;
+    }
+    .rk-chat-input-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .rk-chat-input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: #fff;
+      font-size: 12px;
+      outline: none;
+    }
+    .rk-chat-send {
+      background: var(--accent-red, #ff2a4b);
+      color: #fff;
+      border: none;
+      padding: 0 16px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* Friend / Clan / Rewards Rows */
+    .rk-list-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .rk-list-col {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .rk-list-name {
+      font-weight: 700;
+      color: #fff;
+      font-size: 13px;
+    }
+    .rk-list-status {
+      font-size: 11px;
+      color: #888;
+    }
+    .rk-list-status.online {
+      color: #10b981;
+    }
+    .rk-action-pill {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .rk-action-pill:hover, .rk-action-pill.primary {
+      background: var(--accent-red, #ff2a4b);
+      border-color: var(--accent-red, #ff2a4b);
+      color: #fff;
+    }
+
+    /* Reward Calendar Cards */
+    .rk-reward-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 8px 0;
+    }
+    .rk-reward-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 12px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-align: center;
+    }
+    .rk-reward-card.active {
+      background: linear-gradient(135deg, rgba(255, 42, 75, 0.25) 0%, rgba(20, 24, 36, 0.8) 100%);
+      border-color: var(--accent-red, #ff2a4b);
+      box-shadow: 0 0 15px rgba(255, 42, 75, 0.2);
+    }
+    .rk-reward-day {
+      font-size: 10px;
+      font-weight: 800;
+      color: #888;
+      text-transform: uppercase;
+    }
+    .rk-reward-val {
+      font-size: 12px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .rk-claim-cta {
+      width: 100%;
+      background: linear-gradient(90deg, #ff2a4b 0%, #ff5e3a 100%);
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      text-transform: uppercase;
+      box-shadow: 0 4px 18px rgba(255, 42, 75, 0.4);
+      margin-top: 8px;
+    }
+
+    /* In-Game Animated Toast */
+    .rk-game-toast {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-30px);
+      background: rgba(14, 17, 24, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-left: 4px solid var(--accent-red, #ff2a4b);
+      border-radius: 8px;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 100000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .rk-game-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    .rk-toast-ico {
+      font-size: 16px;
+    }
+    .rk-toast-msg {
+      color: #fff;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    @keyframes rkFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes rkPopIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
     .screen.active {
       opacity: 1;
@@ -1813,7 +2096,7 @@
             <div class="rk-lvl-fill" style="width: 72%;"></div>
           </div>
         </div>
-        <div class="rk-synergy-box">
+        <div class="rk-synergy-box" onclick="openRewardsModal()" style="cursor:pointer;" title="Synergy Bonus">
           <span class="rk-gas-icon">⛽</span>
           <span class="rk-synergy-lbl">Synergy</span>
           <div class="rk-synergy-pips">
@@ -1837,7 +2120,7 @@
       </div>
 
       <!-- Showroom Center: Brand + Model + Tier Badge -->
-      <div class="rk-top-center" id="top-showroom-center">
+      <div class="rk-top-center" id="top-showroom-center" onclick="navTo('garage')" style="cursor:pointer;" title="Choose Vehicle">
         <div class="rk-car-pill" id="rk-header-car-pill">
           <div class="rk-brand-logo">
             <span id="rk-brand-icon">🏎️</span>
@@ -1888,14 +2171,14 @@
     <aside class="rk-left-stack">
         <!-- Top Row: Hero Event (Left) + 2 Stacked Mini Events (Right) -->
         <div class="rk-event-top-row">
-          <div class="rk-card-hero" onclick="navTo('modes')" title="Featured Hypercar Event">
+          <div class="rk-card-hero" onclick="launchSelectedMode('race')" title="Featured Hypercar Event">
             <img src="assets/realistic/banner_event_hypercar.jpg" alt="Featured Event">
           </div>
           <div class="rk-mini-col">
-            <div class="rk-card-mini" onclick="navTo('modes')" title="BMW M4 Challenge">
+            <div class="rk-card-mini" onclick="launchSelectedMode('arcade')" title="BMW M4 Challenge">
               <img src="assets/realistic/banner_event_bmw.jpg" alt="BMW Event">
             </div>
-            <div class="rk-card-mini" onclick="navTo('modes')" title="Drift King Championship">
+            <div class="rk-card-mini" onclick="launchSelectedMode('drift')" title="Drift King Championship">
               <img src="assets/realistic/banner_event_drift.jpg" alt="Drift Event">
             </div>
           </div>
@@ -1980,7 +2263,7 @@
         </button>
 
         <!-- Big Slanted High-Energy RACE CTA Button with Flag Pattern -->
-        <button class="rk-race-cta" onclick="navTo('modes')" id="cta-race">
+        <button class="rk-race-cta" onclick="launchCarRace()" id="cta-race">
           <span class="rk-race-word">Race</span>
           <span class="rk-flag-pattern"></span>
         </button>
@@ -2117,6 +2400,13 @@
           <button class="cam-pill" onclick="setStudioView(this, 'front')">FRONT</button>
           <button class="cam-pill" onclick="setStudioView(this, 'rear')">REAR</button>
           <button class="cam-pill" onclick="setStudioView(this, 'top')">TOP</button>
+        </div>
+
+        
+        <!-- Dealership 3D Hero Car Centerpiece -->
+        <div class="garage-car-showcase">
+          <img src="assets/realistic/real_porsche_911_gt3_studio.png" class="garage-hero-img" id="garage-hero-img" alt="Selected Dealership Vehicle">
+          <div class="garage-floor-shadow"></div>
         </div>
 
         <!-- Top-Left: Technical Specifications Card -->
@@ -2402,7 +2692,30 @@
         </div>
       </section>
 
+    
+    <!-- Interactive In-Game Social & Rewards Modal -->
+    <div class="rk-modal-overlay" id="rk-modal-overlay" onclick="closeGameModal(event)">
+      <div class="rk-modal-dialog" onclick="event.stopPropagation()">
+        <header class="rk-modal-header">
+          <div class="rk-modal-title-row">
+            <span class="rk-modal-icon" id="rk-modal-icon">🏆</span>
+            <h3 class="rk-modal-title" id="rk-modal-title">DAILY REWARDS</h3>
+          </div>
+          <button class="rk-modal-close" onclick="closeGameModal()" title="Close">✕</button>
+        </header>
+        <div class="rk-modal-body" id="rk-modal-body">
+          <!-- Dynamic Content -->
+        </div>
+      </div>
     </div>
+
+    <!-- In-Game Animated Toast Notification -->
+    <div class="rk-game-toast" id="rk-game-toast">
+      <span class="rk-toast-ico" id="rk-toast-ico">🏎️</span>
+      <span class="rk-toast-msg" id="rk-toast-msg">Vehicle Equipped</span>
+    </div>
+
+</div>
   </div>
 
   <script>
@@ -2419,6 +2732,9 @@
     let selectedMode = 'race';
 
     function navTo(screenId) {
+      const app = document.getElementById('app') || document.getElementById('rl-app');
+      if (app) app.classList.toggle('has-subscreen', screenId !== 'home');
+
       currentScreen = screenId;
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       const scr = document.getElementById('screen-' + screenId);
@@ -2474,6 +2790,7 @@
       if (rkTier) rkTier.textContent = c.tier || 'T5 1080';
 
 
+      const gImg = document.getElementById('garage-hero-img'); if (gImg) gImg.src = c.img;
       document.getElementById('g-hp').textContent = c.hp;
       document.getElementById('g-torque').textContent = c.torque;
       document.getElementById('g-weight').textContent = c.weight;
@@ -2493,27 +2810,179 @@
     }
 
     
-    function openSocialModal(type) {
-      const titles = {
-        chat: 'LOBBY CHAT',
-        friends: 'DRIVERS & FRIENDS',
-        messages: 'INBOX NOTIFICATIONS (9+)',
-        clan: 'MOTORSPORT CLAN',
-        rewards: 'DAILY REWARDS (2 CLAIMABLE)'
-      };
-      alert('[' + (titles[type] || type.toUpperCase()) + '] Live service connection active.');
+    function showToast(msg, icon) {
+      const toast = document.getElementById('rk-game-toast');
+      const msgEl = document.getElementById('rk-toast-msg');
+      const icoEl = document.getElementById('rk-toast-ico');
+      if (toast && msgEl) {
+        msgEl.textContent = msg;
+        if (icoEl && icon) icoEl.textContent = icon;
+        toast.classList.add('show');
+        clearTimeout(window._toastTimer);
+        window._toastTimer = setTimeout(function() { toast.classList.remove('show'); }, 2600);
+      }
     }
+
+    function openSocialModal(type) {
+      const overlay = document.getElementById('rk-modal-overlay');
+      const titleEl = document.getElementById('rk-modal-title');
+      const iconEl = document.getElementById('rk-modal-icon');
+      const bodyEl = document.getElementById('rk-modal-body');
+      if (!overlay || !bodyEl) return;
+
+      const titles = {
+        chat: { title: 'PADDOCK LOBBY CHAT', icon: '💬' },
+        friends: { title: 'RIVAL DRIVERS & FRIENDS', icon: '👥' },
+        messages: { title: 'TEAM INBOX & ALERTS', icon: '✉️' },
+        clan: { title: 'MOTORSPORT CLAN · BANGLADESH', icon: '🏁' },
+        rewards: { title: 'DAILY LOGIN REWARDS', icon: '🎁' },
+        wallet: { title: 'BANK & CREDITS STORE', icon: '💳' }
+      };
+
+      const meta = titles[type] || { title: 'SERVICE PORTAL', icon: '🌐' };
+      titleEl.textContent = meta.title;
+      iconEl.textContent = meta.icon;
+
+      if (type === 'chat') {
+        bodyEl.innerHTML = '<div class="rk-chat-feed" id="rk-chat-feed">' +
+          '<div class="rk-chat-msg"><span class="rk-chat-sender">SpeedDemon:</span>Anyone up for downhill drift on Mountain Pass?</div>' +
+          '<div class="rk-chat-msg"><span class="rk-chat-sender">ApexHunter:</span>Just beat the 01:22 lap record on Dhaka GP!</div>' +
+          '<div class="rk-chat-msg"><span class="rk-chat-sender">TurboDrift:</span>The GR Supra with Stage 2 turbo feels incredible.</div>' +
+          '<div class="rk-chat-msg"><span class="rk-chat-sender">RedlineDev:</span>Server connection 100% active. Offline cache verified.</div>' +
+          '</div>' +
+          '<div class="rk-chat-input-row">' +
+          '<input type="text" class="rk-chat-input" id="rk-chat-inp" placeholder="Send paddock message..." onkeydown="if(event.key===\'Enter\')sendChatMessage()">' +
+          '<button class="rk-chat-send" onclick="sendChatMessage()">SEND</button>' +
+          '</div>';
+      } else if (type === 'friends') {
+        bodyEl.innerHTML = '<div class="rk-list-row">' +
+          '<div class="rk-list-col"><span class="rk-list-name">Tamim_Apex</span><span class="rk-list-status online">● Online · Dhaka GP</span></div>' +
+          '<button class="rk-action-pill primary" onclick="showToast(\'Invite sent to Tamim_Apex\', \'🏎️\')">INVITE</button>' +
+          '</div>' +
+          '<div class="rk-list-row">' +
+          '<div class="rk-list-col"><span class="rk-list-name">Rahat_DriftKing</span><span class="rk-list-status online">● Online · In Garage</span></div>' +
+          '<button class="rk-action-pill primary" onclick="showToast(\'Invite sent to Rahat_DriftKing\', \'🏎️\')">INVITE</button>' +
+          '</div>' +
+          '<div class="rk-list-row">' +
+          '<div class="rk-list-col"><span class="rk-list-name">Speedy_Jubayer</span><span class="rk-list-status">● Offline 2h ago</span></div>' +
+          '<button class="rk-action-pill" onclick="showToast(\'Profile pinged\', \'🔔\')">POKE</button>' +
+          '</div>';
+      } else if (type === 'messages') {
+        bodyEl.innerHTML = '<div class="rk-list-row">' +
+          '<div class="rk-list-col"><span class="rk-list-name">Season 3 Pro Sponsor Payout</span><span class="rk-list-status">+25,000 CR available</span></div>' +
+          '<button class="rk-action-pill primary" onclick="claimBonusCredits(25000, this)">CLAIM</button>' +
+          '</div>' +
+          '<div class="rk-list-row">' +
+          '<div class="rk-list-col"><span class="rk-list-name">Clean Drift Challenge Bonus</span><span class="rk-list-status">+15,000 CR available</span></div>' +
+          '<button class="rk-action-pill primary" onclick="claimBonusCredits(15000, this)">CLAIM</button>' +
+          '</div>';
+      } else if (type === 'clan') {
+        bodyEl.innerHTML = '<div style="background:rgba(255,42,75,0.08);padding:12px;border-radius:8px;border:1px solid rgba(255,42,75,0.2);display:flex;justify-content:space-between;align-items:center;">' +
+          '<div>' +
+          '<div style="font-size:15px;font-weight:800;color:#fff;">RACING KINGDOM BD</div>' +
+          '<div style="font-size:11px;color:#ff6b84;">Rank #3 · 48/50 Drivers · Lvl 14 Club</div>' +
+          '</div>' +
+          '<span style="font-size:24px;">👑</span>' +
+          '</div>' +
+          '<div class="rk-list-row" style="margin-top:8px;">' +
+          '<div class="rk-list-col"><span class="rk-list-name">Daily Clan Check-in</span><span class="rk-list-status">Earn +5,000 CR for your team</span></div>' +
+          '<button class="rk-action-pill primary" onclick="claimBonusCredits(5000, this)">CHECK IN</button>' +
+          '</div>';
+      } else if (type === 'rewards') {
+        bodyEl.innerHTML = '<div style="font-size:12px;color:#aaa;">Log in consecutively each day to claim exclusive automotive rewards and rare chassis blueprints:</div>' +
+          '<div class="rk-reward-grid">' +
+          '<div class="rk-reward-card"><span class="rk-reward-day">DAY 1</span><span style="font-size:18px;">💰</span><span class="rk-reward-val">10K CR</span></div>' +
+          '<div class="rk-reward-card"><span class="rk-reward-day">DAY 2</span><span style="font-size:18px;">⚡</span><span class="rk-reward-val">NITRO</span></div>' +
+          '<div class="rk-reward-card"><span class="rk-reward-day">DAY 3</span><span style="font-size:18px;">💰</span><span class="rk-reward-val">25K CR</span></div>' +
+          '<div class="rk-reward-card active"><span class="rk-reward-day" style="color:#ff4767;">DAY 4</span><span style="font-size:18px;">🏆</span><span class="rk-reward-val">50K CR</span></div>' +
+          '</div>' +
+          '<button class="rk-claim-cta" id="rk-claim-btn" onclick="claimDailyReward(50000)">CLAIM 50,000 CR</button>';
+      } else if (type === 'wallet') {
+        bodyEl.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">' +
+          '<div style="background:rgba(255,255,255,0.04);padding:14px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);text-align:center;">' +
+          '<div style="font-size:11px;color:#888;">RACING CREDITS</div>' +
+          '<div style="font-size:18px;font-weight:900;color:#ffcc00;margin:4px 0;"><span id="modal-rk-cr">148,000</span> CR</div>' +
+          '<button class="rk-action-pill primary" style="width:100%;margin-top:6px;" onclick="claimBonusCredits(10000, this)">+10K FREE</button>' +
+          '</div>' +
+          '<div style="background:rgba(255,255,255,0.04);padding:14px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);text-align:center;">' +
+          '<div style="font-size:11px;color:#888;">PREMIUM CASH</div>' +
+          '<div style="font-size:18px;font-weight:900;color:#22c55e;margin:4px 0;">$682</div>' +
+          '<button class="rk-action-pill" style="width:100%;margin-top:6px;" onclick="showToast(\'Free Gold Booster Refilled\', \'✨\')">BOOSTER</button>' +
+          '</div>' +
+          '</div>';
+      }
+      overlay.classList.add('open');
+    }
+
+    function closeGameModal(e) {
+      const overlay = document.getElementById('rk-modal-overlay');
+      if (overlay) overlay.classList.remove('open');
+    }
+
     function openRewardsModal() {
       openSocialModal('rewards');
     }
 
+    function sendChatMessage() {
+      const inp = document.getElementById('rk-chat-inp');
+      const feed = document.getElementById('rk-chat-feed');
+      if (inp && inp.value.trim() && feed) {
+        const div = document.createElement('div');
+        div.className = 'rk-chat-msg';
+        div.innerHTML = '<span class="rk-chat-sender">PlayerOne:</span>' + inp.value.trim().replace(/</g, '&lt;');
+        feed.appendChild(div);
+        feed.scrollTop = feed.scrollHeight;
+        inp.value = '';
+        showToast('Message sent to paddock lobby', '💬');
+      }
+    }
+
+    function claimBonusCredits(amt, btn) {
+      if (btn) {
+        btn.textContent = 'CLAIMED';
+        btn.disabled = true;
+        btn.classList.remove('primary');
+      }
+      const crEl = document.getElementById('topbar-credits');
+      if (crEl) {
+        let cur = parseInt(crEl.textContent.replace(/[^0-9]/g, ''), 10) || 148000;
+        cur += amt;
+        crEl.textContent = cur.toLocaleString();
+      }
+      showToast('+' + amt.toLocaleString() + ' Credits Added!', '💰');
+    }
+
+    function claimDailyReward(amt) {
+      const btn = document.getElementById('rk-claim-btn');
+      if (btn) {
+        btn.textContent = 'REWARD CLAIMED ✓';
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+      }
+      claimBonusCredits(amt);
+    }
+
     function launchSelectedMode(overrideMode) {
-      if (overrideMode) selectedMode = overrideMode;
-      alert('Launching competition discipline: ' + selectedMode.toUpperCase() + ' with ' + CARS[currentCar].name);
+      const mode = overrideMode || selectedMode || 'race';
+      showToast('Launching ' + mode.toUpperCase() + '...', '🏎️');
+      setTimeout(function() {
+        if (window.location.pathname.endsWith('mockup_realistic.html')) {
+          window.location.href = 'index.html#/' + mode + '?quick=1';
+        } else {
+          window.location.hash = '#/' + mode + '?quick=1';
+        }
+      }, 350);
     }
 
     function launchCarRace() {
-      alert('Launching Grand Prix Sprint with active car: ' + CARS[currentCar].name);
+      showToast('Starting 3D Race...', '🏁');
+      setTimeout(function() {
+        if (window.location.pathname.endsWith('mockup_realistic.html')) {
+          window.location.href = 'index.html#/race?quick=1';
+        } else {
+          window.location.hash = '#/race?quick=1';
+        }
+      }, 350);
     }
 
     function setFinish(pill, finish) {
@@ -2542,11 +3011,11 @@
     }
 
     function confirmSelectCar() {
-      alert('Selected ' + CARS[currentCar].name + ' as active vehicle.');
+      showToast(CARS[currentCar].name + ' Equipped', '🏎️');
     }
 
     function applyCustomization() {
-      alert('Modifications applied. Real profile credits updated.');
+      showToast('Livery & Tuning Upgrades Applied', '✨');
     }
 
     /* Settings handlers */
