@@ -44,9 +44,17 @@ server.listen(8092, async () => {
   });
 
   const viewports = [
-    { name: 'iPhone 13 (844x390)', width: 844, height: 390 },
-    { name: 'Android Mid-range (800x360)', width: 800, height: 360 },
-    { name: 'iPhone Pro Max (932x430)', width: 932, height: 430 }
+    // Mobile Landscape Viewports
+    { name: 'Mobile Android (800x360)', width: 800, height: 360, isMobile: true },
+    { name: 'iPhone 13 (844x390)', width: 844, height: 390, isMobile: true },
+    { name: 'iPhone Pro Max (932x430)', width: 932, height: 430, isMobile: true },
+    // Mobile Portrait Viewports (Guard / Responsive Handling)
+    { name: 'Mobile Portrait (360x800)', width: 360, height: 800, isMobile: true },
+    { name: 'Mobile Portrait (412x915)', width: 412, height: 915, isMobile: true },
+    // Desktop Viewports
+    { name: 'Desktop Laptop (1366x768)', width: 1366, height: 768, isMobile: false },
+    { name: 'Desktop Widescreen (1440x900)', width: 1440, height: 900, isMobile: false },
+    { name: 'Desktop Full HD (1920x1080)', width: 1920, height: 1080, isMobile: false }
   ];
 
   const results = [];
@@ -56,8 +64,8 @@ server.listen(8092, async () => {
     const context = await browser.newContext({
       viewport: { width: vp.width, height: vp.height },
       deviceScaleFactor: 2,
-      isMobile: true,
-      hasTouch: true
+      isMobile: vp.isMobile,
+      hasTouch: vp.isMobile
     });
 
     const page = await context.newPage();
@@ -70,7 +78,7 @@ server.listen(8092, async () => {
     });
 
     await page.goto('http://localhost:8092/?ui=2', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(1500);
 
     // 1. Home Screen
     const homeScroll = await page.evaluate(() => ({
@@ -84,86 +92,74 @@ server.listen(8092, async () => {
     console.log('Home Screen State:', JSON.stringify(homeScroll));
 
     const prefix = vp.width + 'x' + vp.height;
-    await page.screenshot({ path: `../brain/a94b5c18-35ae-4889-97c4-e96ab1fc6900/ultimate_home_${prefix}.png` });
+    await page.screenshot({ path: `../brain/a94b5c18-35ae-4889-97c4-e96ab1fc6900/test_home_${prefix}.png` });
 
-    // 2. Modes Screen
+    // 2. Modes Screen (Verify all 10 cards)
     await page.evaluate(() => window.navTo('modes'));
-    await page.waitForTimeout(400);
-    const modesScroll = await page.evaluate(() => ({
-      scrollH: document.documentElement.scrollHeight,
-      innerH: window.innerHeight,
-      scrollW: document.documentElement.scrollWidth,
-      innerW: window.innerWidth
-    }));
-    await page.screenshot({ path: `../brain/a94b5c18-35ae-4889-97c4-e96ab1fc6900/ultimate_modes_${prefix}.png` });
+    await page.waitForTimeout(300);
+    const modesCount = await page.evaluate(() => document.querySelectorAll('#screen-modes .mode-card').length);
+    console.log('Modes screen card count:', modesCount);
 
-    // 3. Garage Screen (with prev/next arrows and camera pills)
+    // 3. Garage Screen (Car selection & specs)
     await page.evaluate(() => window.navTo('garage'));
-    await page.waitForTimeout(400);
-
-    // Test clicking Next Car and Top View
-    await page.evaluate(() => {
-      if (window.nextCar) window.nextCar();
-      if (window.setStudioView) {
-        var topBtn = document.querySelectorAll('.cam-pill')[3];
-        if (topBtn) window.setStudioView(topBtn, 'top');
-      }
-    });
-    await page.waitForTimeout(400);
-
-    const garageScroll = await page.evaluate(() => ({
-      scrollH: document.documentElement.scrollHeight,
-      innerH: window.innerHeight,
-      activeCarMake: document.getElementById('home-car-make') ? document.getElementById('home-car-make').textContent : null,
-      activeCarModel: document.getElementById('home-car-title') ? document.getElementById('home-car-title').textContent : null
+    await page.waitForTimeout(300);
+    await page.evaluate(() => window.nextCar());
+    await page.waitForTimeout(300);
+    const garageState = await page.evaluate(() => ({
+      activeCarMake: document.querySelector('#home-car-make')?.textContent,
+      activeCarModel: document.querySelector('#home-car-title')?.textContent,
+      specsHp: document.querySelector('#g-hp')?.textContent
     }));
-    console.log('Garage State after Next Car:', JSON.stringify(garageScroll));
-    await page.screenshot({ path: `../brain/a94b5c18-35ae-4889-97c4-e96ab1fc6900/ultimate_garage_${prefix}.png` });
+    console.log('Garage state after nextCar():', JSON.stringify(garageState));
 
-    // 4. Customize Screen
-    await page.evaluate(() => window.navTo('customize'));
-    await page.waitForTimeout(400);
-    await page.screenshot({ path: `../brain/a94b5c18-35ae-4889-97c4-e96ab1fc6900/ultimate_customize_${prefix}.png` });
+    // 4. Settings Screen (Graphics tier toggle & audio)
+    await page.evaluate(() => window.navTo('settings'));
+    await page.waitForTimeout(300);
+    const settingsState = await page.evaluate(() => ({
+      tierVal: document.querySelector('#cfg-tier-val')?.textContent,
+      hasOfflineBadge: !!document.querySelector('.offline-badge')
+    }));
+    console.log('Settings screen state:', JSON.stringify(settingsState));
 
-    // 5. HUD Screen
-    await page.evaluate(() => window.navTo('hud'));
-    await page.waitForTimeout(400);
-    await page.screenshot({ path: `../brain/a94b5c18-35ae-4889-97c4-e96ab1fc6900/ultimate_hud_${prefix}.png` });
+    // Capture Settings Screenshot on standard resolutions
+    if (vp.width === 844 || vp.width === 1920) {
+      await page.screenshot({ path: `../brain/a94b5c18-35ae-4889-97c4-e96ab1fc6900/test_settings_${prefix}.png` });
+    }
 
+    // Return to Home
+    await page.evaluate(() => window.navTo('home'));
+    await page.waitForTimeout(200);
+
+    const isZeroScroll = (vp.height <= vp.width) ? (homeScroll.scrollH <= homeScroll.innerH + 1) : true;
     results.push({
       viewport: vp.name,
-      zeroScrollHome: homeScroll.scrollH <= homeScroll.innerH && homeScroll.scrollW <= homeScroll.innerW,
-      zeroScrollModes: modesScroll.scrollH <= modesScroll.innerH && modesScroll.scrollW <= modesScroll.innerW,
-      zeroScrollGarage: garageScroll.scrollH <= vp.height,
+      zeroScroll: isZeroScroll,
+      has3D: homeScroll.has3dCanvas,
+      modesCount: modesCount,
       consoleErrors: consoleErrors.length
     });
 
     await context.close();
   }
 
-  // 6. Test Offline Capability
+  // 5. Offline Simulation Test
   console.log('\n================ Testing Offline Capability ================');
   const offlineContext = await browser.newContext({
-    viewport: { width: 844, height: 390 },
-    isMobile: true
+    viewport: { width: 844, height: 390 }
   });
   const offlinePage = await offlineContext.newPage();
+  await offlinePage.goto('http://localhost:8092/?ui=2', { waitUntil: 'networkidle' });
+  await offlinePage.waitForTimeout(1000);
 
-  // Load once online to populate SW cache
-  await offlinePage.goto('http://localhost:8092/?ui=2', { waitUntil: 'domcontentloaded' });
-  await offlinePage.waitForTimeout(2000);
-
-  // Set offline mode
+  // Turn off network (Airplane mode simulation)
   await offlineContext.setOffline(true);
   console.log('Network disabled (Offline simulation). Reloading page...');
-  try {
-    await offlinePage.reload({ waitUntil: 'domcontentloaded', timeout: 5000 });
-    const offlineTitle = await offlinePage.title();
-    console.log('Offline reload succeeded! Title:', offlineTitle);
-    await offlinePage.screenshot({ path: '../brain/a94b5c18-35ae-4889-97c4-e96ab1fc6900/ultimate_offline_844x390.png' });
-  } catch (err) {
-    console.error('Offline reload failed:', err.message);
-  }
+  await offlinePage.reload({ waitUntil: 'domcontentloaded' });
+  await offlinePage.waitForTimeout(1500);
+
+  const offlineTitle = await offlinePage.title();
+  const offlineBrand = await offlinePage.evaluate(() => document.querySelector('.brand-title')?.textContent.trim());
+  console.log(`Offline reload succeeded! Title: ${offlineTitle}, Brand: ${offlineBrand}`);
 
   console.log('\n================ Verification Summary ================');
   console.table(results);

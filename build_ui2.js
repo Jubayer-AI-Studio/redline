@@ -8,7 +8,7 @@ const jsPath = path.join(ROOT, 'js', 'ui2', 'ui2.js');
 
 const mockupHtml = fs.readFileSync(mockupPath, 'utf8');
 
-// 1. Extract CSS
+// 1. Extract CSS from mockup_realistic.html
 const styleMatch = mockupHtml.match(/<style>([\s\S]*?)<\/style>/);
 if (!styleMatch) {
   console.error('No style block found in mockup_realistic.html');
@@ -53,12 +53,44 @@ html.rl-v2 body {
   touch-action: manipulation !important;
 }
 
-/* Hide original UI elements when UI v2 is active */
-html.rl-v2 #global-nav,
-html.rl-v2 #app-root,
-html.rl-v2 #garage-flow,
-html.rl-v2 #main-menu-shell {
+/* Hide original menu chrome when UI v2 is active in menu mode */
+html.rl-v2:not(.rl-in-session) #global-nav,
+html.rl-v2:not(.rl-in-session) #app-root,
+html.rl-v2:not(.rl-in-session) #garage-flow,
+html.rl-v2:not(.rl-in-session) #main-menu-shell {
   display: none !important;
+}
+
+/* When in active race session, hide UI v2 overlay and reveal real WebGL race screen */
+html.rl-v2.rl-in-session #rl-app {
+  display: none !important;
+}
+
+html.rl-v2.rl-in-session #app-root {
+  display: block !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+}
+
+/* In-Race HUD & Touch Controls Styling Enhancements for UI v2 */
+html.rl-v2 #race-root .rx-touch-steering,
+html.rl-v2 #race-root .rx-touch-pedals {
+  opacity: 0.72;
+  transition: opacity 0.15s ease;
+}
+html.rl-v2 #race-root .rx-touch-steering:hover,
+html.rl-v2 #race-root .rx-touch-pedals:hover,
+html.rl-v2 #race-root .rx-touch-steering:active,
+html.rl-v2 #race-root .rx-touch-pedals:active {
+  opacity: 0.95;
+}
+html.rl-v2 #race-root .rx-steer-btn,
+html.rl-v2 #race-root .rx-pedal-btn {
+  background: rgba(14, 16, 22, 0.65) !important;
+  border-width: 1.5px !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
 }
 
 /* UI v2 App Container: Fixed 100dvh viewport, zero scroll */
@@ -98,7 +130,7 @@ if (!appMatch) {
 
 let appInnerHtml = appMatch[1].trim();
 
-// 3. Generate robust js/ui2/ui2.js
+// 3. Generate robust js/ui2/ui2.js with complete engine integration
 const ui2JsCode = `/* ==========================================================================
    JUBAYER RACING UI v2.0 - js/ui2/ui2.js
    Realistic, Restrained Mobile-First UI (Gran Turismo & Forza Horizon Style)
@@ -141,6 +173,7 @@ var CB = (globalThis.CB = globalThis.CB || {});
 
   var currentScreen = 'home';
   var currentCar = 0;
+  var selectedMode = 'race';
   var audioCtx = null;
   var s3dCanvas = null;
 
@@ -242,7 +275,7 @@ var CB = (globalThis.CB = globalThis.CB || {});
 
       var stage = document.getElementById('stage');
       if (stage) {
-        stage.style.display = (screenId === 'hud') ? 'none' : 'flex';
+        stage.style.display = (screenId === 'hud' || screenId === 'settings') ? 'none' : 'flex';
       }
     }
 
@@ -330,24 +363,37 @@ var CB = (globalThis.CB = globalThis.CB || {});
 
     /* Mode Selection and Launcher */
     function selectMode(card, modeKey) {
+      selectedMode = modeKey || 'race';
       rlHaptic('select');
       rlPlaySound('select');
       document.querySelectorAll('#rl-app .mode-card').forEach(function (c) { c.classList.remove('selected'); });
       card.classList.add('selected');
+    }
 
-      // Launch mode if tapped
-      if (modeKey && typeof CB !== 'undefined' && CB.router && typeof CB.router.go === 'function') {
-        if (modeKey === 'race') CB.router.go('race');
-        else if (modeKey === 'drift') CB.router.go('drift');
-        else if (modeKey === 'f1') CB.router.go('f1');
-        else if (modeKey === 'drag') CB.router.go('drag');
-        else if (modeKey === 'career') CB.router.go('career');
-        else if (modeKey === 'arcade') CB.router.go('arcade');
-        else if (modeKey === 'derby') CB.router.go('derby');
-        else if (modeKey === 'timetrial') CB.router.go('hub', { sub: 'timetrial' });
-        else if (modeKey === 'online') CB.router.go('multiplayer');
-        else if (modeKey === 'challenges') CB.router.go('challenges');
-        else CB.router.go(modeKey);
+    function launchSelectedMode() {
+      rlHaptic('cta');
+      var mode = selectedMode || 'race';
+      enterRaceSession(mode);
+    }
+
+    function launchCarRace() {
+      rlHaptic('cta');
+      enterRaceSession('race');
+    }
+
+    function enterRaceSession(routeId) {
+      document.documentElement.classList.add('rl-in-session');
+      try {
+        var c = CARS[currentCar];
+        if (c && typeof CB !== 'undefined' && CB.stock && typeof CB.stock.apply === 'function') {
+          CB.stock.apply({ model: c.id });
+        }
+      } catch (e) {}
+
+      if (typeof CB !== 'undefined' && CB.router && typeof CB.router.go === 'function') {
+        if (routeId === 'timetrial') CB.router.go('hub', { sub: 'timetrial' });
+        else if (routeId === 'multiplayer') CB.router.go('multiplayer');
+        else CB.router.go(routeId);
       }
     }
 
@@ -391,6 +437,122 @@ var CB = (globalThis.CB = globalThis.CB || {});
         }
       } catch (e) {}
       alert('Modifications installed successfully.');
+    }
+
+    /* Settings handlers */
+    function setGraphicsTier(btn, tier) {
+      rlHaptic('tap');
+      btn.parentElement.querySelectorAll('.setting-pill').forEach(function (p) { p.classList.remove('selected'); });
+      btn.classList.add('selected');
+      var valEl = document.getElementById('cfg-tier-val');
+      if (valEl) valEl.textContent = tier.toUpperCase();
+      try {
+        var raw = localStorage.getItem('forge.race.settings.v1');
+        var s = raw ? JSON.parse(raw) : {};
+        s.quality = tier;
+        localStorage.setItem('forge.race.settings.v1', JSON.stringify(s));
+        if (typeof CB !== 'undefined' && CB.device && typeof CB.device.setTier === 'function') {
+          CB.device.setTier(tier);
+        }
+      } catch (e) {}
+    }
+
+    function setUnits(btn, unit) {
+      rlHaptic('tap');
+      btn.parentElement.querySelectorAll('.setting-pill').forEach(function (p) { p.classList.remove('selected'); });
+      btn.classList.add('selected');
+      var valEl = document.getElementById('cfg-units-val');
+      if (valEl) valEl.textContent = unit.toUpperCase();
+      try {
+        var raw = localStorage.getItem('forge.race.settings.v1');
+        var s = raw ? JSON.parse(raw) : {};
+        s.units = unit;
+        localStorage.setItem('forge.race.settings.v1', JSON.stringify(s));
+      } catch (e) {}
+    }
+
+    function setMasterVolume(val) {
+      var valEl = document.getElementById('cfg-vol-val');
+      if (valEl) valEl.textContent = val + '%';
+      var themeAudio = document.getElementById('as-sunnah-theme-audio');
+      if (themeAudio) {
+        themeAudio.volume = Math.max(0, Math.min(1, val / 100));
+      }
+    }
+
+    function toggleThemeMusic(btn, enable) {
+      rlHaptic('tap');
+      btn.parentElement.querySelectorAll('.setting-pill').forEach(function (p) { p.classList.remove('selected'); });
+      btn.classList.add('selected');
+      var valEl = document.getElementById('cfg-music-val');
+      if (valEl) valEl.textContent = enable ? 'ENABLED' : 'MUTED';
+      var themeAudio = document.getElementById('as-sunnah-theme-audio');
+      if (themeAudio) {
+        if (enable) themeAudio.play().catch(function () {});
+        else themeAudio.pause();
+      }
+    }
+
+    function setSteeringSensitivity(val) {
+      var valEl = document.getElementById('cfg-sens-val');
+      if (valEl) valEl.textContent = (val / 100).toFixed(1) + 'x';
+      try {
+        var raw = localStorage.getItem('forge.race.settings.v1');
+        var s = raw ? JSON.parse(raw) : {};
+        s.steerSensitivity = val / 100;
+        localStorage.setItem('forge.race.settings.v1', JSON.stringify(s));
+      } catch (e) {}
+    }
+
+    function setSteerAssist(btn, level) {
+      rlHaptic('tap');
+      btn.parentElement.querySelectorAll('.setting-pill').forEach(function (p) { p.classList.remove('selected'); });
+      btn.classList.add('selected');
+      var valEl = document.getElementById('cfg-assist-val');
+      if (valEl) valEl.textContent = level.toUpperCase();
+      try {
+        var raw = localStorage.getItem('forge.race.settings.v1');
+        var s = raw ? JSON.parse(raw) : {};
+        s.raceSteerAssist = level;
+        s.driftSteerAssist = level;
+        localStorage.setItem('forge.race.settings.v1', JSON.stringify(s));
+      } catch (e) {}
+    }
+
+    function setTouchMode(btn, mode) {
+      rlHaptic('tap');
+      btn.parentElement.querySelectorAll('.setting-pill').forEach(function (p) { p.classList.remove('selected'); });
+      btn.classList.add('selected');
+      var valEl = document.getElementById('cfg-touch-val');
+      if (valEl) valEl.textContent = mode.toUpperCase();
+      try {
+        var raw = localStorage.getItem('forge.race.settings.v1');
+        var s = raw ? JSON.parse(raw) : {};
+        s.touchControls = mode;
+        localStorage.setItem('forge.race.settings.v1', JSON.stringify(s));
+      } catch (e) {}
+    }
+
+    function setLanguage(btn, lang) {
+      rlHaptic('tap');
+      btn.parentElement.querySelectorAll('.setting-pill').forEach(function (p) { p.classList.remove('selected'); });
+      btn.classList.add('selected');
+      var valEl = document.getElementById('cfg-lang-val');
+      if (valEl) valEl.textContent = lang === 'bn' ? 'বাংলা' : 'ENGLISH';
+    }
+
+    function resetSaveData() {
+      if (confirm('Reset your profile, coins, and unlocks to factory default?')) {
+        try {
+          if (typeof CB !== 'undefined' && CB.game && CB.game.profile && typeof CB.game.profile.reset === 'function') {
+            CB.game.profile.reset();
+          } else {
+            localStorage.removeItem('forge.profile.v1');
+          }
+        } catch (e) {}
+        alert('Profile reset to factory defaults (150,000 CR starter bonus).');
+        syncProfileData();
+      }
     }
 
     /* Profile Sync */
@@ -479,20 +641,60 @@ var CB = (globalThis.CB = globalThis.CB || {});
       window.location.href = url.toString();
     }
 
+    /* Keyboard navigation on Desktop */
+    window.addEventListener('keydown', function (e) {
+      if (document.documentElement.classList.contains('rl-in-session')) return;
+      if (e.key === 'ArrowLeft') {
+        prevCar();
+      } else if (e.key === 'ArrowRight') {
+        nextCar();
+      } else if (e.key === ' ' || e.key === 'Enter') {
+        if (currentScreen === 'home' || currentScreen === 'modes') launchSelectedMode();
+        else if (currentScreen === 'garage') launchCarRace();
+      } else if (e.key === 'Escape') {
+        if (currentScreen !== 'home') navTo('home');
+      }
+    });
+
     // Expose APIs globally
     window.navTo = navTo;
     window.selectCar = selectCar;
     window.selectEngineCar = selectEngineCar;
     window.selectMode = selectMode;
+    window.launchSelectedMode = launchSelectedMode;
+    window.launchCarRace = launchCarRace;
     window.setFinish = setFinish;
     window.pickColor = pickColor;
     window.applyCustomization = applyCustomization;
+    window.setGraphicsTier = setGraphicsTier;
+    window.setUnits = setUnits;
+    window.setMasterVolume = setMasterVolume;
+    window.toggleThemeMusic = toggleThemeMusic;
+    window.setSteeringSensitivity = setSteeringSensitivity;
+    window.setSteerAssist = setSteerAssist;
+    window.setTouchMode = setTouchMode;
+    window.setLanguage = setLanguage;
+    window.resetSaveData = resetSaveData;
     window.setUIVersion = setUIVersion;
     window.syncProfileData = syncProfileData;
     window.nextCar = nextCar;
     window.prevCar = prevCar;
     window.setStudioView = setStudioView;
     window.confirmSelectCar = confirmSelectCar;
+
+    // Listen to router route changes to restore UI v2 on return from race
+    document.addEventListener('cb:route', function (ev) {
+      var r = ev && ev.detail && ev.detail.route;
+      if (r === 'menu') {
+        document.documentElement.classList.remove('rl-in-session');
+        var app = document.getElementById('rl-app');
+        if (app) app.style.display = 'flex';
+        syncProfileData();
+        updateStudioCar();
+      } else if (r === 'race' || r === 'drift' || r === 'arcade' || r === 'derby' || r === 'drag' || r === 'f1') {
+        document.documentElement.classList.add('rl-in-session');
+      }
+    });
 
     // Initial sync
     setTimeout(function () {

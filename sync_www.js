@@ -11,6 +11,7 @@ if (!fs.existsSync(WWW)) {
 
 const copyList = [
   'index.html',
+  'mockup_realistic.html',
   'manifest.webmanifest',
   'icon-192.png',
   'icon-512.png',

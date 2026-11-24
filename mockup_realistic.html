@@ -826,23 +826,28 @@
       background: var(--bg-hover);
     }
 
-    /* Garage Select Car Button */
-    .garage-select-btn {
+    /* Garage Action Buttons */
+    .garage-action-btns {
       position: absolute;
       bottom: 84px;
       right: max(24px, env(safe-area-inset-right));
+      display: flex;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    .garage-select-btn {
       height: 42px;
-      padding: 0 22px;
+      padding: 0 20px;
       background: var(--accent-red);
       color: var(--text-white);
       font-weight: 800;
-      font-size: 12px;
+      font-size: 11px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       border-radius: var(--radius-sm);
       border: none;
       cursor: pointer;
-      z-index: 10;
       box-shadow: 0 4px 14px rgba(212, 59, 44, 0.45);
       display: inline-flex;
       align-items: center;
@@ -852,6 +857,32 @@
     .garage-select-btn:active {
       transform: scale(0.96);
       background: var(--accent-red-hover);
+    }
+
+    .garage-drive-btn {
+      height: 42px;
+      padding: 0 20px;
+      background: var(--bg-panel);
+      color: var(--text-white);
+      border: 1px solid var(--border-focus);
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all var(--duration-fast) ease;
+    }
+    .garage-drive-btn:hover, .garage-drive-btn:active {
+      background: var(--bg-hover);
+      border-color: var(--accent-red);
+    }
+
+    .modes-action-bar {
+      margin-top: 14px;
+      display: flex;
+      justify-content: flex-end;
     }
 
     /* ==========================================================================
@@ -1030,6 +1061,144 @@
       text-transform: uppercase;
       cursor: pointer;
     }
+    /* ==========================================================================
+       SCREEN: SETTINGS (Global Configuration & Controls)
+       ========================================================================== */
+    .settings-content {
+      position: absolute;
+      inset: 60px max(24px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(88px, calc(env(safe-area-inset-left) + 72px));
+      overflow-y: auto;
+      scrollbar-width: thin;
+      padding-bottom: 24px;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .settings-group {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      backdrop-filter: blur(14px);
+    }
+
+    .settings-group-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .setting-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .setting-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .setting-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .setting-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-white);
+    }
+
+    .setting-value-badge {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent-red);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .setting-pills {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .setting-pill {
+      flex: 1;
+      min-width: 44px;
+      height: 28px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-silver);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--duration-fast) ease;
+    }
+
+    .setting-pill:hover {
+      background: var(--bg-hover);
+      color: var(--text-white);
+    }
+
+    .setting-pill.selected {
+      background: var(--text-white);
+      color: var(--text-dark);
+      border-color: var(--text-white);
+      font-weight: 800;
+    }
+
+    .setting-slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--bg-surface);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .setting-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent-red);
+      cursor: pointer;
+      border: 2px solid var(--text-white);
+    }
+
+    .offline-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+    }
   </style>
 </head>
 <body>
@@ -1075,8 +1244,12 @@
         <span>Garage</span>
       </button>
       <button class="nav-btn" onclick="navTo('customize')" id="rail-customize">
-        <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg>
         <span>Tuning</span>
+      </button>
+      <button class="nav-btn" onclick="navTo('settings')" id="rail-settings">
+        <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Settings</span>
       </button>
       <button class="nav-btn" onclick="navTo('hud')" id="rail-hud">
         <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
@@ -1096,22 +1269,25 @@
         </div>
         <div class="home-quick-actions">
           <button class="quick-btn" onclick="navTo('garage')">
-            <span>🏎️ Garage</span>
+            <span>🏎️ 53 Cars Garage</span>
           </button>
           <button class="quick-btn" onclick="navTo('modes')">
-            <span>🏆 Career & Events</span>
+            <span>🏆 10 Game Modes</span>
           </button>
           <button class="quick-btn" onclick="navTo('customize')">
-            <span>⚙️ Atelier</span>
+            <span>🎨 Paint & Tuning</span>
+          </button>
+          <button class="quick-btn" onclick="navTo('settings')">
+            <span>⚙️ Settings</span>
           </button>
         </div>
-        <button class="cta-play-btn" onclick="navTo('modes')">
+        <button class="cta-play-btn" onclick="launchSelectedMode()">
           <span>RACE NOW</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </section>
 
-      <!-- SCREEN 2: MODES (Photographic Real Event Cards) -->
+      <!-- SCREEN 2: MODES (Photographic Real Event Cards - All 10 Game Modes) -->
       <section class="screen" id="screen-modes">
         <div class="modes-content">
           <div class="section-header">
@@ -1120,7 +1296,7 @@
           </div>
           <div class="modes-carousel">
             <!-- Mode 1: Circuit Race -->
-            <div class="mode-card selected" onclick="selectMode(this)">
+            <div class="mode-card selected" onclick="selectMode(this, 'race')">
               <img src="assets/cards/mode_race.webp" class="mode-card-img" alt="Circuit Sprint">
               <div class="mode-card-grad"></div>
               <div class="mode-card-body">
@@ -1130,7 +1306,7 @@
               </div>
             </div>
             <!-- Mode 2: Drift Attack -->
-            <div class="mode-card" onclick="selectMode(this)">
+            <div class="mode-card" onclick="selectMode(this, 'drift')">
               <img src="assets/cards/mode_drift.webp" class="mode-card-img" alt="Drift Attack">
               <div class="mode-card-grad"></div>
               <div class="mode-card-body">
@@ -1140,7 +1316,7 @@
               </div>
             </div>
             <!-- Mode 3: Formula 1 -->
-            <div class="mode-card" onclick="selectMode(this)">
+            <div class="mode-card" onclick="selectMode(this, 'f1')">
               <img src="assets/cards/mode_f1.webp" class="mode-card-img" alt="Formula 1">
               <div class="mode-card-grad"></div>
               <div class="mode-card-body">
@@ -1150,7 +1326,7 @@
               </div>
             </div>
             <!-- Mode 4: 1/4 Mile Drag -->
-            <div class="mode-card" onclick="selectMode(this)">
+            <div class="mode-card" onclick="selectMode(this, 'drag')">
               <img src="assets/cards/mode_drag.webp" class="mode-card-img" alt="Drag Strip">
               <div class="mode-card-grad"></div>
               <div class="mode-card-body">
@@ -1159,8 +1335,28 @@
                 <div class="mode-info">Reaction times, burnout grip and trap speeds.</div>
               </div>
             </div>
-            <!-- Mode 5: Career -->
-            <div class="mode-card" onclick="selectMode(this)">
+            <!-- Mode 5: Demolition Derby -->
+            <div class="mode-card" onclick="selectMode(this, 'derby')">
+              <img src="assets/cards/mode_derby.webp" class="mode-card-img" alt="Demolition Derby">
+              <div class="mode-card-grad"></div>
+              <div class="mode-card-body">
+                <span class="mode-badge">DESTRUCTION</span>
+                <div class="mode-name">Demolition Derby</div>
+                <div class="mode-info">Vehicular combat with live metal deformation.</div>
+              </div>
+            </div>
+            <!-- Mode 6: Stunt Arcade -->
+            <div class="mode-card" onclick="selectMode(this, 'arcade')">
+              <img src="assets/cards/mode_arcade.webp" class="mode-card-img" alt="Stunt Arcade">
+              <div class="mode-card-grad"></div>
+              <div class="mode-card-body">
+                <span class="mode-badge">ARCADE</span>
+                <div class="mode-name">Stunt Stadium</div>
+                <div class="mode-info">High-flying loops, corkscrews and nitro stunts.</div>
+              </div>
+            </div>
+            <!-- Mode 7: Career -->
+            <div class="mode-card" onclick="selectMode(this, 'career')">
               <img src="assets/cards/mode_career.webp" class="mode-card-img" alt="Career Mode">
               <div class="mode-card-grad"></div>
               <div class="mode-card-body">
@@ -1169,6 +1365,42 @@
                 <div class="mode-info">Championship tiers, sponsors and prizes.</div>
               </div>
             </div>
+            <!-- Mode 8: Challenges -->
+            <div class="mode-card" onclick="selectMode(this, 'challenges')">
+              <img src="assets/cards/mode_challenges.webp" class="mode-card-img" alt="Challenges">
+              <div class="mode-card-grad"></div>
+              <div class="mode-card-body">
+                <span class="mode-badge">CHALLENGE</span>
+                <div class="mode-name">Master Trials</div>
+                <div class="mode-info">Target times and technical obstacle courses.</div>
+              </div>
+            </div>
+            <!-- Mode 9: Time Attack -->
+            <div class="mode-card" onclick="selectMode(this, 'timetrial')">
+              <img src="assets/cards/mode_timetrial.webp" class="mode-card-img" alt="Time Attack">
+              <div class="mode-card-grad"></div>
+              <div class="mode-card-body">
+                <span class="mode-badge">TIME ATTACK</span>
+                <div class="mode-name">Hotlap Records</div>
+                <div class="mode-info">Ghost cars, sector splits and global records.</div>
+              </div>
+            </div>
+            <!-- Mode 10: Multiplayer -->
+            <div class="mode-card" onclick="selectMode(this, 'multiplayer')">
+              <img src="assets/cards/mode_online.webp" class="mode-card-img" alt="Multiplayer">
+              <div class="mode-card-grad"></div>
+              <div class="mode-card-body">
+                <span class="mode-badge">MULTIPLAYER</span>
+                <div class="mode-name">Live P2P Lobby</div>
+                <div class="mode-info">Low-latency WebRTC real-time racing.</div>
+              </div>
+            </div>
+          </div>
+          <div class="modes-action-bar">
+            <button class="cta-play-btn" id="launch-mode-btn" onclick="launchSelectedMode()">
+              <span>START EVENT</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
           </div>
         </div>
       </section>
@@ -1215,7 +1447,10 @@
           </div>
         </div>
 
-        <button class="garage-select-btn" onclick="confirmSelectCar()">SELECT THIS CAR</button>
+        <div class="garage-action-btns">
+          <button class="garage-select-btn" onclick="confirmSelectCar()">SELECT THIS CAR</button>
+          <button class="garage-drive-btn" onclick="launchCarRace()">🏎️ DRIVE NOW</button>
+        </div>
 
         <div class="garage-roster-strip" id="garage-roster">
           <!-- Real models rendered directly from game catalog -->
@@ -1290,6 +1525,129 @@
         </div>
       </section>
 
+      <!-- SCREEN: SETTINGS (Global Graphics, Audio, Controls & Offline) -->
+      <section class="screen" id="screen-settings">
+        <div class="settings-content">
+          <div class="section-header">
+            <h2 class="section-title">GLOBAL SETTINGS</h2>
+            <p class="section-desc">Performance, graphics tiers, acoustics, input sensitivity and storage</p>
+          </div>
+          <div class="settings-grid">
+            <!-- Group 1: Graphics & Display -->
+            <div class="settings-group">
+              <div class="settings-group-title"><span>🖥️ GRAPHICS & FIDELITY</span></div>
+              <div class="setting-item">
+                <div class="setting-label-row">
+                  <span class="setting-label">Preset Tier</span>
+                  <span class="setting-value-badge" id="cfg-tier-val">AUTO (HIGH)</span>
+                </div>
+                <div class="setting-pills">
+                  <button class="setting-pill selected" onclick="setGraphicsTier(this, 'auto')">Auto</button>
+                  <button class="setting-pill" onclick="setGraphicsTier(this, 'low')">Low</button>
+                  <button class="setting-pill" onclick="setGraphicsTier(this, 'medium')">Med</button>
+                  <button class="setting-pill" onclick="setGraphicsTier(this, 'high')">High</button>
+                  <button class="setting-pill" onclick="setGraphicsTier(this, 'ultra')">Ultra</button>
+                </div>
+              </div>
+              <div class="setting-item">
+                <div class="setting-label-row">
+                  <span class="setting-label">Speedometer Units</span>
+                  <span class="setting-value-badge" id="cfg-units-val">KM/H</span>
+                </div>
+                <div class="setting-pills">
+                  <button class="setting-pill selected" onclick="setUnits(this, 'kph')">KM/H</button>
+                  <button class="setting-pill" onclick="setUnits(this, 'mph')">MPH</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Group 2: Audio Mixer -->
+            <div class="settings-group">
+              <div class="settings-group-title"><span>🔊 AUDIO & ACOUSTICS</span></div>
+              <div class="setting-item">
+                <div class="setting-label-row">
+                  <span class="setting-label">Master Volume</span>
+                  <span class="setting-value-badge" id="cfg-vol-val">85%</span>
+                </div>
+                <input type="range" class="setting-slider" min="0" max="100" value="85" oninput="setMasterVolume(this.value)">
+              </div>
+              <div class="setting-item">
+                <div class="setting-label-row">
+                  <span class="setting-label">Theme Music</span>
+                  <span class="setting-value-badge" id="cfg-music-val">ENABLED</span>
+                </div>
+                <div class="setting-pills">
+                  <button class="setting-pill selected" onclick="toggleThemeMusic(this, true)">On</button>
+                  <button class="setting-pill" onclick="toggleThemeMusic(this, false)">Mute</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Group 3: Driving & Input -->
+            <div class="settings-group">
+              <div class="settings-group-title"><span>🎮 STEERING & CONTROLS</span></div>
+              <div class="setting-item">
+                <div class="setting-label-row">
+                  <span class="setting-label">Steering Sensitivity</span>
+                  <span class="setting-value-badge" id="cfg-sens-val">1.0x</span>
+                </div>
+                <input type="range" class="setting-slider" min="50" max="160" value="100" oninput="setSteeringSensitivity(this.value)">
+              </div>
+              <div class="setting-item">
+                <div class="setting-label-row">
+                  <span class="setting-label">Steering Assist</span>
+                  <span class="setting-value-badge" id="cfg-assist-val">MEDIUM</span>
+                </div>
+                <div class="setting-pills">
+                  <button class="setting-pill" onclick="setSteerAssist(this, 'off')">Off</button>
+                  <button class="setting-pill" onclick="setSteerAssist(this, 'light')">Light</button>
+                  <button class="setting-pill selected" onclick="setSteerAssist(this, 'medium')">Med</button>
+                  <button class="setting-pill" onclick="setSteerAssist(this, 'heavy')">Heavy</button>
+                </div>
+              </div>
+              <div class="setting-item">
+                <div class="setting-label-row">
+                  <span class="setting-label">Touch Controls (Mobile)</span>
+                  <span class="setting-value-badge" id="cfg-touch-val">ALWAYS</span>
+                </div>
+                <div class="setting-pills">
+                  <button class="setting-pill selected" onclick="setTouchMode(this, 'always')">Always</button>
+                  <button class="setting-pill" onclick="setTouchMode(this, 'auto')">Auto</button>
+                  <button class="setting-pill" onclick="setTouchMode(this, 'never')">Hide</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Group 4: Offline & Localization -->
+            <div class="settings-group">
+              <div class="settings-group-title"><span>🌐 SYSTEM & OFFLINE</span></div>
+              <div class="setting-item">
+                <div class="setting-label-row">
+                  <span class="setting-label">Language</span>
+                  <span class="setting-value-badge" id="cfg-lang-val">ENGLISH</span>
+                </div>
+                <div class="setting-pills">
+                  <button class="setting-pill selected" onclick="setLanguage(this, 'en')">English</button>
+                  <button class="setting-pill" onclick="setLanguage(this, 'bn')">বাংলা</button>
+                </div>
+              </div>
+              <div class="setting-item">
+                <div class="setting-label-row">
+                  <span class="setting-label">Offline Playback</span>
+                  <span class="offline-badge">● 100% OFFLINE READY</span>
+                </div>
+                <p class="section-desc">All 53 cars, audio, tracks & physics run locally without internet.</p>
+              </div>
+              <div class="setting-item">
+                <button class="quick-btn" style="width:100%;justify-content:center;margin-top:6px;" onclick="resetSaveData()">
+                  <span>Reset Local Progress</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- SCREEN 5: IN-RACE HUD (Minimalist & Unobtrusive) -->
       <section class="screen" id="screen-hud">
         <!-- Road Backdrop -->
@@ -1355,6 +1713,7 @@
 
     let currentScreen = 'home';
     let currentCar = 0;
+    let selectedMode = 'race';
 
     function navTo(screenId) {
       currentScreen = screenId;
@@ -1369,7 +1728,7 @@
 
       const stage = document.getElementById('stage');
       if (stage) {
-        stage.style.display = (screenId === 'hud') ? 'none' : 'flex';
+        stage.style.display = (screenId === 'hud' || screenId === 'settings') ? 'none' : 'flex';
       }
     }
 
@@ -1392,9 +1751,18 @@
       });
     }
 
-    function selectMode(card) {
+    function selectMode(card, modeKey) {
+      selectedMode = modeKey || 'race';
       document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
+    }
+
+    function launchSelectedMode() {
+      alert('Launching competition discipline: ' + selectedMode.toUpperCase() + ' with ' + CARS[currentCar].name);
+    }
+
+    function launchCarRace() {
+      alert('Launching Grand Prix Sprint with active car: ' + CARS[currentCar].name);
     }
 
     function setFinish(pill, finish) {
@@ -1428,6 +1796,65 @@
 
     function applyCustomization() {
       alert('Modifications applied. Real profile credits updated.');
+    }
+
+    /* Settings handlers */
+    function setGraphicsTier(btn, tier) {
+      btn.parentElement.querySelectorAll('.setting-pill').forEach(p => p.classList.remove('selected'));
+      btn.classList.add('selected');
+      const valEl = document.getElementById('cfg-tier-val');
+      if (valEl) valEl.textContent = tier.toUpperCase();
+    }
+
+    function setUnits(btn, unit) {
+      btn.parentElement.querySelectorAll('.setting-pill').forEach(p => p.classList.remove('selected'));
+      btn.classList.add('selected');
+      const valEl = document.getElementById('cfg-units-val');
+      if (valEl) valEl.textContent = unit.toUpperCase();
+    }
+
+    function setMasterVolume(val) {
+      const valEl = document.getElementById('cfg-vol-val');
+      if (valEl) valEl.textContent = val + '%';
+    }
+
+    function toggleThemeMusic(btn, enable) {
+      btn.parentElement.querySelectorAll('.setting-pill').forEach(p => p.classList.remove('selected'));
+      btn.classList.add('selected');
+      const valEl = document.getElementById('cfg-music-val');
+      if (valEl) valEl.textContent = enable ? 'ENABLED' : 'MUTED';
+    }
+
+    function setSteeringSensitivity(val) {
+      const valEl = document.getElementById('cfg-sens-val');
+      if (valEl) valEl.textContent = (val / 100).toFixed(1) + 'x';
+    }
+
+    function setSteerAssist(btn, level) {
+      btn.parentElement.querySelectorAll('.setting-pill').forEach(p => p.classList.remove('selected'));
+      btn.classList.add('selected');
+      const valEl = document.getElementById('cfg-assist-val');
+      if (valEl) valEl.textContent = level.toUpperCase();
+    }
+
+    function setTouchMode(btn, mode) {
+      btn.parentElement.querySelectorAll('.setting-pill').forEach(p => p.classList.remove('selected'));
+      btn.classList.add('selected');
+      const valEl = document.getElementById('cfg-touch-val');
+      if (valEl) valEl.textContent = mode.toUpperCase();
+    }
+
+    function setLanguage(btn, lang) {
+      btn.parentElement.querySelectorAll('.setting-pill').forEach(p => p.classList.remove('selected'));
+      btn.classList.add('selected');
+      const valEl = document.getElementById('cfg-lang-val');
+      if (valEl) valEl.textContent = lang === 'bn' ? 'বাংলা' : 'ENGLISH';
+    }
+
+    function resetSaveData() {
+      if (confirm('Reset your profile, coins, and unlocks to factory default?')) {
+        alert('Profile reset to factory defaults (150,000 CR starter bonus).');
+      }
     }
   </script>
 </body>
