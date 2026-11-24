@@ -1268,3 +1268,598 @@ html.rl-v2 #race-root .rx-pedal-btn {
       border-radius: var(--radius-sm);
     }
   
+    /* ==========================================================================
+       RACING KINGDOM / CSR2 SHOWROOM STYLING
+       ========================================================================== */
+    .studio-stage {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 0;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 30%, #20242e 0%, #0d0f14 65%, #050608 100%);
+    }
+
+    .workshop-backdrop {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center bottom;
+      opacity: 0.88;
+      filter: contrast(1.08) brightness(0.92);
+      pointer-events: none;
+    }
+
+    /* Top Bar */
+    .rk-topbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 max(14px, env(safe-area-inset-right)) 0 max(14px, env(safe-area-inset-left));
+      z-index: 25;
+      background: linear-gradient(180deg, rgba(7, 8, 11, 0.94) 0%, rgba(7, 8, 11, 0.6) 70%, transparent 100%);
+      pointer-events: auto;
+    }
+
+    .rk-top-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .rk-lvl-box {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      background: rgba(18, 21, 28, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 4px;
+      padding: 3px 8px;
+      backdrop-filter: blur(8px);
+    }
+
+    .rk-lvl-tag {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #f3f4f6;
+    }
+
+    .rk-lvl-track {
+      width: 68px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.14);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .rk-lvl-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff9900 0%, #ff5500 100%);
+      border-radius: 3px;
+      box-shadow: 0 0 6px rgba(255, 120, 0, 0.6);
+    }
+
+    .rk-synergy-box {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(18, 21, 28, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 4px;
+      padding: 3px 8px;
+      backdrop-filter: blur(8px);
+    }
+
+    .rk-gas-icon {
+      font-size: 11px;
+    }
+
+    .rk-synergy-lbl {
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #f3f4f6;
+    }
+
+    .rk-synergy-pips {
+      display: flex;
+      gap: 2.5px;
+    }
+
+    .rk-synergy-pips .pip {
+      width: 6px;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.16);
+      transform: skewX(-14deg);
+      border-radius: 1px;
+    }
+
+    .rk-synergy-pips .pip.active {
+      background: linear-gradient(180deg, #ff5500 0%, #d42200 100%);
+      box-shadow: 0 0 6px rgba(255, 60, 0, 0.7);
+    }
+
+    /* Top Center: Car Pill with Tier Badge */
+    .rk-top-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+    }
+
+    .rk-car-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(12, 14, 19, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 3px 6px 3px 10px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+    }
+
+    .rk-brand-logo {
+      font-size: 14px;
+    }
+
+    .rk-car-names {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .rk-make-text {
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #9ca3af;
+    }
+
+    .rk-model-text {
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .rk-tier-tag {
+      padding: 3px 8px;
+      background: linear-gradient(135deg, #e10650 0%, #aa0033 100%);
+      color: #ffffff;
+      font-size: 9.5px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transform: skewX(-14deg);
+      border-radius: 2px;
+      box-shadow: 0 0 8px rgba(225, 6, 80, 0.5);
+    }
+
+    .rk-tier-tag span {
+      display: inline-block;
+      transform: skewX(14deg);
+    }
+
+    /* Top Right Currencies */
+    .rk-top-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rk-currency-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(16, 19, 26, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 4px;
+      padding: 3px 5px 3px 8px;
+      backdrop-filter: blur(8px);
+    }
+
+    .rk-coin-tag {
+      font-size: 8.5px;
+      font-weight: 900;
+      color: #f59e0b;
+      background: rgba(245, 158, 11, 0.18);
+      border-radius: 3px;
+      padding: 1px 3px;
+    }
+
+    .rk-cash-tag {
+      font-size: 10px;
+      font-weight: 900;
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.18);
+      border-radius: 3px;
+      padding: 1px 4px;
+    }
+
+    .rk-cur-val {
+      font-size: 11.5px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: #ffffff;
+    }
+
+    .rk-plus-btn {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f59e0b;
+      color: #000;
+      border: none;
+      border-radius: 2px;
+      font-size: 11px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .rk-cash-chip .rk-plus-btn {
+      background: #10b981;
+      color: #fff;
+    }
+
+    /* Left Event Cards Stack */
+    .rk-left-stack {
+      position: absolute;
+      left: max(12px, env(safe-area-inset-left));
+      top: 54px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      z-index: 20;
+      width: 155px;
+      pointer-events: auto;
+    }
+
+    .rk-card-hero {
+      position: relative;
+      width: 100%;
+      height: 64px;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: #141720;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .rk-card-hero:hover, .rk-card-hero:active {
+      transform: scale(1.02);
+      border-color: #ff0055;
+    }
+
+    .rk-card-hero img, .rk-card-mini img, .rk-card-bp img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .rk-card-badge {
+      position: absolute;
+      top: 3px;
+      left: 5px;
+      z-index: 2;
+      font-size: 8.5px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #ffffff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+      border-left: 2px solid #ff0055;
+      padding-left: 4px;
+    }
+
+    .rk-card-foot {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 5px 3px 5px;
+      background: linear-gradient(180deg, transparent 0%, rgba(9, 10, 14, 0.92) 100%);
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+    }
+
+    .rk-card-title {
+      font-size: 9.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #ffffff;
+    }
+
+    .rk-card-timer {
+      font-size: 7.5px;
+      font-weight: 600;
+      color: #9ca3af;
+    }
+
+    .rk-mini-row {
+      display: flex;
+      gap: 5px;
+      width: 100%;
+    }
+
+    .rk-card-mini {
+      position: relative;
+      flex: 1;
+      height: 42px;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: #141720;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .rk-card-mini:hover, .rk-card-mini:active {
+      transform: scale(1.02);
+      border-color: #ff0055;
+    }
+
+    .rk-card-bp {
+      position: relative;
+      width: 100%;
+      height: 46px;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: #141720;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .rk-card-bp:hover, .rk-card-bp:active {
+      transform: scale(1.02);
+      border-color: #a855f7;
+    }
+
+    .rk-chat-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      background: rgba(18, 21, 28, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 4px;
+      color: #9ca3af;
+      font-size: 9px;
+      font-weight: 700;
+      cursor: pointer;
+      width: fit-content;
+      backdrop-filter: blur(8px);
+      margin-top: 1px;
+    }
+
+    .rk-chat-btn svg {
+      width: 11px;
+      height: 11px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    /* Right Rail (Vertical utility buttons) */
+    .rk-right-rail {
+      position: absolute;
+      right: max(12px, env(safe-area-inset-right));
+      top: 54px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      z-index: 20;
+      pointer-events: auto;
+    }
+
+    .rk-rail-btn {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      background: rgba(14, 16, 22, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 5px;
+      color: #9ca3af;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+      transition: all 0.15s ease;
+    }
+
+    .rk-rail-btn:hover, .rk-rail-btn:active {
+      background: rgba(28, 32, 44, 0.95);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.28);
+    }
+
+    .rk-rail-btn svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .rk-rail-btn span {
+      font-size: 7px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .rk-rail-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 7.5px;
+      font-weight: 900;
+      padding: 1px 3.5px;
+      border-radius: 8px;
+      line-height: 1;
+      border: 1px solid #000;
+    }
+
+    .rk-rail-badge.pink {
+      background: #ec4899;
+    }
+
+    /* Bottom Command Bar */
+    .rk-bottom-bar {
+      position: absolute;
+      bottom: max(8px, env(safe-area-inset-bottom));
+      left: max(12px, env(safe-area-inset-left));
+      right: max(12px, env(safe-area-inset-right));
+      height: 50px;
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+      z-index: 25;
+      pointer-events: auto;
+    }
+
+    .rk-cmd-group {
+      display: flex;
+      align-items: stretch;
+      flex: 1;
+      gap: 3px;
+      background: rgba(12, 14, 20, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 5px;
+      padding: 3px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .rk-cmd-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid transparent;
+      border-radius: 3px;
+      color: #d1d5db;
+      cursor: pointer;
+      padding: 0 4px;
+      transition: all 0.15s ease;
+    }
+
+    .rk-cmd-btn:hover, .rk-cmd-btn:active {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .rk-cmd-icon {
+      font-size: 13px;
+    }
+
+    .rk-cmd-text {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1.15;
+    }
+
+    .rk-cmd-title {
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .rk-cmd-sub {
+      font-size: 7px;
+      font-weight: 600;
+      color: #9ca3af;
+      letter-spacing: 0.02em;
+    }
+
+    /* Slanted High-Energy RACE CTA Button */
+    .rk-race-cta {
+      position: relative;
+      min-width: 160px;
+      background: linear-gradient(135deg, #ff0055 0%, #d40040 100%);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 5px;
+      transform: skewX(-14deg);
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: 0 4px 24px rgba(255, 0, 85, 0.55);
+      transition: transform 0.1s ease, box-shadow 0.15s ease;
+    }
+
+    .rk-race-cta:active {
+      transform: skewX(-14deg) scale(0.97);
+      box-shadow: 0 2px 12px rgba(255, 0, 85, 0.4);
+    }
+
+    .rk-race-slant-wrap {
+      transform: skewX(14deg);
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
+
+    .rk-race-title {
+      font-size: 20px;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #ffffff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .rk-checkered-flag {
+      width: 32px;
+      height: 20px;
+      background-image: 
+        linear-gradient(45deg, #ffffff 25%, transparent 25%), 
+        linear-gradient(-45deg, #ffffff 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #ffffff 75%), 
+        linear-gradient(-45deg, transparent 75%, #ffffff 75%);
+      background-size: 8px 8px;
+      background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+      opacity: 0.88;
+      border-radius: 2px;
+    }
+
+  

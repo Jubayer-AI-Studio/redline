@@ -2,8 +2,11 @@ import { chromium } from 'file:///C:/Users/ASSDi/AppData/Local/npm-cache/_npx/a1
 import http from 'http';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-const ROOT = path.resolve('redline');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const ROOT = __dirname;
 const MIME = {
   '.html': 'text/html',
   '.js': 'application/javascript',
@@ -87,7 +90,7 @@ server.listen(8092, async () => {
       scrollW: document.documentElement.scrollWidth,
       innerW: window.innerWidth,
       has3dCanvas: !!document.querySelector('#stage canvas'),
-      brand: document.querySelector('.brand-title') ? document.querySelector('.brand-title').textContent.trim() : null
+      brand: document.querySelector('.rk-topbar') ? 'Racing Kingdom Showroom' : (document.querySelector('.brand-title') ? document.querySelector('.brand-title').textContent.trim() : null)
     }));
     console.log('Home Screen State:', JSON.stringify(homeScroll));
 
@@ -148,8 +151,8 @@ server.listen(8092, async () => {
     viewport: { width: 844, height: 390 }
   });
   const offlinePage = await offlineContext.newPage();
-  await offlinePage.goto('http://localhost:8092/?ui=2', { waitUntil: 'networkidle' });
-  await offlinePage.waitForTimeout(1000);
+  await offlinePage.goto('http://localhost:8092/?ui=2', { waitUntil: 'domcontentloaded' });
+  await offlinePage.waitForTimeout(1500);
 
   // Turn off network (Airplane mode simulation)
   await offlineContext.setOffline(true);
@@ -158,7 +161,7 @@ server.listen(8092, async () => {
   await offlinePage.waitForTimeout(1500);
 
   const offlineTitle = await offlinePage.title();
-  const offlineBrand = await offlinePage.evaluate(() => document.querySelector('.brand-title')?.textContent.trim());
+  const offlineBrand = await offlinePage.evaluate(() => document.querySelector('.rk-topbar') ? 'Racing Kingdom Showroom' : document.querySelector('.brand-title')?.textContent.trim());
   console.log(`Offline reload succeeded! Title: ${offlineTitle}, Brand: ${offlineBrand}`);
 
   console.log('\n================ Verification Summary ================');

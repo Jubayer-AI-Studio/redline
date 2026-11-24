@@ -177,6 +177,39 @@ var CB = (globalThis.CB = globalThis.CB || {});
   var audioCtx = null;
   var s3dCanvas = null;
 
+  var _navTo, _selectCar, _selectEngineCar, _selectMode, _launchSelectedMode, _launchCarRace;
+  var _setFinish, _pickColor, _applyCustomization, _setGraphicsTier, _setUnits;
+  var _setMasterVolume, _toggleThemeMusic, _setSteeringSensitivity, _setSteerAssist;
+  var _setTouchMode, _setLanguage, _resetSaveData, _setUIVersion, _syncProfileData;
+  var _nextCar, _prevCar, _setStudioView, _confirmSelectCar, _openSocialModal, _openRewardsModal;
+
+  window.navTo = function(s) { if (_navTo) _navTo(s); };
+  window.selectCar = function(i) { if (_selectCar) _selectCar(i); };
+  window.selectEngineCar = function(i, m) { if (_selectEngineCar) _selectEngineCar(i, m); };
+  window.selectMode = function(c, m) { if (_selectMode) _selectMode(c, m); };
+  window.launchSelectedMode = function(m) { if (_launchSelectedMode) _launchSelectedMode(m); };
+  window.launchCarRace = function() { if (_launchCarRace) _launchCarRace(); };
+  window.nextCar = function() { if (_nextCar) _nextCar(); };
+  window.prevCar = function() { if (_prevCar) _prevCar(); };
+  window.setStudioView = function(b, v) { if (_setStudioView) _setStudioView(b, v); };
+  window.confirmSelectCar = function() { if (_confirmSelectCar) _confirmSelectCar(); };
+  window.setFinish = function(p, f) { if (_setFinish) _setFinish(p, f); };
+  window.pickColor = function(b, h) { if (_pickColor) _pickColor(b, h); };
+  window.applyCustomization = function() { if (_applyCustomization) _applyCustomization(); };
+  window.setGraphicsTier = function(b, t) { if (_setGraphicsTier) _setGraphicsTier(b, t); };
+  window.setUnits = function(b, u) { if (_setUnits) _setUnits(b, u); };
+  window.setMasterVolume = function(v) { if (_setMasterVolume) _setMasterVolume(v); };
+  window.toggleThemeMusic = function(b, e) { if (_toggleThemeMusic) _toggleThemeMusic(b, e); };
+  window.setSteeringSensitivity = function(v) { if (_setSteeringSensitivity) _setSteeringSensitivity(v); };
+  window.setSteerAssist = function(b, l) { if (_setSteerAssist) _setSteerAssist(b, l); };
+  window.setTouchMode = function(b, m) { if (_setTouchMode) _setTouchMode(b, m); };
+  window.setLanguage = function(b, l) { if (_setLanguage) _setLanguage(b, l); };
+  window.resetSaveData = function() { if (_resetSaveData) _resetSaveData(); };
+  window.setUIVersion = function(v) { if (_setUIVersion) _setUIVersion(v); };
+  window.syncProfileData = function() { if (_syncProfileData) _syncProfileData(); };
+  window.openSocialModal = function(t) { if (_openSocialModal) _openSocialModal(t); };
+  window.openRewardsModal = function() { if (_openRewardsModal) _openRewardsModal(); };
+
   function initUI2() {
     if (document.getElementById('rl-app')) return;
 
@@ -305,6 +338,13 @@ var CB = (globalThis.CB = globalThis.CB || {});
       var titleEl = document.getElementById('home-car-title');
       if (titleEl) titleEl.textContent = c.name;
 
+      var rkMake = document.getElementById('rk-make-text');
+      var rkModel = document.getElementById('rk-model-text');
+      var rkTier = document.getElementById('rk-tier-text');
+      if (rkMake) rkMake.textContent = c.make;
+      if (rkModel) rkModel.textContent = c.name;
+      if (rkTier) rkTier.textContent = c.tier || 'T5 1080';
+
       var hpEl = document.getElementById('g-hp');
       if (hpEl) hpEl.textContent = c.hp;
       var tqEl = document.getElementById('g-torque');
@@ -370,10 +410,26 @@ var CB = (globalThis.CB = globalThis.CB || {});
       card.classList.add('selected');
     }
 
-    function launchSelectedMode() {
+    function launchSelectedMode(overrideMode) {
       rlHaptic('cta');
-      var mode = selectedMode || 'race';
+      var mode = overrideMode || selectedMode || 'race';
       enterRaceSession(mode);
+    }
+
+    function openSocialModal(type) {
+      rlHaptic('tap');
+      var titles = {
+        chat: 'LOBBY CHAT',
+        friends: 'DRIVERS & FRIENDS',
+        messages: 'INBOX NOTIFICATIONS (9+)',
+        clan: 'MOTORSPORT CLAN',
+        rewards: 'DAILY REWARDS (2 CLAIMABLE)'
+      };
+      alert('[' + (titles[type] || String(type).toUpperCase()) + '] Live service connection active.');
+    }
+
+    function openRewardsModal() {
+      openSocialModal('rewards');
     }
 
     function launchCarRace() {
@@ -656,31 +712,33 @@ var CB = (globalThis.CB = globalThis.CB || {});
       }
     });
 
-    // Expose APIs globally
-    window.navTo = navTo;
-    window.selectCar = selectCar;
-    window.selectEngineCar = selectEngineCar;
-    window.selectMode = selectMode;
-    window.launchSelectedMode = launchSelectedMode;
-    window.launchCarRace = launchCarRace;
-    window.setFinish = setFinish;
-    window.pickColor = pickColor;
-    window.applyCustomization = applyCustomization;
-    window.setGraphicsTier = setGraphicsTier;
-    window.setUnits = setUnits;
-    window.setMasterVolume = setMasterVolume;
-    window.toggleThemeMusic = toggleThemeMusic;
-    window.setSteeringSensitivity = setSteeringSensitivity;
-    window.setSteerAssist = setSteerAssist;
-    window.setTouchMode = setTouchMode;
-    window.setLanguage = setLanguage;
-    window.resetSaveData = resetSaveData;
-    window.setUIVersion = setUIVersion;
-    window.syncProfileData = syncProfileData;
-    window.nextCar = nextCar;
-    window.prevCar = prevCar;
-    window.setStudioView = setStudioView;
-    window.confirmSelectCar = confirmSelectCar;
+    // Assign internal implementations to outer delegation pointers
+    _navTo = navTo;
+    _selectCar = selectCar;
+    _selectEngineCar = selectEngineCar;
+    _selectMode = selectMode;
+    _launchSelectedMode = launchSelectedMode;
+    _launchCarRace = launchCarRace;
+    _nextCar = nextCar;
+    _prevCar = prevCar;
+    _setStudioView = setStudioView;
+    _confirmSelectCar = confirmSelectCar;
+    _setFinish = setFinish;
+    _pickColor = pickColor;
+    _applyCustomization = applyCustomization;
+    _setGraphicsTier = setGraphicsTier;
+    _setUnits = setUnits;
+    _setMasterVolume = setMasterVolume;
+    _toggleThemeMusic = toggleThemeMusic;
+    _setSteeringSensitivity = setSteeringSensitivity;
+    _setSteerAssist = setSteerAssist;
+    _setTouchMode = setTouchMode;
+    _setLanguage = setLanguage;
+    _resetSaveData = resetSaveData;
+    _setUIVersion = setUIVersion;
+    _syncProfileData = syncProfileData;
+    _openSocialModal = openSocialModal;
+    _openRewardsModal = openRewardsModal;
 
     // Listen to router route changes to restore UI v2 on return from race
     document.addEventListener('cb:route', function (ev) {
