@@ -298,17 +298,42 @@ var CB = (globalThis.CB = globalThis.CB || {});
       rlPlaySound('tap');
 
       document.querySelectorAll('#rl-app .screen').forEach(function (s) { s.classList.remove('active'); });
-      document.querySelectorAll('#rl-app .nav-btn').forEach(function (b) { b.classList.remove('active'); });
 
       var scr = document.getElementById('screen-' + screenId);
       if (scr) scr.classList.add('active');
 
-      var btn = document.getElementById('rail-' + screenId);
-      if (btn) btn.classList.add('active');
-
       var stage = document.getElementById('stage');
       if (stage) {
         stage.style.display = (screenId === 'hud' || screenId === 'settings') ? 'none' : 'flex';
+      }
+
+      // Update topbar header between showroom and subscreen
+      var showroomLeft = document.getElementById('top-showroom-left');
+      var showroomCenter = document.getElementById('top-showroom-center');
+      var subscreenLeft = document.getElementById('top-subscreen-left');
+      var subscreenTitle = document.getElementById('rk-subscreen-title');
+
+      var titles = {
+        garage: 'DEALERSHIP · 53 VEHICLES',
+        modes: 'COMPETITION · 10 DISCIPLINES',
+        customize: 'OEM CUSTOMIZATION & ATELIER',
+        settings: 'GLOBAL SYSTEM SETTINGS',
+        hud: 'RACE TELEMETRY COCKPIT'
+      };
+
+      if (screenId === 'home') {
+        if (showroomLeft) showroomLeft.style.display = 'flex';
+        if (showroomCenter) showroomCenter.style.display = 'flex';
+        if (subscreenLeft) subscreenLeft.style.display = 'none';
+        if (subscreenTitle) subscreenTitle.style.display = 'none';
+      } else {
+        if (showroomLeft) showroomLeft.style.display = 'none';
+        if (showroomCenter) showroomCenter.style.display = 'none';
+        if (subscreenLeft) subscreenLeft.style.display = 'flex';
+        if (subscreenTitle) {
+          subscreenTitle.style.display = 'block';
+          subscreenTitle.textContent = titles[screenId] || screenId.toUpperCase();
+        }
       }
     }
 

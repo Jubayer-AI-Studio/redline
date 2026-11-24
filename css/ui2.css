@@ -1523,334 +1523,332 @@ html.rl-v2 #race-root .rx-pedal-btn {
     /* Left Event Cards Stack */
     .rk-left-stack {
       position: absolute;
-      left: max(12px, env(safe-area-inset-left));
-      top: 54px;
+      left: 0;
+      top: 48px;
+      width: 314px;
       display: flex;
       flex-direction: column;
-      gap: 5px;
-      z-index: 20;
-      width: 155px;
+      z-index: 25;
       pointer-events: auto;
+    }
+
+    .rk-event-top-row {
+      display: flex;
+      gap: 3px;
+      width: 312px;
+      height: 108px;
     }
 
     .rk-card-hero {
       position: relative;
-      width: 100%;
-      height: 64px;
-      border-radius: 4px;
+      width: 228px;
+      height: 108px;
+      border-radius: 2px;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.22);
       background: #141720;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
       transition: transform 0.15s ease, border-color 0.15s ease;
     }
+    .rk-card-hero:hover { transform: scale(1.015); border-color: #ff0055; }
 
-    .rk-card-hero:hover, .rk-card-hero:active {
-      transform: scale(1.02);
-      border-color: #ff0055;
-    }
-
-    .rk-card-hero img, .rk-card-mini img, .rk-card-bp img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .rk-card-badge {
-      position: absolute;
-      top: 3px;
-      left: 5px;
-      z-index: 2;
-      font-size: 8.5px;
-      font-weight: 900;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #ffffff;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-      border-left: 2px solid #ff0055;
-      padding-left: 4px;
-    }
-
-    .rk-card-foot {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 12px 5px 3px 5px;
-      background: linear-gradient(180deg, transparent 0%, rgba(9, 10, 14, 0.92) 100%);
+    .rk-mini-col {
       display: flex;
       flex-direction: column;
-      line-height: 1.15;
-    }
-
-    .rk-card-title {
-      font-size: 9.5px;
-      font-weight: 800;
-      text-transform: uppercase;
-      color: #ffffff;
-    }
-
-    .rk-card-timer {
-      font-size: 7.5px;
-      font-weight: 600;
-      color: #9ca3af;
-    }
-
-    .rk-mini-row {
-      display: flex;
-      gap: 5px;
-      width: 100%;
+      gap: 3px;
+      width: 80px;
+      height: 108px;
     }
 
     .rk-card-mini {
       position: relative;
-      flex: 1;
-      height: 42px;
-      border-radius: 4px;
+      width: 80px;
+      height: 52px;
+      border-radius: 2px;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.18);
       background: #141720;
       cursor: pointer;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
       transition: transform 0.15s ease, border-color 0.15s ease;
     }
-
-    .rk-card-mini:hover, .rk-card-mini:active {
-      transform: scale(1.02);
-      border-color: #ff0055;
-    }
+    .rk-card-mini:hover { transform: scale(1.02); border-color: #ff0055; }
 
     .rk-card-bp {
       position: relative;
-      width: 100%;
-      height: 46px;
-      border-radius: 4px;
+      width: 228px;
+      height: 76px;
+      margin-top: 4px;
+      border-radius: 2px;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.18);
       background: #141720;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
       transition: transform 0.15s ease, border-color 0.15s ease;
     }
+    .rk-card-bp:hover { transform: scale(1.015); border-color: #ec4899; }
 
-    .rk-card-bp:hover, .rk-card-bp:active {
-      transform: scale(1.02);
-      border-color: #a855f7;
+    .rk-card-hero img, .rk-card-mini img, .rk-card-bp img {
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      display: block;
     }
 
     .rk-chat-btn {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      padding: 3px 8px;
-      background: rgba(18, 21, 28, 0.88);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 4px;
-      color: #9ca3af;
-      font-size: 9px;
-      font-weight: 700;
+      padding: 3px 10px;
+      background: rgba(14, 16, 22, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 12px;
+      color: #e5e7eb;
+      font-size: 9.5px;
+      font-weight: 800;
       cursor: pointer;
       width: fit-content;
       backdrop-filter: blur(8px);
-      margin-top: 1px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      margin-top: 5px;
+      margin-left: 8px;
     }
+    .rk-chat-btn:hover { background: rgba(255, 0, 85, 0.35); border-color: #ff0055; color: #fff; }
+    .rk-chat-btn svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2; }
 
-    .rk-chat-btn svg {
-      width: 11px;
-      height: 11px;
-      stroke: currentColor;
-      stroke-width: 2;
-      fill: none;
-    }
-
-    /* Right Rail (Vertical utility buttons) */
+    /* Right Rail Floating Icons */
     .rk-right-rail {
       position: absolute;
-      right: max(12px, env(safe-area-inset-right));
-      top: 54px;
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-      z-index: 20;
-      pointer-events: auto;
-    }
-
-    .rk-rail-btn {
-      position: relative;
-      width: 40px;
-      height: 40px;
+      right: 0;
+      top: 52px;
+      bottom: 64px;
+      width: 66px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 2px;
-      background: rgba(14, 16, 22, 0.88);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 5px;
-      color: #9ca3af;
-      cursor: pointer;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
-      transition: all 0.15s ease;
+      gap: 10px;
+      z-index: 25;
+      padding: 4px 0;
+      background: linear-gradient(270deg, #07080a 0%, #07080a 82%, rgba(7, 8, 10, 0) 100%);
+      pointer-events: auto;
     }
 
-    .rk-rail-btn:hover, .rk-rail-btn:active {
-      background: rgba(28, 32, 44, 0.95);
+    .rk-rail-item {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1px;
+      background: transparent;
+      border: none;
       color: #ffffff;
-      border-color: rgba(255, 255, 255, 0.28);
+      cursor: pointer;
+      padding: 2px;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+      transition: transform 0.15s ease;
     }
-
-    .rk-rail-btn svg {
-      width: 15px;
-      height: 15px;
-      stroke: currentColor;
-      stroke-width: 2;
+    .rk-rail-item:hover, .rk-rail-item:active { transform: scale(1.12); filter: drop-shadow(0 0 6px rgba(255, 0, 85, 0.8)); }
+    .rk-rail-svg {
+      width: 22px;
+      height: 22px;
       fill: none;
+      stroke: #ffffff;
+      stroke-width: 2.2;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.9));
     }
-
-    .rk-rail-btn span {
-      font-size: 7px;
-      font-weight: 700;
+    .rk-rail-txt {
+      font-size: 8.5px;
+      font-weight: 800;
       letter-spacing: 0.04em;
-      text-transform: uppercase;
+      text-shadow: 0 2px 4px #000;
+      color: #ffffff;
     }
-
     .rk-rail-badge {
       position: absolute;
       top: -3px;
-      right: -3px;
-      background: #ef4444;
+      right: -2px;
+      background: #ff0055;
       color: #ffffff;
       font-size: 7.5px;
       font-weight: 900;
       padding: 1px 3.5px;
       border-radius: 8px;
-      line-height: 1;
-      border: 1px solid #000;
+      border: 1px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(255, 0, 85, 0.8);
     }
-
     .rk-rail-badge.pink {
       background: #ec4899;
+      box-shadow: 0 2px 6px rgba(236, 72, 153, 0.8);
     }
 
-    /* Bottom Command Bar */
+    /* Bottom Command Bar: Full-width solid dark bar covering bottom edge */
     .rk-bottom-bar {
       position: absolute;
-      bottom: max(8px, env(safe-area-inset-bottom));
-      left: max(12px, env(safe-area-inset-left));
-      right: max(12px, env(safe-area-inset-right));
-      height: 50px;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
       display: flex;
-      align-items: stretch;
-      gap: 8px;
-      z-index: 25;
+      align-items: center;
+      gap: 6px;
+      z-index: 30;
+      padding: 0 max(10px, env(safe-area-inset-right)) 0 max(10px, env(safe-area-inset-left));
+      background: linear-gradient(0deg, #07080a 0%, #07080a 82%, rgba(7, 8, 10, 0) 100%);
       pointer-events: auto;
     }
 
-    .rk-cmd-group {
+    /* 2x2 Quadrant Frame */
+    .rk-cmd-quad-frame {
+      position: relative;
       display: flex;
       align-items: stretch;
-      flex: 1;
-      gap: 3px;
-      background: rgba(12, 14, 20, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 5px;
-      padding: 3px;
-      backdrop-filter: blur(14px);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      background: rgba(14, 16, 22, 0.96);
+      border-left: 3px solid #ff0055;
+      border-right: 3px solid #ff0055;
+      transform: skewX(-14deg);
+      border-radius: 2px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+      padding: 2px;
+      flex: 1.5;
+      height: 56px;
     }
 
-    .rk-cmd-btn {
-      flex: 1;
+    .rk-cmd-quad-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      width: 100%;
+      height: 100%;
+      gap: 1px;
+      background: rgba(255, 0, 85, 0.35);
+    }
+
+    .rk-quad-btn {
+      background: rgba(14, 16, 24, 0.98);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      cursor: pointer;
+      color: #ffffff;
+      transition: background 0.15s ease;
+    }
+    .rk-quad-btn:hover, .rk-quad-btn:active {
+      background: rgba(255, 0, 85, 0.35);
+    }
+
+    .rk-quad-txt {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-style: italic;
+      transform: skewX(14deg);
+    }
+
+    .rk-quad-ico {
+      transform: skewX(14deg);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid transparent;
-      border-radius: 3px;
-      color: #d1d5db;
-      cursor: pointer;
-      padding: 0 4px;
-      transition: all 0.15s ease;
+    }
+    .rk-icon-red {
+      width: 14px;
+      height: 14px;
+      stroke: #ff0055;
+      fill: none;
+      filter: drop-shadow(0 0 4px rgba(255, 0, 85, 0.7));
     }
 
-    .rk-cmd-btn:hover, .rk-cmd-btn:active {
-      background: rgba(255, 255, 255, 0.1);
-      color: #ffffff;
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .rk-cmd-icon {
-      font-size: 13px;
-    }
-
-    .rk-cmd-text {
+    /* Store Standalone Button */
+    .rk-store-btn {
+      position: relative;
       display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      line-height: 1.15;
-    }
-
-    .rk-cmd-title {
-      font-size: 9.5px;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: rgba(14, 16, 22, 0.96);
+      border: none;
+      border-left: 3px solid #ff0055;
+      border-right: 3px solid #ff0055;
+      transform: skewX(-14deg);
+      border-radius: 2px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+      padding: 0 16px;
+      cursor: pointer;
       color: #ffffff;
-      white-space: nowrap;
+      flex: 0.8;
+      height: 56px;
+      transition: background 0.15s ease;
     }
-
-    .rk-cmd-sub {
-      font-size: 7px;
-      font-weight: 600;
-      color: #9ca3af;
-      letter-spacing: 0.02em;
+    .rk-store-btn:hover, .rk-store-btn:active {
+      background: rgba(255, 0, 85, 0.35);
+    }
+    .rk-store-txt {
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-style: italic;
+      transform: skewX(14deg);
+      color: #ffffff;
+    }
+    .rk-store-ico {
+      transform: skewX(14deg);
+      display: flex;
+      align-items: center;
+    }
+    .rk-store-ico svg {
+      width: 18px;
+      height: 18px;
+      stroke: #ff0055;
+      fill: none;
     }
 
     /* Slanted High-Energy RACE CTA Button */
     .rk-race-cta {
       position: relative;
-      min-width: 160px;
+      flex: 1.2;
       background: linear-gradient(135deg, #ff0055 0%, #d40040 100%);
-      border: 1px solid rgba(255, 255, 255, 0.35);
-      border-radius: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
       transform: skewX(-14deg);
-      overflow: hidden;
+      border-radius: 2px;
+      box-shadow: 0 0 22px rgba(255, 0, 85, 0.8);
       cursor: pointer;
-      box-shadow: 0 4px 24px rgba(255, 0, 85, 0.55);
-      transition: transform 0.1s ease, box-shadow 0.15s ease;
-    }
-
-    .rk-race-cta:active {
-      transform: skewX(-14deg) scale(0.97);
-      box-shadow: 0 2px 12px rgba(255, 0, 85, 0.4);
-    }
-
-    .rk-race-slant-wrap {
-      transform: skewX(14deg);
-      width: 100%;
-      height: 100%;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 16px;
+      padding: 0 16px 0 20px;
+      overflow: hidden;
+      height: 56px;
+      transition: all 0.15s ease;
+    }
+    .rk-race-cta:hover, .rk-race-cta:active {
+      transform: skewX(-14deg) scale(1.02);
+      box-shadow: 0 0 32px rgba(255, 0, 85, 1);
     }
 
-    .rk-race-title {
+    .rk-race-word {
       font-size: 20px;
       font-weight: 900;
-      font-style: italic;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
+      font-style: italic;
       color: #ffffff;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      transform: skewX(14deg);
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
     }
 
-    .rk-checkered-flag {
-      width: 32px;
-      height: 20px;
+    .rk-flag-pattern {
+      display: inline-block;
+      width: 44px;
+      height: 32px;
+      transform: skewX(14deg);
       background-image: 
         linear-gradient(45deg, #ffffff 25%, transparent 25%), 
         linear-gradient(-45deg, #ffffff 25%, transparent 25%), 
@@ -1858,7 +1856,7 @@ html.rl-v2 #race-root .rx-pedal-btn {
         linear-gradient(-45deg, transparent 75%, #ffffff 75%);
       background-size: 8px 8px;
       background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
-      opacity: 0.88;
+      opacity: 0.85;
       border-radius: 2px;
     }
 
