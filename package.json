@@ -1,0 +1,25 @@
+{
+  "name": "jubayer-racing",
+  "version": "2.0.0",
+  "description": "JUBAYER RACING — Premium Fullscreen 3D Mobile Racing Game",
+  "main": "index.html",
+  "scripts": {
+    "test": "node tests/run.js",
+    "build:ui": "node build_ui2.js",
+    "cap:sync": "cap sync",
+    "cap:build": "cap build android"
+  },
+  "author": "JUBAYER · As-Sunnah Skill Development Institute",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@capacitor/android": "^7.0.1",
+    "@capacitor/app": "^7.0.0",
+    "@capacitor/core": "^7.0.1",
+    "@capacitor/haptics": "^7.0.0",
+    "@capacitor/screen-orientation": "^7.0.0",
+    "@capacitor/status-bar": "^7.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.0.1"
+  }
+}

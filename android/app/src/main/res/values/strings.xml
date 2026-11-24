@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Jubayer Racing</string>
+    <string name="title_activity_main">Jubayer Racing</string>
+    <string name="package_name">com.jubayer.racing</string>
+    <string name="custom_url_scheme">com.jubayer.racing</string>
+</resources>

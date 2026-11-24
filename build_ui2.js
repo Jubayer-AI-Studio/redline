@@ -18,15 +18,15 @@ if (!styleMatch) {
 let rawCss = styleMatch[1];
 
 // Scope CSS cleanly under html.rl-v2 and #rl-app
-// Strip html, body global rules from raw CSS and rewrite #app to #rl-app
 let cleanedCss = rawCss
   .replace(/html,\s*body\s*\{[\s\S]*?\}/, '')
   .replace(/\*\s*\{[\s\S]*?\}/, '')
   .replace(/#app\b/g, '#rl-app');
 
 const scopedCss = `/* ==========================================================================
-   Redline UI v2.0 Realistic Theme (Gran Turismo & Forza Horizon Aesthetic)
+   JUBAYER RACING UI v2.0 Realistic Theme (Gran Turismo & Forza Horizon Aesthetic)
    Scoped strictly to html.rl-v2 and #rl-app so ?ui=1 is 100% pristine.
+   Zero vertical and zero horizontal scrolling on mobile landscape viewports.
    ========================================================================== */
 
 /* Hidden when not in UI v2 mode */
@@ -100,7 +100,7 @@ let appInnerHtml = appMatch[1].trim();
 
 // 3. Generate robust js/ui2/ui2.js
 const ui2JsCode = `/* ==========================================================================
-   Redline UI v2.0 - js/ui2/ui2.js
+   JUBAYER RACING UI v2.0 - js/ui2/ui2.js
    Realistic, Restrained Mobile-First UI (Gran Turismo & Forza Horizon Style)
    Full parity with Redline engine: 53 cars, real profile saves, all 10 modes.
    Active when URL has ?ui=2 or localStorage redline_ui_version === '2'.
@@ -142,6 +142,7 @@ var CB = (globalThis.CB = globalThis.CB || {});
   var currentScreen = 'home';
   var currentCar = 0;
   var audioCtx = null;
+  var s3dCanvas = null;
 
   function initUI2() {
     if (document.getElementById('rl-app')) return;
@@ -192,6 +193,38 @@ var CB = (globalThis.CB = globalThis.CB || {});
       } catch (e) {}
     }
 
+    /* Mount live 3D WebGL Turntable in #stage */
+    function mountStudio3D() {
+      try {
+        var stageEl = document.getElementById('stage');
+        if (stageEl && typeof CB !== 'undefined' && CB.studio3d && typeof CB.studio3d.mount === 'function' && CB.studio3d.isSupported()) {
+          s3dCanvas = CB.studio3d.mount(stageEl, { view: 'side', spin: true });
+          if (s3dCanvas) {
+            var fbImg = document.getElementById('studio-car');
+            if (fbImg) fbImg.style.display = 'none';
+            var floorRefl = document.querySelector('.studio-floor-reflection');
+            if (floorRefl) floorRefl.style.display = 'none';
+            updateStudioCar();
+          }
+        }
+      } catch (e) {
+        if (typeof console !== 'undefined') console.warn('[ui2] 3D studio mount fallback to photographic render', e);
+      }
+    }
+
+    function updateStudioCar(modelId) {
+      try {
+        if (typeof CB !== 'undefined' && CB.studio3d && typeof CB.studio3d.update === 'function') {
+          var mId = modelId || (CARS[currentCar] && CARS[currentCar].id);
+          var b = (CB.state && typeof CB.state.get === 'function') ? CB.state.get() : { model: mId };
+          if (b) {
+            b.model = mId;
+            CB.studio3d.update(b);
+          }
+        }
+      } catch (e) {}
+    }
+
     /* Screen Navigation */
     function navTo(screenId) {
       currentScreen = screenId;
@@ -211,6 +244,18 @@ var CB = (globalThis.CB = globalThis.CB || {});
       if (stage) {
         stage.style.display = (screenId === 'hud') ? 'none' : 'flex';
       }
+    }
+
+    /* Studio Camera Angles */
+    function setStudioView(btn, vId) {
+      rlHaptic('tap');
+      document.querySelectorAll('#rl-app .cam-pill').forEach(function (p) { p.classList.remove('active'); });
+      if (btn) btn.classList.add('active');
+      try {
+        if (typeof CB !== 'undefined' && CB.studio3d && typeof CB.studio3d.setView === 'function') {
+          CB.studio3d.setView(vId);
+        }
+      } catch (e) {}
     }
 
     /* Car Selection */
@@ -244,6 +289,8 @@ var CB = (globalThis.CB = globalThis.CB || {});
         t.classList.toggle('active', i === idx);
       });
 
+      updateStudioCar(c.id);
+
       // Synchronize with Redline game engine if available
       try {
         if (typeof CB !== 'undefined') {
@@ -254,6 +301,31 @@ var CB = (globalThis.CB = globalThis.CB || {});
           }
         }
       } catch (e) {}
+    }
+
+    function nextCar() {
+      var nextIdx = (currentCar + 1) % CARS.length;
+      selectCar(nextIdx);
+    }
+
+    function prevCar() {
+      var prevIdx = (currentCar - 1 + CARS.length) % CARS.length;
+      selectCar(prevIdx);
+    }
+
+    function confirmSelectCar() {
+      rlHaptic('cta');
+      var c = CARS[currentCar];
+      try {
+        if (typeof CB !== 'undefined') {
+          if (CB.stock && typeof CB.stock.apply === 'function') {
+            CB.stock.apply({ model: c.id });
+          } else if (CB.state && typeof CB.state.set === 'function') {
+            CB.state.set('shape', c.id);
+          }
+        }
+      } catch (e) {}
+      alert('Selected ' + c.name + ' as your active competition car.');
     }
 
     /* Mode Selection and Launcher */
@@ -287,6 +359,7 @@ var CB = (globalThis.CB = globalThis.CB || {});
       try {
         if (typeof CB !== 'undefined' && CB.state && typeof CB.state.set === 'function') {
           CB.state.set('paint.finish', finish);
+          updateStudioCar();
         }
       } catch (e) {}
     }
@@ -298,6 +371,7 @@ var CB = (globalThis.CB = globalThis.CB || {});
       try {
         if (typeof CB !== 'undefined' && CB.state && typeof CB.state.set === 'function') {
           CB.state.set('paint.color', hex);
+          updateStudioCar();
         }
       } catch (e) {}
     }
@@ -392,6 +466,7 @@ var CB = (globalThis.CB = globalThis.CB || {});
           }
         }
       } catch (e) {}
+      updateStudioCar(mId);
     }
 
     /* Switch between UI versions */
@@ -414,11 +489,16 @@ var CB = (globalThis.CB = globalThis.CB || {});
     window.applyCustomization = applyCustomization;
     window.setUIVersion = setUIVersion;
     window.syncProfileData = syncProfileData;
+    window.nextCar = nextCar;
+    window.prevCar = prevCar;
+    window.setStudioView = setStudioView;
+    window.confirmSelectCar = confirmSelectCar;
 
     // Initial sync
     setTimeout(function () {
       syncProfileData();
       populate53Cars();
+      mountStudio3D();
     }, 150);
   }
 
