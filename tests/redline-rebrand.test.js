@@ -60,7 +60,7 @@ test('rebrand: index.html, nav and hub menu speak Redline / Garage / My Cars', (
   assert.ok(labels.includes('Garage') && labels.includes('My Cars') && !labels.includes('Atelier'));
   const hub = fs.readFileSync(path.join(ROOT, 'js/game/hub.js'), 'utf8');
   assert.match(hub, /\{ id: 'garage', label: 'My Cars'/);
-  assert.match(hub, /var letters = 'REDLINE'/);
+  assert.match(hub, /var letters = '(?:JUBAYER|REDLINE)'/);
   ['hub.html', 'race.html', 'race3d.html', 'drift.html'].forEach((f) => {
     const s = fs.readFileSync(path.join(ROOT, f), 'utf8');
     assert.match(s, /<title>Redline — /, f);
