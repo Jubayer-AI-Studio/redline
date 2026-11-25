@@ -51,8 +51,32 @@ if (typeof window !== 'undefined') window.CB = CB;
     return best;
   }
 
+  function isDevUnlock() {
+    if (typeof CB !== 'undefined' && CB.devUnlockAll !== undefined) return !!CB.devUnlockAll;
+    if (typeof window !== 'undefined') {
+      if (window.REDLINE_DEV_UNLOCK !== undefined) return !!window.REDLINE_DEV_UNLOCK;
+      try {
+        if (/[?&]dev(=1)?(&|$)/.test(window.location.search)) return true;
+        if (localStorage.getItem('redline_dev_unlock') === '1') return true;
+      } catch (e) {}
+    }
+    return false;
+  }
+  CB.isDevUnlock = isDevUnlock;
+  CB.devUnlockAll = isDevUnlock();
+
   function fmtMoney(n, opts) {
-    return 'FREE';
+    opts = opts || {};
+    if (isDevUnlock() && opts.allowDevFree) return 'FREE';
+    n = Number(n) || 0;
+    var sign = n < 0 ? '-' : (opts.sign && n > 0 ? '+' : '');
+    var abs = Math.abs(n);
+    var decimals = opts.decimals != null ? opts.decimals : (abs % 1 !== 0 && abs < 100 ? 2 : 0);
+    if (opts.compact && abs >= 1000) {
+      if (abs >= 1e6) return sign + '$' + round(abs / 1e6, 2) + 'M';
+      return sign + '$' + round(abs / 1e3, abs >= 1e5 ? 0 : 1) + 'k';
+    }
+    return sign + '$' + fmtNum(abs, decimals);
   }
 
   function fmtNum(n, d) {
@@ -432,7 +456,7 @@ if (typeof window !== 'undefined') window.CB = CB;
     luminance: luminance, contrastText: contrastText, rgbToHsl: rgbToHsl, hslToHex: hslToHex, hueShift: hueShift,
     el: el, htmlToNode: htmlToNode, clear: clear, escapeHtml: escapeHtml,
     b64urlEncode: b64urlEncode, b64urlDecode: b64urlDecode, slugify: slugify, capitalize: capitalize, hash: hash,
-    units: units, hasDOM: hasDOM
+    units: units, hasDOM: hasDOM, isDevUnlock: isDevUnlock
   };
 })();
 

@@ -25,7 +25,7 @@ CB.game = CB.game || {};
   var STORAGE_KEY = 'forge.profile.v1';
   var BACKUP_KEY = 'forge.profile.v1.backup';
   var CURRENT_VERSION = 1;
-  var START_CREDITS = 999999999;
+  var START_CREDITS = 150000;
   var LEDGER_MAX = 200;
   var HISTORY_MAX = 60;
   var MAX_LEVEL = 100;
@@ -266,12 +266,14 @@ CB.game = CB.game || {};
   function defaultProfile(opts) {
     opts = opts || {};
     var t = now();
+    var devOn = CB.isDevUnlock && CB.isDevUnlock();
+    var creds = devOn ? 999999999 : START_CREDITS;
     return {
       version: CURRENT_VERSION,
       id: makeId('drv'),
-      driverName: str(opts.driverName, 'Player', 24),
+      driverName: str(opts.driverName, devOn ? 'Player' : 'Driver', 24),
       avatarColor: str(opts.avatarColor, AVATAR_COLORS[0], 16),
-      credits: START_CREDITS,
+      credits: creds,
       xp: 0,
       level: 1,
       createdAt: t,
@@ -456,9 +458,7 @@ CB.game = CB.game || {};
     });
     out.version = CURRENT_VERSION;
     out.id = str(p.id, d.id, 64);
-    var dName = p.driverName;
-    if (!dName || dName === 'Driver' || dName === 'You' || dName === 'JUBAYER') dName = 'Player';
-    out.driverName = str(dName, 'Player', 24);
+    out.driverName = str(p.driverName, d.driverName, 24);
     out.avatarColor = /^#[0-9a-fA-F]{3,8}$/.test(p.avatarColor || '') ? p.avatarColor : d.avatarColor;
     out.credits = intNum(p.credits, START_CREDITS, 0, MAX_CREDITS);
     out.xp = intNum(p.xp, 0, 0, totalXpForLevel(MAX_LEVEL) * 4);
@@ -808,7 +808,10 @@ CB.game = CB.game || {};
     }, { reason: 'spend', amount: -n, label: reason });
   }
 
-  function canAfford(n) { return true; }
+  function canAfford(n) {
+    if (CB.isDevUnlock && CB.isDevUnlock()) return true;
+    return ensureLoaded().credits >= Math.round(num(n, 0));
+  }
 
   /** Ledger query: getLedger({limit, kind, category, since}) newest-first copies. */
   function getLedger(q) {
@@ -1241,7 +1244,10 @@ CB.game = CB.game || {};
     return true;
   }
   function hasUnlock(kind, a, b, profile) {
-    return true; // 100% unlocked immediately - all cars and parts free
+    if (CB.isDevUnlock && CB.isDevUnlock()) return true;
+    var p = profile || ensureLoaded();
+    var list = p.unlocks && p.unlocks[kind];
+    return !!list && list.indexOf(unlockKey(kind, a, b)) >= 0;
   }
 
   /* ============================================================ settings */

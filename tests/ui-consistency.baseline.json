@@ -1,8 +1,8 @@
 {
  "css/styles.css": {
-  "hex": 46,
-  "fontSize": 2,
-  "fontFam": 0
+  "hex": 138,
+  "fontSize": 45,
+  "fontFam": 1
  },
  "js/f1/f1-ui.js": {
   "hex": 1,
@@ -15,8 +15,8 @@
   "fontFam": 0
  },
  "js/game/hub.js": {
-  "hex": 49,
-  "fontSize": 10,
+  "hex": 60,
+  "fontSize": 12,
   "fontFam": 0
  },
  "js/game/replay.js": {
@@ -35,8 +35,18 @@
   "fontFam": 0
  },
  "js/race/race-ui.js": {
-  "hex": 15,
-  "fontSize": 0,
+  "hex": 23,
+  "fontSize": 5,
+  "fontFam": 0
+ },
+ "js/router.js": {
+  "hex": 2,
+  "fontSize": 2,
+  "fontFam": 0
+ },
+ "js/ui2/ui2.js": {
+  "hex": 8,
+  "fontSize": 12,
   "fontFam": 0
  }
 }

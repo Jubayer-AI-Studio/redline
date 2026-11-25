@@ -1781,7 +1781,17 @@ CB.game.career = (function () {
 
   /** isUnlocked(profile, id) for a championship, event or tier -> {ok, reasons[]} */
   function isUnlocked(profile, id, st) {
-    return { ok: true, reasons: [] };
+    if (CB.isDevUnlock && CB.isDevUnlock()) return { ok: true, reasons: [] };
+    st = st || peekCareer(profile);
+    if (TIER_BY_ID[id]) return tierUnlock(profile, id, st);
+    var c = getChampionship(id);
+    if (!c) return { ok: false, reasons: ['Unknown championship'] };
+    var t = tierUnlock(profile, c.tier, st);
+    var reasons = t.ok ? [] : ['Unlock the ' + c.tierName + ' tier: ' + t.reasons.join('; ')];
+    var lvl = profileLevel(profile);
+    if (lvl < c.minLevel && t.ok) reasons.push('Reach driver level ' + c.minLevel + ' (you are level ' + lvl + ')');
+    c.requires.forEach(function (r) { var m = requirementMet(st, r); if (!m.ok) reasons.push(m.reason); });
+    return { ok: reasons.length === 0, reasons: reasons };
   }
 
   /* ======================================================================

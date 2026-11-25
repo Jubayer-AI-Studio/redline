@@ -422,15 +422,23 @@ CB.game.economy = (function () {
   }
 
   function isUnlocked(profile, collOrPath, id) {
-    return true; // 100% unlocked immediately - all cars, body styles, parts free!
+    if (CB.isDevUnlock && CB.isDevUnlock()) return true;
+    var coll = resolveCollection(collOrPath);
+    if (profileLevel(profile) >= partUnlockLevel(coll, id)) return true;
+    return hasGrant(profile, coll, id);
   }
 
   function isFeatureUnlocked(profile, path) {
-    return true; // 100% unlocked!
+    if (CB.isDevUnlock && CB.isDevUnlock()) return true;
+    if (profileLevel(profile) >= featureUnlockLevel(path)) return true;
+    var g = grants(profile).parts;
+    return g.indexOf('feature:' + path) >= 0 || g.indexOf(path + ':true') >= 0;
   }
 
   function isTrackUnlocked(profile, trackId) {
-    return true; // 100% unlocked!
+    if (CB.isDevUnlock && CB.isDevUnlock()) return true;
+    if (profileLevel(profile) >= trackUnlockLevel(trackId)) return true;
+    return grants(profile).tracks.indexOf(trackId) >= 0;
   }
 
   /* All known collections: table keys ∪ catalog collections referenced by pathCollections. */
@@ -453,19 +461,28 @@ CB.game.economy = (function () {
   function lockedOptions(profile) {
     var out = {};
     allCollections().forEach(function (coll) {
-      out[coll] = new Set();
+      var set = new Set();
+      if (!CB.isDevUnlock || !CB.isDevUnlock()) {
+        collectionIds(coll).forEach(function (id) {
+          if (!isUnlocked(profile, coll, id)) set.add(id);
+        });
+      }
+      out[coll] = set;
     });
     return out;
   }
 
   function lockedPaths(profile) {
-    var out = {}, pc = pathCollections();
-    for (var p in pc) out[p] = new Set();
+    var byColl = lockedOptions(profile), out = {}, pc = pathCollections();
+    for (var p in pc) out[p] = byColl[pc[p]] || new Set();
     return out;
   }
 
   function lockedFeatures(profile) {
-    return {};
+    var out = {};
+    if (CB.isDevUnlock && CB.isDevUnlock()) return out;
+    for (var p in FEATURE_UNLOCKS) if (!isFeatureUnlocked(profile, p)) out[p] = FEATURE_UNLOCKS[p].level;
+    return out;
   }
 
   function knownTrackIds() {
@@ -564,7 +581,32 @@ CB.game.economy = (function () {
 
   /* Paths of the build that use a locked part / feature. */
   function buildLockViolations(profile, build) {
-    return []; // All cars and parts 100% unlocked immediately!
+    var out = [];
+    if (!build) return out;
+    if (CB.isDevUnlock && CB.isDevUnlock()) return out;
+    var pc = pathCollections();
+    var evNoIce = getPath(build, 'engine.type') === 'ev';
+    var isEv = function (p) { return evNoIce && (p === 'engine.layout' || p === 'engine.aspiration' || p === 'engine.fuel' || p === 'engine.exhaust'); };
+    var iceOnly = getPath(build, 'engine.type') === 'ice';
+    for (var p in pc) {
+      var v = getPath(build, p);
+      if (v === undefined || v === null) continue;
+      if (isEv(p)) continue; // irrelevant on EVs
+      if (iceOnly && (p === 'engine.chemistry' || p === 'engine.voltage')) continue;
+      if (p === 'drivetrain.centerDiff' && getPath(build, 'drivetrain.layout') !== 'awd') continue;
+      if (!isUnlocked(profile, pc[p], v)) {
+        out.push({ kind: 'part', path: p, collection: pc[p], id: v, name: partName(pc[p], v),
+          level: partUnlockLevel(pc[p], v), category: collectionLabel(pc[p]) });
+      }
+    }
+    for (var f in FEATURE_UNLOCKS) {
+      if (getPath(build, f) === true && !isFeatureUnlocked(profile, f)) {
+        out.push({ kind: 'feature', path: f, collection: null, id: true, name: FEATURE_UNLOCKS[f].name,
+          level: FEATURE_UNLOCKS[f].level, category: 'Feature' });
+      }
+    }
+    out.sort(function (a, b) { return b.level - a.level; });
+    return out;
   }
 
   /* Best unlocked substitute: prefer the most expensive unlocked option not above the current price
@@ -865,7 +907,10 @@ CB.game.economy = (function () {
     return { credits: total, lines: lines };
   }
 
-  function canAfford(profile, n) { return true; }
+  function canAfford(profile, n) {
+    if (CB.isDevUnlock && CB.isDevUnlock()) return true;
+    return num(profile && profile.credits, 0) >= num(n, 0);
+  }
 
   /* ------------------------------------------------------------------ race rewards */
   var BASE_PURSE = 4000;
