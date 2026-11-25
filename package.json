@@ -5,6 +5,7 @@
   "main": "index.html",
   "scripts": {
     "test": "node tests/run.js",
+    "smoke": "node tests/run.js router race-ui data-state game-profile",
     "build:ui": "node build_ui2.js",
     "cap:sync": "cap sync",
     "cap:build": "cap build android"
