@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+  <meta name="description" content="JUBAYER RACING — As-Sunnah Skill Development Institute Dedicated Mobile Arcade Edition. 100% Free 3D Cars, Pilots, Formula 1, Demolition Derby, and Circuit Racing.">
+  <meta name="theme-color" content="#070a14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>JUBAYER RACING — As-Sunnah Skill Development Institute</title>
+  <link rel="icon" type="image/png" href="img/as_sunnah_logo.png">
+  <style>
+    :root {
+      --bg: #070a14;
+      --panel-bg: rgba(15, 23, 42, 0.85);
+      --panel-border: rgba(255, 255, 255, 0.14);
+      --cyan: #00e5ff;
+      --orange: #ff7700;
+      --gold: #fbbf24;
+      --green: #22c55e;
+      --red: #ef4444;
+      --purple: #a855f7;
+      --text: #f8fafc;
+      --text-dim: #94a3b8;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      position: fixed;
+      inset: 0;
+      background: #070a14;
+      color: var(--text);
+      font-family: var(--font);
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    body {
+      background: radial-gradient(circle at 50% 15%, rgba(0, 229, 255, 0.12) 0%, transparent 60%),
+                  radial-gradient(circle at 80% 90%, rgba(255, 119, 0, 0.08) 0%, transparent 50%),
+                  #070a14;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Orientation Notice for Portrait (Game is optimized for Landscape) */
+    #landscape-notice {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: rgba(7, 10, 20, 0.96);
+      backdrop-filter: blur(12px);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+    }
+    @media (orientation: portrait) {
+      #landscape-notice { display: flex; }
+    }
+    .rotate-phone-icon {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 16px;
+      animation: phone-rotate-hint 2s ease-in-out infinite;
+    }
+    @keyframes phone-rotate-hint {
+      0%, 15% { transform: rotate(0deg); }
+      50%, 85% { transform: rotate(90deg); }
+      100% { transform: rotate(0deg); }
+    }
+    .notice-title {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: var(--cyan);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    .notice-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.5;
+      max-width: 320px;
+    }
+    .bypass-btn {
+      margin-top: 18px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Header Bar */
+    .top-header {
+      height: 48px;
+      padding: 0 16px;
+      padding-top: max(4px, env(safe-area-inset-top));
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(7, 10, 20, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 50;
+      flex-shrink: 0;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1.5px solid var(--orange);
+      background: #000;
+      object-fit: cover;
+      box-shadow: 0 0 10px rgba(255, 119, 0, 0.4);
+    }
+    .brand-title {
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .brand-title span { color: var(--cyan); }
+    .brand-sub {
+      font-size: 9px;
+      color: var(--orange);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .header-tools {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .icon-btn {
+      height: 30px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .icon-btn:active { transform: scale(0.95); }
+    .icon-btn.active {
+      border-color: var(--orange);
+      background: rgba(255, 119, 0, 0.2);
+      color: #ff9933;
+    }
+
+    /* Main Stage */
+    .stage {
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 16px;
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+      overflow: hidden;
+    }
+
+    /* Top Pilot Selection Tray */
+    .char-bar-container {
+      width: 100%;
+      max-width: 900px;
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .char-bar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0 4px;
+    }
+    .char-bar-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .char-badge-info {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--gold);
+      background: rgba(251, 191, 36, 0.15);
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(251, 191, 36, 0.35);
+    }
+    .char-tray {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      overflow-x: auto;
+      padding: 2px 4px;
+      scrollbar-width: none;
+    }
+    .char-tray::-webkit-scrollbar { display: none; }
+    .char-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      padding: 3px 10px 3px 3px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .char-pill:active { transform: scale(0.96); }
+    .char-pill.active {
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.25), rgba(255, 119, 0, 0.2));
+      border-color: var(--cyan);
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.35);
+    }
+    .char-avatar-img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      background: #000;
+    }
+    .char-pill.active .char-avatar-img {
+      border-color: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+    }
+    .char-name-txt {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    /* Car Info & Pilot Line */
+    .car-info-card {
+      text-align: center;
+      z-index: 20;
+      margin-top: 2px;
+    }
+    .car-name {
+      font-size: clamp(16px, 3.5vw, 22px);
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+      line-height: 1.1;
+    }
+    .car-pilot-line {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-top: 2px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .car-stats {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 3px 12px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 700;
+    }
+    .stat-badge { color: var(--gold); }
+
+    /* Genuine 3D Studio Stage Viewport */
+    .showroom-viewport {
+      position: absolute;
+      inset: 0;
+      top: 50px;
+      bottom: 58px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      overflow: hidden;
+      touch-action: none;
+    }
+    #studio-mount {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    #studio-mount canvas {
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+      outline: none;
+    }
+
+    /* Nav Arrows for Cycling All 53 Cars */
+    .nav-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 30;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+      transition: all 0.15s ease;
+    }
+    .nav-arrow:active { transform: translateY(-50%) scale(0.92); border-color: var(--cyan); }
+    .arrow-left { left: max(12px, env(safe-area-inset-left)); }
+    .arrow-right { right: max(12px, env(safe-area-inset-right)); }
+
+    /* Color Swatches Bar */
+    .paint-bar {
+      position: absolute;
+      bottom: 64px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 4px 12px;
+      border-radius: 999px;
+      z-index: 30;
+      backdrop-filter: blur(8px);
+    }
+    .color-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .color-dot:active { transform: scale(0.9); }
+    .color-dot.active {
+      transform: scale(1.22);
+      border-color: #fff;
+      box-shadow: 0 0 10px var(--cyan);
+    }
+
+    /* Bottom Dock */
+    .bottom-dock {
+      width: 100%;
+      max-width: 900px;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 6px 12px;
+      border-radius: 999px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+    }
+    .mode-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .mode-pill {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-dim);
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+    .mode-pill:active { transform: scale(0.96); }
+    .mode-pill.active {
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.25), rgba(255, 119, 0, 0.25));
+      border-color: var(--cyan);
+      color: #fff;
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.35);
+    }
+    .track-pill {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #fff;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .start-btn {
+      background: linear-gradient(135deg, #ff7700, #ff3300);
+      border: none;
+      color: #fff;
+      padding: 8px 22px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 16px rgba(255, 119, 0, 0.5);
+      transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .start-btn:active {
+      transform: scale(0.95);
+      box-shadow: 0 2px 8px rgba(255, 119, 0, 0.7);
+    }
+
+    /* In-Game Modal Overlay */
+    #race-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: #000;
+    }
+    #race-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+    .exit-garage-btn {
+      position: fixed;
+      top: max(10px, env(safe-area-inset-top));
+      right: max(12px, env(safe-area-inset-right));
+      z-index: 10010;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      backdrop-filter: blur(8px);
+    }
+    .exit-garage-btn:active { transform: scale(0.95); border-color: var(--cyan); }
+  </style>
+
+  <!-- Redline 3D Game Engine Scripts -->
+  <script src="js/util.js"></script>
+  <script src="js/platform/device.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/shapes/core.js"></script>
+  <script src="js/shapes/models/coupe.js"></script>
+  <script src="js/shapes/models/sedan.js"></script>
+  <script src="js/shapes/models/hatchback.js"></script>
+  <script src="js/shapes/models/wagon.js"></script>
+  <script src="js/shapes/models/suv.js"></script>
+  <script src="js/shapes/models/roadster.js"></script>
+  <script src="js/shapes/models/pickup.js"></script>
+  <script src="js/shapes/models/hypercar.js"></script>
+  <script src="js/shapes/models/shooting-brake.js"></script>
+  <script src="js/shapes/models/van.js"></script>
+  <script src="js/shapes/models/pack-jdm.js"></script>
+  <script src="js/shapes/models/pack-usa.js"></script>
+  <script src="js/shapes/models/pack-exotic.js"></script>
+  <script src="js/shapes/models/pack-sport.js"></script>
+  <script src="js/shapes/stock-specs.js"></script>
+  <script src="js/shapes/lowpoly/_examples.js"></script>
+  <script src="js/shapes/lowpoly/coupe.js"></script>
+  <script src="js/shapes/lowpoly/sedan.js"></script>
+  <script src="js/shapes/lowpoly/wagon-brake.js"></script>
+  <script src="js/shapes/lowpoly/hatch-roadster.js"></script>
+  <script src="js/shapes/lowpoly/suv.js"></script>
+  <script src="js/shapes/lowpoly/pickup-van.js"></script>
+  <script src="js/shapes/lowpoly/hyper-a.js"></script>
+  <script src="js/shapes/lowpoly/hyper-b.js"></script>
+  <script src="js/shapes/lowpoly/jdm-muscle.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/physics.js"></script>
+  <script src="js/rules.js"></script>
+  <script src="js/pricing.js"></script>
+  <script src="js/ui-kit.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/race/gl/gl-core.js"></script>
+  <script src="js/race/gl/lowpoly.js"></script>
+  <script src="js/studio3d.js"></script>
+</head>
+<body>
+
+  <!-- Portrait Orientation Hint -->
+  <div id="landscape-notice">
+    <svg class="rotate-phone-icon" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+      <path d="M12 18h.01"/>
+    </svg>
+    <div class="notice-title">ROTATE YOUR DEVICE</div>
+    <div class="notice-desc">Please rotate your phone to Landscape mode for the best arcade racing experience.</div>
+    <button class="bypass-btn" id="bypass-portrait-btn" type="button">CONTINUE ANYWAY</button>
+  </div>
+
+  <!-- Top Header Bar -->
+  <header class="top-header">
+    <div class="brand-group">
+      <img class="brand-logo" src="img/as_sunnah_logo.png" alt="As-Sunnah Logo">
+      <div>
+        <div class="brand-title">JUBAYER <span>RACING</span></div>
+        <div class="brand-sub">AS-SUNNAH SKILL DEVELOPMENT INSTITUTE</div>
+      </div>
+    </div>
+    <div class="header-tools">
+      <button class="icon-btn active" id="bgm-toggle-btn" type="button" title="Toggle Theme Music">
+        <span>🎵</span> AS-SUNNAH THEME
+      </button>
+      <button class="icon-btn" id="ctrl-hint-btn" type="button" title="Controls">
+        <span>🎮</span> CONTROLS
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Arcade Stage -->
+  <main class="stage">
+    <!-- Pilot Selection Bar -->
+    <div class="char-bar-container">
+      <div class="char-bar-header">
+        <div class="char-bar-title"><span>👤</span> SELECT PILOT</div>
+        <div class="char-badge-info" id="char-trait-badge">TOP SPEED +15%</div>
+      </div>
+      <div class="char-tray" id="char-tray">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+
+    <!-- Nav Arrow Left -->
+    <button class="nav-arrow arrow-left" id="prev-car" type="button" aria-label="Previous Car">◄</button>
+
+    <!-- Car Info Header -->
+    <div class="car-info-card">
+      <h1 class="car-name" id="car-name-el">PORSCHE 911 CARRERA S</h1>
+      <div class="car-pilot-line" id="car-pilot-line">PILOT: SHAFIN (The Speed Fighter)</div>
+      <div class="car-stats">
+        <span class="stat-badge" id="stat-hp">443 HP</span>
+        <span class="stat-badge" id="stat-speed">308 KM/H</span>
+        <span class="stat-badge" id="stat-acc">0-100: 3.5s</span>
+        <span style="color: var(--green); font-weight: 800;">✓ FREE UNLOCKED</span>
+      </div>
+    </div>
+
+    <!-- 3D Studio Car Viewport -->
+    <div class="showroom-viewport">
+      <div id="studio-mount"></div>
+    </div>
+
+    <!-- Nav Arrow Right -->
+    <button class="nav-arrow arrow-right" id="next-car" type="button" aria-label="Next Car">►</button>
+
+    <!-- Color Swatches Bar -->
+    <div class="paint-bar" id="paint-bar">
+      <div class="color-dot active" data-color="#c0392b" style="background: #c0392b;" title="Crimson Red"></div>
+      <div class="color-dot" data-color="#00e5ff" style="background: #00e5ff;" title="Electric Blue"></div>
+      <div class="color-dot" data-color="#fbbf24" style="background: #fbbf24;" title="Apex Gold"></div>
+      <div class="color-dot" data-color="#10b981" style="background: #10b981;" title="British Racing Green"></div>
+      <div class="color-dot" data-color="#1e293b" style="background: #1e293b;" title="Stealth Black"></div>
+      <div class="color-dot" data-color="#f8fafc" style="background: #f8fafc;" title="Pearl White"></div>
+    </div>
+
+    <!-- Bottom Dock: Game Modes & Start Button -->
+    <footer class="bottom-dock">
+      <div class="mode-pills" id="mode-pills">
+        <button class="mode-pill active" data-mode="race" type="button">
+          <span>🏁</span> CIRCUIT RACE
+        </button>
+        <button class="mode-pill" data-mode="f1" type="button">
+          <span>🏎️</span> FORMULA 1
+        </button>
+        <button class="mode-pill" data-mode="derby" type="button">
+          <span>💥</span> DEMOLITION DERBY
+        </button>
+      </div>
+
+      <div class="track-pill" id="track-btn" type="button" title="Select Track">
+        <span>📍</span> <span id="track-name-el">REDLINE SPEEDWAY</span> <span>⇅</span>
+      </div>
+
+      <button class="start-btn" id="start-btn" type="button">
+        <span>🚀</span> START RACE
+      </button>
+    </footer>
+  </main>
+
+  <!-- In-Game Race Viewport Overlay -->
+  <div id="race-overlay">
+    <button class="exit-garage-btn" id="exit-garage-btn" type="button">
+      <span>🏠</span> GARAGE
+    </button>
+    <iframe id="race-frame" src="about:blank" allow="autoplay; fullscreen"></iframe>
+  </div>
+
+  <!-- As-Sunnah Pure Instrumental Theme Audio -->
+  <audio id="bgm-player" loop preload="auto" src="audio/as_sunnah_theme.mp3"></audio>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // 1. ALL PILOTS / CHARACTERS (From D:\AAA car and Institute Team)
+      var PILOTS = [
+        {
+          id: 'jubayer',
+          name: 'JUBAYER',
+          title: 'Institute Grand Champion',
+          trait: 'ALL STATS BOOST +20%',
+          avatar: 'img/characters/jubayer.jpg'
+        },
+        {
+          id: 'shafin',
+          name: 'SHAFIN',
+          title: 'The Speed Fighter',
+          trait: 'TOP SPEED +15%',
+          avatar: 'img/characters/shafin.jpg'
+        },
+        {
+          id: 'nafis',
+          name: 'NAFIS',
+          title: 'Master Tactician',
+          trait: 'NITRO BOOST +20%',
+          avatar: 'img/characters/nafis_avatar.png'
+        },
+        {
+          id: 'tamim',
+          name: 'TAMIM',
+          title: 'Apex Hunter',
+          trait: 'ACCELERATION +18%',
+          avatar: 'img/characters/tamim_avatar.png'
+        },
+        {
+          id: 'hamza',
+          name: 'HAMZA',
+          title: 'Precision Striker',
+          trait: 'CORNERING GRIP +25%',
+          avatar: 'img/characters/hamza_avatar.png'
+        },
+        {
+          id: 'aavon',
+          name: 'AAVON',
+          title: 'Iron Defender',
+          trait: 'DERBY ARMOUR +30%',
+          avatar: 'img/characters/aavon_avatar.png'
+        },
+        {
+          id: 'abdur-rahman',
+          name: 'ABDUR RAHMAN',
+          title: 'Endurance Champion',
+          trait: 'TYRE DURABILITY +30%',
+          avatar: 'img/characters/abdur_rahman.jpg'
+        },
+        {
+          id: 'affan-labib',
+          name: 'AFFAN LABIB',
+          title: 'Turbo Specialist',
+          trait: 'BOOST CHARGE +22%',
+          avatar: 'img/characters/affan_labib.jpg'
+        },
+        {
+          id: 'ferdaus',
+          name: 'FERDAUS',
+          title: 'Slipstream Ace',
+          trait: 'DRAFTING SPEED +18%',
+          avatar: 'img/characters/ferdaus.jpg'
+        },
+        {
+          id: 'ft-imran',
+          name: 'FT IMRAN',
+          title: 'Rally King',
+          trait: 'DIRT OFF-ROAD +25%',
+          avatar: 'img/characters/ft_imran.jpg'
+        },
+        {
+          id: 'jabir',
+          name: 'JABIR',
+          title: 'Drift Prodigy',
+          trait: 'DRIFT MULTIPLIER +25%',
+          avatar: 'img/characters/jabir.jpg'
+        },
+        {
+          id: 'sawban-arib',
+          name: 'SAWBAN ARIB',
+          title: 'Night Falcon',
+          trait: 'REACTION SPEED +15%',
+          avatar: 'img/characters/sawban_arib.jpg'
+        }
+      ];
+
+      // 2. TRACKS LIST
+      var TRACKS = [
+        { id: 'redline-speedway', name: 'REDLINE SPEEDWAY' },
+        { id: 'cypress-heights', name: 'CYPRESS HEIGHTS' },
+        { id: 'monza', name: 'AUTODROMO MONZA' },
+        { id: 'spa', name: 'SPA-FRANCORCHAMPS' },
+        { id: 'silverstone', name: 'SILVERSTONE CIRCUIT' },
+        { id: 'dockyard-sliders', name: 'DOCKYARD HARBOR' }
+      ];
+
+      // 3. 53 FACTORY CARS FROM CB.stock.SPECS
+      var carKeys = [];
+      if (CB.stock && CB.stock.SPECS) {
+        carKeys = Object.keys(CB.stock.SPECS);
+      }
+      if (!carKeys.length) {
+        carKeys = ['porsche-911-992', 'nissan-skyline-gtr-r34', 'bmw-m4-g82', 'toyota-gr-supra-a90', 'mclaren-p1', 'f1'];
+      }
+
+      var currentCarIdx = 0;
+      var currentPilotIdx = 0;
+      var currentTrackIdx = 0;
+      var currentMode = 'race';
+      var currentColor = '#c0392b';
+
+      // Elements
+      var charTrayEl = document.getElementById('char-tray');
+      var charTraitBadgeEl = document.getElementById('char-trait-badge');
+      var carNameEl = document.getElementById('car-name-el');
+      var carPilotLineEl = document.getElementById('car-pilot-line');
+      var statHpEl = document.getElementById('stat-hp');
+      var statSpeedEl = document.getElementById('stat-speed');
+      var statAccEl = document.getElementById('stat-acc');
+      var trackNameEl = document.getElementById('track-name-el');
+      var prevCarBtn = document.getElementById('prev-car');
+      var nextCarBtn = document.getElementById('next-car');
+      var trackBtn = document.getElementById('track-btn');
+      var startBtn = document.getElementById('start-btn');
+      var modePillsEl = document.getElementById('mode-pills');
+      var paintBarEl = document.getElementById('paint-bar');
+      var studioMountEl = document.getElementById('studio-mount');
+      var raceOverlayEl = document.getElementById('race-overlay');
+      var raceFrameEl = document.getElementById('race-frame');
+      var exitGarageBtn = document.getElementById('exit-garage-btn');
+      var bgmPlayer = document.getElementById('bgm-player');
+      var bgmToggleBtn = document.getElementById('bgm-toggle-btn');
+      var ctrlHintBtn = document.getElementById('ctrl-hint-btn');
+      var bypassPortraitBtn = document.getElementById('bypass-portrait-btn');
+      var landscapeNotice = document.getElementById('landscape-notice');
+
+      // 4. Render Pilot Selection Tray
+      function renderPilots() {
+        charTrayEl.innerHTML = '';
+        PILOTS.forEach(function (pilot, i) {
+          var pill = document.createElement('div');
+          pill.className = 'char-pill' + (i === currentPilotIdx ? ' active' : '');
+          pill.innerHTML = '<img class="char-avatar-img" src="' + pilot.avatar + '" alt="' + pilot.name + '" onerror="this.src=\'img/as_sunnah_logo.png\'">' +
+                           '<span class="char-name-txt">' + pilot.name + '</span>';
+          pill.addEventListener('click', function () {
+            selectPilot(i);
+          });
+          charTrayEl.appendChild(pill);
+        });
+      }
+
+      function selectPilot(idx) {
+        currentPilotIdx = idx;
+        var pilot = PILOTS[idx];
+        window.CURRENT_PILOT_NAME = pilot.name;
+        charTraitBadgeEl.textContent = pilot.trait;
+        var pills = charTrayEl.querySelectorAll('.char-pill');
+        pills.forEach(function (p, i) {
+          p.classList.toggle('active', i === idx);
+        });
+        carPilotLineEl.textContent = 'PILOT & OWNER: ' + pilot.name + ' (' + pilot.title + ')';
+        try {
+          localStorage.setItem('redline_pilot_name', pilot.name);
+          localStorage.setItem('redline_pilot', JSON.stringify(pilot));
+          localStorage.setItem('cb.pilot.id', pilot.id);
+          localStorage.setItem('cb.pilot.name', pilot.name);
+          sessionStorage.setItem('cb.pilot.id', pilot.id);
+          sessionStorage.setItem('cb.pilot.name', pilot.name);
+        } catch (e) {}
+
+        if (CB.gl && CB.gl.textures && typeof CB.gl.textures.invalidate === 'function') {
+          try { CB.gl.textures.invalidate(); } catch (e) {}
+        }
+        if (studioMounted) {
+          updateCarDisplay();
+        }
+      }
+
+      // 5. 3D WebGL Studio Turntable
+      var studioMounted = false;
+      var activeBuild = null;
+      var activeMetrics = null;
+
+      function initStudio3D() {
+        if (!CB.studio3d || typeof CB.studio3d.mount !== 'function') return;
+        try {
+          var cv = CB.studio3d.mount(studioMountEl, { view: 'iso', spin: true });
+          if (cv) studioMounted = true;
+        } catch (e) {
+          console.warn('[Studio3D mount error]', e);
+        }
+      }
+
+      function updateCarDisplay() {
+        var carKey = carKeys[currentCarIdx];
+        var carData = null;
+        if (CB.stock && typeof CB.stock.build === 'function') {
+          carData = CB.stock.build(carKey);
+        }
+
+        var title = (carData && carData.title) ? carData.title : carKey.toUpperCase().replace(/-/g, ' ');
+        var spec = (carData && carData.spec) ? carData.spec : { hp: 500, v: 310, s: 3.3 };
+        activeBuild = (carData && carData.build) ? carData.build : null;
+        activeMetrics = (carData && carData.metrics) ? carData.metrics : null;
+
+        // Apply chosen paint color to build
+        if (activeBuild) {
+          activeBuild.exterior = activeBuild.exterior || {};
+          activeBuild.exterior.paint = currentColor;
+        }
+
+        carNameEl.textContent = title;
+        statHpEl.textContent = (spec.hp || 500) + ' HP';
+        statSpeedEl.textContent = (spec.v || 310) + ' KM/H';
+        statAccEl.textContent = '0-100: ' + (spec.s ? spec.s + 's' : '3.3s');
+
+        // Update 3D studio model
+        if (CB.studio3d && activeBuild) {
+          try {
+            CB.studio3d.update(activeBuild, activeMetrics || { hp: spec.hp || 500, topSpeed_kmh: spec.v || 310, zeroTo100_s: spec.s || 3.3 });
+          } catch (e) {
+            console.warn('[Studio3D update error]', e);
+          }
+        }
+
+        // Store active vehicle build in state & localStorage
+        try {
+          if (CB.state && typeof CB.state.set === 'function' && activeBuild) {
+            CB.state.set(activeBuild);
+          }
+          if (activeBuild) {
+            localStorage.setItem('redline_build', JSON.stringify(activeBuild));
+          }
+        } catch (e) {}
+      }
+
+      // 6. Navigation Event Listeners
+      prevCarBtn.addEventListener('click', function () {
+        currentCarIdx = (currentCarIdx - 1 + carKeys.length) % carKeys.length;
+        updateCarDisplay();
+      });
+      nextCarBtn.addEventListener('click', function () {
+        currentCarIdx = (currentCarIdx + 1) % carKeys.length;
+        updateCarDisplay();
+      });
+
+      // Track Cycling
+      trackBtn.addEventListener('click', function () {
+        currentTrackIdx = (currentTrackIdx + 1) % TRACKS.length;
+        trackNameEl.textContent = TRACKS[currentTrackIdx].name;
+      });
+
+      // Mode Selection
+      modePillsEl.addEventListener('click', function (e) {
+        var btn = e.target.closest('.mode-pill');
+        if (!btn) return;
+        modePillsEl.querySelectorAll('.mode-pill').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        currentMode = btn.getAttribute('data-mode') || 'race';
+      });
+
+      // Color Swatches
+      paintBarEl.addEventListener('click', function (e) {
+        var dot = e.target.closest('.color-dot');
+        if (!dot) return;
+        paintBarEl.querySelectorAll('.color-dot').forEach(function (d) { d.classList.remove('active'); });
+        dot.classList.add('active');
+        currentColor = dot.getAttribute('data-color') || '#c0392b';
+        updateCarDisplay();
+      });
+
+      // 7. Start Race Flow
+      startBtn.addEventListener('click', function () {
+        var pilot = PILOTS[currentPilotIdx];
+        var track = TRACKS[currentTrackIdx];
+        var carKey = carKeys[currentCarIdx];
+
+        // Ensure state & localStorage carry active pilot and build
+        try {
+          localStorage.setItem('redline_pilot', JSON.stringify(pilot));
+          localStorage.setItem('redline_selected_track', track.id);
+          localStorage.setItem('redline_camera', 'chase');
+        } catch (e) {}
+
+        var targetUrl = 'index.html';
+        var pilotQuery = '&pilot=' + encodeURIComponent(pilot.id) + '&pilotName=' + encodeURIComponent(pilot.name);
+        if (currentMode === 'f1') {
+          targetUrl = 'index.html#/f1?camera=chase' + pilotQuery;
+        } else if (currentMode === 'derby') {
+          targetUrl = 'index.html#/derby?camera=chase' + pilotQuery;
+        } else {
+          targetUrl = 'index.html#/race?track=' + encodeURIComponent(track.id) + '&camera=chase' + pilotQuery;
+        }
+
+        // Launch in fullscreen overlay
+        raceFrameEl.src = targetUrl;
+        raceOverlayEl.style.display = 'block';
+        if (bgmPlayer && !bgmPlayer.paused) {
+          bgmPlayer.pause();
+        }
+      });
+
+      // Exit Garage Button
+      exitGarageBtn.addEventListener('click', function () {
+        raceOverlayEl.style.display = 'none';
+        raceFrameEl.src = 'about:blank';
+        if (bgmToggleBtn.classList.contains('active')) {
+          try { bgmPlayer.play(); } catch (e) {}
+        }
+      });
+
+      // 8. Background Music Toggle
+      bgmToggleBtn.addEventListener('click', function () {
+        if (bgmPlayer.paused) {
+          bgmPlayer.play().then(function () {
+            bgmToggleBtn.classList.add('active');
+          }).catch(function () {});
+        } else {
+          bgmPlayer.pause();
+          bgmToggleBtn.classList.remove('active');
+        }
+      });
+
+      // Auto start music on first user interaction
+      function enableAudioOnFirstTap() {
+        if (bgmPlayer.paused && bgmToggleBtn.classList.contains('active')) {
+          bgmPlayer.play().catch(function () {});
+        }
+        document.removeEventListener('pointerdown', enableAudioOnFirstTap);
+        document.removeEventListener('keydown', enableAudioOnFirstTap);
+      }
+      document.addEventListener('pointerdown', enableAudioOnFirstTap);
+      document.addEventListener('keydown', enableAudioOnFirstTap);
+
+      // Controls Dialog
+      ctrlHintBtn.addEventListener('click', function () {
+        alert('GAME CONTROLS:\n• Mobile: On-screen Left/Right steering + Gas/Brake pedals.\n• Desktop: Arrow keys or WASD.\n• Camera: Locked Chase Camera directly behind your car.\n• Action buttons (A1 / A2 in Derby): Nitro, Flamethrower, Weapons.');
+      });
+
+      // Bypass portrait button
+      bypassPortraitBtn.addEventListener('click', function () {
+        landscapeNotice.style.display = 'none';
+      });
+
+      // Boot
+      renderPilots();
+      selectPilot(0);
+      initStudio3D();
+      updateCarDisplay();
+
+    })();
+  </script>
+</body>
+</html>

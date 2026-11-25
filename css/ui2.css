@@ -1,0 +1,2163 @@
+/* ==========================================================================
+   JUBAYER RACING UI v2.0 Realistic Theme (Gran Turismo & Forza Horizon Aesthetic)
+   Scoped strictly to html.rl-v2 and #rl-app so ?ui=1 is 100% pristine.
+   Zero vertical and zero horizontal scrolling on mobile landscape viewports.
+   ========================================================================== */
+
+/* Hidden when not in UI v2 mode */
+html:not(.rl-v2) #rl-app {
+  display: none !important;
+}
+
+html.rl-v2 {
+  overflow: hidden !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+html.rl-v2 body {
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  overflow: hidden !important;
+  background-color: #090a0c !important;
+  color: #f3f4f6 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif !important;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+  touch-action: manipulation !important;
+}
+
+/* Hide original menu chrome when UI v2 is active in menu mode */
+html.rl-v2 #gnav,
+html.rl-v2 .gnav,
+html.rl-v2:not(.rl-in-session) #global-nav,
+html.rl-v2:not(.rl-in-session) #app-root,
+html.rl-v2:not(.rl-in-session) #garage-flow,
+html.rl-v2:not(.rl-in-session) #main-menu-shell {
+  display: none !important;
+}
+
+/* When in active race session, hide UI v2 overlay and reveal real WebGL race screen */
+html.rl-v2.rl-in-session #rl-app {
+  display: none !important;
+}
+
+html.rl-v2.rl-in-session #app-root {
+  display: block !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+}
+
+/* In-Race HUD & Touch Controls Styling Enhancements for UI v2 */
+html.rl-v2 #race-root .rx-touch-steering,
+html.rl-v2 #race-root .rx-touch-pedals {
+  opacity: 0.72;
+  transition: opacity 0.15s ease;
+}
+html.rl-v2 #race-root .rx-touch-steering:hover,
+html.rl-v2 #race-root .rx-touch-pedals:hover,
+html.rl-v2 #race-root .rx-touch-steering:active,
+html.rl-v2 #race-root .rx-touch-pedals:active {
+  opacity: 0.95;
+}
+html.rl-v2 #race-root .rx-steer-btn,
+html.rl-v2 #race-root .rx-pedal-btn {
+  background: rgba(14, 16, 22, 0.65) !important;
+  border-width: 1.5px !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+
+/* Eradicate any stark white backgrounds and white setup screens */
+html, body, #race-root, #game-hub, .st-sys, .rx-screen, .rx-screen-setup, .summary-head, .summary-chart, .overall, .lap-card, .rating-list {
+  background-color: #0b0d14 !important;
+  color: #f3f4f6 !important;
+}
+#race-root .rx-screen-setup, #race-root .rx-screen-setup * {
+  background-color: #12141c !important;
+  color: #f3f4f6 !important;
+}
+#toast-root {
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
+
+/* UI v2 App Container: Fixed 100dvh viewport, zero scroll */
+#rl-app {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 2147482000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#rl-app, #rl-app * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+    /* ==========================================================================
+       FORZA HORIZON & GRAN TURISMO INSPIRED DESIGN TOKENS
+       Restrained, Matte, Minimal, Photoreal-Leaning
+       ========================================================================== */
+    :root {
+      --bg-base: #090a0c;
+      --bg-surface: #121418;
+      --bg-panel: rgba(18, 20, 25, 0.78);
+      --bg-card: rgba(22, 25, 32, 0.65);
+      --bg-translucent: rgba(255, 255, 255, 0.04);
+      --bg-hover: rgba(255, 255, 255, 0.07);
+
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(255, 255, 255, 0.22);
+      --border-accent: #d43b2c;
+
+      --text-white: #f3f4f6;
+      --text-silver: #9ca3af;
+      --text-dim: #64748b;
+      --text-dark: #090a0c;
+
+      --accent-red: #d43b2c;
+      --accent-red-hover: #e04434;
+
+      --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-full: 9999px;
+
+      --ease-fast: cubic-bezier(0.16, 1, 0.3, 1);
+      --duration-fast: 180ms;
+    }
+
+    
+
+    
+
+    /* Fixed App Shell - Zero Vertical Scroll */
+    #rl-app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(circle at 50% 40%, #15181f 0%, #0c0d10 65%, #060708 100%);
+    }
+
+    /* Subtle Studio Vignette */
+    .vignette-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, transparent 60%, rgba(0, 0, 0, 0.65) 100%);
+      z-index: 1;
+    }
+
+    /* 3D Turntable Scene Backdrop with Real Rendered Car */
+    .studio-stage {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    /* Soft Realistic Ground Reflection & Shadow */
+    .studio-floor-reflection {
+      position: absolute;
+      bottom: 6%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 680px;
+      height: 140px;
+      background: radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.35) 45%, transparent 75%);
+      filter: blur(8px);
+      pointer-events: none;
+    }
+
+    /* Real 3D Car Image from WebGL engine */
+    .studio-car-img {
+      position: absolute;
+      bottom: 12%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 580px;
+      max-width: 82vw;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 20px 25px rgba(0,0,0,0.9));
+      transition: transform var(--duration-fast) var(--ease-fast), opacity var(--duration-fast) ease;
+      pointer-events: none;
+    }
+
+    /* Minimalist Top Bar */
+    .topbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 max(20px, env(safe-area-inset-right)) 0 max(20px, env(safe-area-inset-left));
+      z-index: 10;
+      background: linear-gradient(180deg, rgba(9, 10, 12, 0.85) 0%, transparent 100%);
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-title {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-white);
+    }
+
+    .brand-accent {
+      color: var(--accent-red);
+      font-weight: 900;
+    }
+
+    .brand-badge {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-translucent);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-silver);
+    }
+
+    .top-stats {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .stat-chip {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      padding: 4px 12px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      backdrop-filter: blur(8px);
+    }
+
+    .stat-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .stat-val {
+      font-size: 13px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-white);
+    }
+
+    /* Minimal Left Nav Rail */
+    .nav-rail {
+      position: absolute;
+      left: max(16px, env(safe-area-inset-left));
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 10;
+    }
+
+    .nav-btn {
+      min-width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 16px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-silver);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-fast);
+    }
+
+    .nav-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-white);
+    }
+
+    .nav-btn.active {
+      background: var(--bg-panel);
+      border-color: var(--border-subtle);
+      border-left: 2px solid var(--accent-red);
+      color: var(--text-white);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-icon {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      stroke-width: 1.75;
+      fill: none;
+    }
+
+    /* Screen Container */
+    .screen-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    
+    /* Sleek Atmospheric Carbon Subscreens (No Black Voids) */
+    .screen {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--duration-fast) ease;
+      background: radial-gradient(circle at 50% 30%, rgba(15, 20, 32, 0.78) 0%, rgba(7, 9, 14, 0.94) 100%);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    #screen-home {
+      background: transparent !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
+    /* Ambient Workshop Lighting Behind Subscreens */
+    .studio-stage {
+      transition: filter 0.3s ease, transform 0.3s ease;
+    }
+    .has-subscreen .studio-stage {
+      filter: brightness(0.42) blur(12px);
+      transform: scale(1.03);
+    }
+
+    /* Interactive AAA In-Game Game Modal */
+    .rk-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 99999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      animation: rkFadeIn 0.2s ease;
+    }
+    .rk-modal-overlay.open {
+      display: flex;
+    }
+    .rk-modal-dialog {
+      background: linear-gradient(145deg, #161922 0%, #0d0f15 100%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-top: 2px solid var(--accent-red, #ff2a4b);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 85vh;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 42, 75, 0.15);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: rkPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .rk-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .rk-modal-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .rk-modal-icon {
+      font-size: 20px;
+    }
+    .rk-modal-title {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #fff;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .rk-modal-close {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: #fff;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      transition: background 0.15s ease;
+    }
+    .rk-modal-close:hover {
+      background: var(--accent-red, #ff2a4b);
+    }
+    .rk-modal-body {
+      padding: 16px 18px;
+      overflow-y: auto;
+      font-size: 13px;
+      color: #ccc;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Modal Content Specifics */
+    .rk-chat-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .rk-chat-msg {
+      background: rgba(255, 255, 255, 0.04);
+      padding: 8px 12px;
+      border-radius: 6px;
+      border-left: 3px solid var(--accent-red, #ff2a4b);
+      font-size: 12px;
+    }
+    .rk-chat-sender {
+      font-weight: 800;
+      color: #ff4767;
+      margin-right: 6px;
+    }
+    .rk-chat-input-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .rk-chat-input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: #fff;
+      font-size: 12px;
+      outline: none;
+    }
+    .rk-chat-send {
+      background: var(--accent-red, #ff2a4b);
+      color: #fff;
+      border: none;
+      padding: 0 16px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* Friend / Clan / Rewards Rows */
+    .rk-list-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .rk-list-col {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .rk-list-name {
+      font-weight: 700;
+      color: #fff;
+      font-size: 13px;
+    }
+    .rk-list-status {
+      font-size: 11px;
+      color: #888;
+    }
+    .rk-list-status.online {
+      color: #10b981;
+    }
+    .rk-action-pill {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .rk-action-pill:hover, .rk-action-pill.primary {
+      background: var(--accent-red, #ff2a4b);
+      border-color: var(--accent-red, #ff2a4b);
+      color: #fff;
+    }
+
+    /* Reward Calendar Cards */
+    .rk-reward-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 8px 0;
+    }
+    .rk-reward-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 12px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-align: center;
+    }
+    .rk-reward-card.active {
+      background: linear-gradient(135deg, rgba(255, 42, 75, 0.25) 0%, rgba(20, 24, 36, 0.8) 100%);
+      border-color: var(--accent-red, #ff2a4b);
+      box-shadow: 0 0 15px rgba(255, 42, 75, 0.2);
+    }
+    .rk-reward-day {
+      font-size: 10px;
+      font-weight: 800;
+      color: #888;
+      text-transform: uppercase;
+    }
+    .rk-reward-val {
+      font-size: 12px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .rk-claim-cta {
+      width: 100%;
+      background: linear-gradient(90deg, #ff2a4b 0%, #ff5e3a 100%);
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      text-transform: uppercase;
+      box-shadow: 0 4px 18px rgba(255, 42, 75, 0.4);
+      margin-top: 8px;
+    }
+
+    /* In-Game Animated Toast */
+    .rk-game-toast {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-30px);
+      background: rgba(14, 17, 24, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-left: 4px solid var(--accent-red, #ff2a4b);
+      border-radius: 8px;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 100000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .rk-game-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    .rk-toast-ico {
+      font-size: 16px;
+    }
+    .rk-toast-msg {
+      color: #fff;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    @keyframes rkFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes rkPopIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    .screen.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ==========================================================================
+       SCREEN 1: HOME
+       ========================================================================== */
+    .home-hero-info {
+      position: absolute;
+      left: max(180px, 24vw);
+      top: 22%;
+      max-width: 440px;
+    }
+
+    .hero-make {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 2px;
+    }
+
+    .hero-title {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-white);
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .hero-subtitle {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-silver);
+      letter-spacing: 0.04em;
+    }
+
+    /* Forza Horizon Restrained Primary CTA */
+    .cta-play-btn {
+      position: absolute;
+      right: max(24px, env(safe-area-inset-right));
+      bottom: max(24px, env(safe-area-inset-bottom));
+      min-width: 180px;
+      height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: var(--accent-red);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(212, 59, 44, 0.35);
+      transition: background var(--duration-fast) ease, transform 100ms ease;
+    }
+
+    .cta-play-btn:active {
+      transform: scale(0.98);
+      background: var(--accent-red-hover);
+    }
+
+    /* ==========================================================================
+       SCREEN 2: MODES (Clean Photographic Cards)
+       ========================================================================== */
+    .modes-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-left: max(180px, 22vw);
+      padding-right: max(24px, env(safe-area-inset-right));
+    }
+
+    .section-header {
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-white);
+    }
+
+    .section-desc {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .modes-carousel {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      padding-bottom: 10px;
+    }
+
+    .modes-carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .mode-card {
+      flex: 0 0 210px;
+      height: 230px;
+      scroll-snap-align: start;
+      position: relative;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 14px;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-fast);
+    }
+
+    .mode-card:hover, .mode-card.selected {
+      border-color: var(--border-focus);
+      background: #181b22;
+      transform: translateY(-2px);
+    }
+
+    .mode-card.selected::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent-red);
+    }
+
+    .mode-card-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.65;
+      transition: opacity var(--duration-fast) ease;
+    }
+
+    .mode-card:hover .mode-card-img, .mode-card.selected .mode-card-img {
+      opacity: 0.85;
+    }
+
+    .mode-card-grad {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(14,16,20,0.1) 0%, rgba(14,16,20,0.92) 80%);
+    }
+
+    .mode-card-body {
+      position: relative;
+      z-index: 2;
+    }
+
+    .mode-badge {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 4px;
+    }
+
+    .mode-name {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text-white);
+      margin-bottom: 4px;
+    }
+
+    .mode-info {
+      font-size: 11px;
+      color: var(--text-silver);
+      line-height: 1.3;
+    }
+
+    /* ==========================================================================
+       SCREEN 3: GARAGE (Gran Turismo Style Telemetry Specs)
+       ========================================================================== */
+    .garage-telemetry {
+      position: absolute;
+      left: max(180px, 22vw);
+      top: 18%;
+      width: 250px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      backdrop-filter: blur(14px);
+    }
+
+    .telemetry-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--bg-translucent);
+    }
+
+    .telemetry-row:last-child {
+      border-bottom: none;
+    }
+
+    .telemetry-key {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .telemetry-val {
+      font-size: 12px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-white);
+    }
+
+    /* Clean Horizontal Thumbnail Strip */
+    .garage-roster-strip {
+      position: absolute;
+      left: max(180px, 22vw);
+      right: max(24px, env(safe-area-inset-right));
+      bottom: max(20px, env(safe-area-inset-bottom));
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 4px 0;
+    }
+
+    .roster-thumb {
+      flex: 0 0 110px;
+      height: 52px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--duration-fast) ease;
+    }
+
+    .roster-thumb:hover, .roster-thumb.active {
+      border-color: var(--border-focus);
+      background: #171920;
+    }
+
+    .roster-thumb.active {
+      border-top: 2px solid var(--accent-red);
+    }
+
+    .thumb-make {
+      font-size: 8px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .thumb-model {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-white);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .thumb-spec {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--text-silver);
+    }
+
+    /* ==========================================================================
+       SCREEN 4: CUSTOMIZE (Precision Paint & Hotspots)
+       ========================================================================== */
+    .customize-panel {
+      position: absolute;
+      right: max(24px, env(safe-area-inset-right));
+      top: 18%;
+      width: 280px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      backdrop-filter: blur(14px);
+    }
+
+    .customize-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-white);
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .swatch-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .swatch-btn {
+      height: 34px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: transform var(--duration-fast) ease, border-color var(--duration-fast) ease;
+    }
+
+    .swatch-btn.selected {
+      border-color: var(--text-white);
+      box-shadow: 0 0 0 1px #fff;
+    }
+
+    .finish-selector {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .finish-pill {
+      flex: 1;
+      height: 28px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-silver);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .finish-pill.selected {
+      background: var(--text-white);
+      color: var(--text-dark);
+      border-color: var(--text-white);
+    }
+
+    .apply-btn {
+      width: 100%;
+      height: 42px;
+      background: var(--accent-red);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    /* Hotspot Pins with Thin Leader Lines */
+    .hotspot-pin {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--text-white);
+      border: 2px solid var(--bg-base);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.8);
+      cursor: pointer;
+      z-index: 8;
+    }
+
+    .pin-aero { top: 52%; left: 36%; }
+    .pin-paint { top: 58%; left: 52%; }
+    .pin-wheels { top: 74%; left: 65%; }
+
+    .micro-label {
+      font-size: var(--fs-xs, 10px);
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .cost-summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .cost-key {
+      font-size: var(--fs-xs, 10px);
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+    .cost-val {
+      font-size: var(--fs-sm, 12px);
+      font-weight: 700;
+      color: var(--text-white);
+    }
+
+    .hud-lap-badge {
+      font-size: var(--fs-xs, 10px);
+      color: var(--text-dim);
+      font-weight: 700;
+    }
+
+    .touch-btn.touch-brk { color: var(--fail, #ef4444); }
+    .touch-btn.touch-gas { color: var(--win, #10b981); }
+
+    .swatch-btn[data-swatch="red"] { background: #b91c1c; }
+    .swatch-btn[data-swatch="blue"] { background: #1d4ed8; }
+    .swatch-btn[data-swatch="black"] { background: #111827; }
+    .swatch-btn[data-swatch="silver"] { background: #e5e7eb; }
+    .swatch-btn[data-swatch="orange"] { background: #c2410c; }
+    .swatch-btn[data-swatch="green"] { background: #047857; }
+    .swatch-btn[data-swatch="grey"] { background: #4b5563; }
+    .swatch-btn[data-swatch="gold"] { background: #d97706; }
+
+    .hotspot-label {
+      position: absolute;
+      left: 18px;
+      top: -3px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-white);
+      background: rgba(9, 10, 12, 0.75);
+      padding: 2px 6px;
+      border-radius: 2px;
+      white-space: nowrap;
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* Camera View Angle Pills */
+    .camera-bar {
+      position: absolute;
+      top: 60px;
+      right: max(24px, env(safe-area-inset-right));
+      display: flex;
+      gap: 6px;
+      z-index: 10;
+    }
+    .cam-pill {
+      padding: 6px 12px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: var(--radius-full);
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-dim);
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all var(--duration-fast) var(--ease-fast);
+    }
+    .cam-pill.active {
+      background: var(--text-white);
+      color: var(--text-dark);
+      font-weight: 800;
+      border-color: var(--text-white);
+    }
+
+    /* Large Floating Prev/Next Car Arrows in Garage */
+    .car-nav-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-white);
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+      transition: all var(--duration-fast) var(--ease-fast);
+    }
+    .car-nav-arrow:active {
+      transform: translateY(-50%) scale(0.92);
+      border-color: var(--accent-red);
+    }
+    .arrow-prev {
+      left: max(88px, calc(env(safe-area-inset-left) + 72px));
+    }
+    .arrow-next {
+      right: max(24px, env(safe-area-inset-right));
+    }
+
+    /* Home Screen Quick Actions Bar */
+    .home-quick-actions {
+      position: absolute;
+      bottom: 28px;
+      left: max(88px, calc(env(safe-area-inset-left) + 72px));
+      display: flex;
+      gap: 10px;
+      z-index: 10;
+    }
+    .quick-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-white);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all var(--duration-fast) var(--ease-fast);
+    }
+    .quick-btn:hover, .quick-btn:active {
+      border-color: var(--border-focus);
+      background: var(--bg-hover);
+    }
+
+    /* Garage Action Buttons */
+    .garage-action-btns {
+      position: absolute;
+      bottom: 84px;
+      right: max(24px, env(safe-area-inset-right));
+      display: flex;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    .garage-select-btn {
+      height: 42px;
+      padding: 0 20px;
+      background: var(--accent-red);
+      color: var(--text-white);
+      font-weight: 800;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(212, 59, 44, 0.45);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all var(--duration-fast) var(--ease-fast);
+    }
+    .garage-select-btn:active {
+      transform: scale(0.96);
+      background: var(--accent-red-hover);
+    }
+
+    .garage-drive-btn {
+      height: 42px;
+      padding: 0 20px;
+      background: var(--bg-panel);
+      color: var(--text-white);
+      border: 1px solid var(--border-focus);
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all var(--duration-fast) ease;
+    }
+    .garage-drive-btn:hover, .garage-drive-btn:active {
+      background: var(--bg-hover);
+      border-color: var(--accent-red);
+    }
+
+    .modes-action-bar {
+      margin-top: 14px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    /* ==========================================================================
+       SCREEN 5: MINIMAL REALISTIC RACE HUD (Clear View of the Road)
+       ========================================================================== */
+    .hud-backdrop {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 55%, #18202c 0%, #080a0f 80%);
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+    }
+
+    .hud-cluster-top {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(9, 10, 12, 0.65);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 4px 14px;
+      backdrop-filter: blur(8px);
+    }
+
+    .hud-lap-time {
+      font-size: 15px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-white);
+      letter-spacing: 0.05em;
+    }
+
+    .hud-split-time {
+      font-size: 11px;
+      font-weight: 700;
+      color: #10b981;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Minimal Slim Tachometer Arc & Central Speed */
+    .hud-telemetry-bottom {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .speed-gauge-wrap {
+      position: relative;
+      width: 140px;
+      height: 70px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .speed-gauge-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 140px;
+      height: 70px;
+    }
+
+    .hud-speed-num {
+      font-size: 26px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-white);
+      line-height: 1;
+    }
+
+    .hud-speed-unit {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .hud-gear-badge {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent-red);
+      margin-top: 2px;
+    }
+
+    /* Low-Opacity Thin Wireframe Touch Controls (Does NOT hide the road) */
+    .hud-touch-left {
+      position: absolute;
+      left: max(20px, env(safe-area-inset-left));
+      bottom: max(20px, env(safe-area-inset-bottom));
+      display: flex;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    .hud-touch-right {
+      position: absolute;
+      right: max(20px, env(safe-area-inset-right));
+      bottom: max(20px, env(safe-area-inset-bottom));
+      display: flex;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    .touch-btn {
+      min-width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+    }
+
+    .touch-btn:active {
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+    }
+
+    /* Top Corner Utility Icons */
+    .hud-top-actions {
+      position: absolute;
+      top: 14px;
+      right: max(16px, env(safe-area-inset-right));
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+    }
+
+    .hud-util-btn {
+      min-width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      background: rgba(9, 10, 12, 0.55);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-silver);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* Back Button */
+    .back-btn {
+      min-width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: none;
+      color: var(--text-silver);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    /* ==========================================================================
+       SCREEN: SETTINGS (Global Configuration & Controls)
+       ========================================================================== */
+    .settings-content {
+      position: absolute;
+      inset: 60px max(24px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(88px, calc(env(safe-area-inset-left) + 72px));
+      overflow-y: auto;
+      scrollbar-width: thin;
+      padding-bottom: 24px;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .settings-group {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      backdrop-filter: blur(14px);
+    }
+
+    .settings-group-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .setting-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .setting-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .setting-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .setting-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-white);
+    }
+
+    .setting-value-badge {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent-red);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .setting-pills {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .setting-pill {
+      flex: 1;
+      min-width: 44px;
+      height: 28px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-silver);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--duration-fast) ease;
+    }
+
+    .setting-pill:hover {
+      background: var(--bg-hover);
+      color: var(--text-white);
+    }
+
+    .setting-pill.selected {
+      background: var(--text-white);
+      color: var(--text-dark);
+      border-color: var(--text-white);
+      font-weight: 800;
+    }
+
+    .setting-slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--bg-surface);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .setting-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent-red);
+      cursor: pointer;
+      border: 2px solid var(--text-white);
+    }
+
+    .offline-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+    }
+  
+    /* ==========================================================================
+       RACING KINGDOM / CSR2 SHOWROOM STYLING
+       ========================================================================== */
+    .studio-stage {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 0;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 30%, #20242e 0%, #0d0f14 65%, #050608 100%);
+    }
+
+    .workshop-backdrop {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center bottom;
+      opacity: 0.88;
+      filter: contrast(1.08) brightness(0.92);
+      pointer-events: none;
+    }
+
+    /* Top Bar */
+    .rk-topbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 max(14px, env(safe-area-inset-right)) 0 max(14px, env(safe-area-inset-left));
+      z-index: 25;
+      background: linear-gradient(180deg, rgba(7, 8, 11, 0.94) 0%, rgba(7, 8, 11, 0.6) 70%, transparent 100%);
+      pointer-events: auto;
+    }
+
+    .rk-top-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .rk-lvl-box {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      background: rgba(18, 21, 28, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 4px;
+      padding: 3px 8px;
+      backdrop-filter: blur(8px);
+    }
+
+    .rk-lvl-tag {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #f3f4f6;
+    }
+
+    .rk-lvl-track {
+      width: 68px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.14);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .rk-lvl-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff9900 0%, #ff5500 100%);
+      border-radius: 3px;
+      box-shadow: 0 0 6px rgba(255, 120, 0, 0.6);
+    }
+
+    .rk-synergy-box {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(18, 21, 28, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 4px;
+      padding: 3px 8px;
+      backdrop-filter: blur(8px);
+    }
+
+    .rk-gas-icon {
+      font-size: 11px;
+    }
+
+    .rk-synergy-lbl {
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #f3f4f6;
+    }
+
+    .rk-synergy-pips {
+      display: flex;
+      gap: 2.5px;
+    }
+
+    .rk-synergy-pips .pip {
+      width: 6px;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.16);
+      transform: skewX(-14deg);
+      border-radius: 1px;
+    }
+
+    .rk-synergy-pips .pip.active {
+      background: linear-gradient(180deg, #ff5500 0%, #d42200 100%);
+      box-shadow: 0 0 6px rgba(255, 60, 0, 0.7);
+    }
+
+    /* Top Center: Car Pill with Tier Badge */
+    .rk-top-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+    }
+
+    .rk-car-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(12, 14, 19, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 3px 6px 3px 10px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+    }
+
+    .rk-brand-logo {
+      font-size: 14px;
+    }
+
+    .rk-car-names {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .rk-make-text {
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #9ca3af;
+    }
+
+    .rk-model-text {
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .rk-tier-tag {
+      padding: 3px 8px;
+      background: linear-gradient(135deg, #e10650 0%, #aa0033 100%);
+      color: #ffffff;
+      font-size: 9.5px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transform: skewX(-14deg);
+      border-radius: 2px;
+      box-shadow: 0 0 8px rgba(225, 6, 80, 0.5);
+    }
+
+    .rk-tier-tag span {
+      display: inline-block;
+      transform: skewX(14deg);
+    }
+
+    /* Top Right Currencies */
+    .rk-top-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rk-currency-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(16, 19, 26, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 4px;
+      padding: 3px 5px 3px 8px;
+      backdrop-filter: blur(8px);
+    }
+
+    .rk-coin-tag {
+      font-size: 8.5px;
+      font-weight: 900;
+      color: #f59e0b;
+      background: rgba(245, 158, 11, 0.18);
+      border-radius: 3px;
+      padding: 1px 3px;
+    }
+
+    .rk-cash-tag {
+      font-size: 10px;
+      font-weight: 900;
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.18);
+      border-radius: 3px;
+      padding: 1px 4px;
+    }
+
+    .rk-cur-val {
+      font-size: 11.5px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: #ffffff;
+    }
+
+    .rk-plus-btn {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f59e0b;
+      color: #000;
+      border: none;
+      border-radius: 2px;
+      font-size: 11px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .rk-cash-chip .rk-plus-btn {
+      background: #10b981;
+      color: #fff;
+    }
+
+    /* Left Event Cards Stack */
+    .rk-left-stack {
+      position: absolute;
+      left: 0;
+      top: 48px;
+      width: 314px;
+      display: flex;
+      flex-direction: column;
+      z-index: 25;
+      pointer-events: auto;
+    }
+
+    .rk-event-top-row {
+      display: flex;
+      gap: 3px;
+      width: 312px;
+      height: 108px;
+    }
+
+    .rk-card-hero {
+      position: relative;
+      width: 228px;
+      height: 108px;
+      border-radius: 2px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: #141720;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .rk-card-hero:hover { transform: scale(1.015); border-color: #ff0055; }
+
+    .rk-mini-col {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      width: 80px;
+      height: 108px;
+    }
+
+    .rk-card-mini {
+      position: relative;
+      width: 80px;
+      height: 52px;
+      border-radius: 2px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: #141720;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .rk-card-mini:hover { transform: scale(1.02); border-color: #ff0055; }
+
+    .rk-card-bp {
+      position: relative;
+      width: 228px;
+      height: 76px;
+      margin-top: 4px;
+      border-radius: 2px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: #141720;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .rk-card-bp:hover { transform: scale(1.015); border-color: #ec4899; }
+
+    .rk-card-hero img, .rk-card-mini img, .rk-card-bp img {
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      display: block;
+    }
+
+    .rk-chat-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      background: rgba(14, 16, 22, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 12px;
+      color: #e5e7eb;
+      font-size: 9.5px;
+      font-weight: 800;
+      cursor: pointer;
+      width: fit-content;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      margin-top: 5px;
+      margin-left: 8px;
+    }
+    .rk-chat-btn:hover { background: rgba(255, 0, 85, 0.35); border-color: #ff0055; color: #fff; }
+    .rk-chat-btn svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    /* Right Rail Floating Icons */
+    .rk-right-rail {
+      position: absolute;
+      right: 0;
+      top: 52px;
+      bottom: 64px;
+      width: 66px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      z-index: 25;
+      padding: 4px 0;
+      background: linear-gradient(270deg, #07080a 0%, #07080a 82%, rgba(7, 8, 10, 0) 100%);
+      pointer-events: auto;
+    }
+
+    .rk-rail-item {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1px;
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+      padding: 2px;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+      transition: transform 0.15s ease;
+    }
+    .rk-rail-item:hover, .rk-rail-item:active { transform: scale(1.12); filter: drop-shadow(0 0 6px rgba(255, 0, 85, 0.8)); }
+    .rk-rail-svg {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 2.2;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.9));
+    }
+    .rk-rail-txt {
+      font-size: 8.5px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 4px #000;
+      color: #ffffff;
+    }
+    .rk-rail-badge {
+      position: absolute;
+      top: -3px;
+      right: -2px;
+      background: #ff0055;
+      color: #ffffff;
+      font-size: 7.5px;
+      font-weight: 900;
+      padding: 1px 3.5px;
+      border-radius: 8px;
+      border: 1px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(255, 0, 85, 0.8);
+    }
+    .rk-rail-badge.pink {
+      background: #ec4899;
+      box-shadow: 0 2px 6px rgba(236, 72, 153, 0.8);
+    }
+
+    /* Bottom Command Bar: Full-width solid dark bar covering bottom edge */
+    .rk-bottom-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 30;
+      padding: 0 max(10px, env(safe-area-inset-right)) 0 max(10px, env(safe-area-inset-left));
+      background: linear-gradient(0deg, #07080a 0%, #07080a 82%, rgba(7, 8, 10, 0) 100%);
+      pointer-events: auto;
+    }
+
+    /* 2x2 Quadrant Frame */
+    .rk-cmd-quad-frame {
+      position: relative;
+      display: flex;
+      align-items: stretch;
+      background: rgba(14, 16, 22, 0.96);
+      border-left: 3px solid #ff0055;
+      border-right: 3px solid #ff0055;
+      transform: skewX(-14deg);
+      border-radius: 2px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+      padding: 2px;
+      flex: 1.5;
+      height: 56px;
+    }
+
+    .rk-cmd-quad-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      width: 100%;
+      height: 100%;
+      gap: 1px;
+      background: rgba(255, 0, 85, 0.35);
+    }
+
+    .rk-quad-btn {
+      background: rgba(14, 16, 24, 0.98);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      cursor: pointer;
+      color: #ffffff;
+      transition: background 0.15s ease;
+    }
+    .rk-quad-btn:hover, .rk-quad-btn:active {
+      background: rgba(255, 0, 85, 0.35);
+    }
+
+    .rk-quad-txt {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-style: italic;
+      transform: skewX(14deg);
+    }
+
+    .rk-quad-ico {
+      transform: skewX(14deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .rk-icon-red {
+      width: 14px;
+      height: 14px;
+      stroke: #ff0055;
+      fill: none;
+      filter: drop-shadow(0 0 4px rgba(255, 0, 85, 0.7));
+    }
+
+    /* Store Standalone Button */
+    .rk-store-btn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: rgba(14, 16, 22, 0.96);
+      border: none;
+      border-left: 3px solid #ff0055;
+      border-right: 3px solid #ff0055;
+      transform: skewX(-14deg);
+      border-radius: 2px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+      padding: 0 16px;
+      cursor: pointer;
+      color: #ffffff;
+      flex: 0.8;
+      height: 56px;
+      transition: background 0.15s ease;
+    }
+    .rk-store-btn:hover, .rk-store-btn:active {
+      background: rgba(255, 0, 85, 0.35);
+    }
+    .rk-store-txt {
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-style: italic;
+      transform: skewX(14deg);
+      color: #ffffff;
+    }
+    .rk-store-ico {
+      transform: skewX(14deg);
+      display: flex;
+      align-items: center;
+    }
+    .rk-store-ico svg {
+      width: 18px;
+      height: 18px;
+      stroke: #ff0055;
+      fill: none;
+    }
+
+    /* Slanted High-Energy RACE CTA Button */
+    .rk-race-cta {
+      position: relative;
+      flex: 1.2;
+      background: linear-gradient(135deg, #ff0055 0%, #d40040 100%);
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      transform: skewX(-14deg);
+      border-radius: 2px;
+      box-shadow: 0 0 22px rgba(255, 0, 85, 0.8);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px 0 20px;
+      overflow: hidden;
+      height: 56px;
+      transition: all 0.15s ease;
+    }
+    .rk-race-cta:hover, .rk-race-cta:active {
+      transform: skewX(-14deg) scale(1.02);
+      box-shadow: 0 0 32px rgba(255, 0, 85, 1);
+    }
+
+    .rk-race-word {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-style: italic;
+      color: #ffffff;
+      transform: skewX(14deg);
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+    }
+
+    .rk-flag-pattern {
+      display: inline-block;
+      width: 44px;
+      height: 32px;
+      transform: skewX(14deg);
+      background-image: 
+        linear-gradient(45deg, #ffffff 25%, transparent 25%), 
+        linear-gradient(-45deg, #ffffff 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #ffffff 75%), 
+        linear-gradient(-45deg, transparent 75%, #ffffff 75%);
+      background-size: 8px 8px;
+      background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+      opacity: 0.85;
+      border-radius: 2px;
+    }
+
+  
