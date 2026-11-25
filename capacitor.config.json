@@ -1,0 +1,31 @@
+{
+  "appId": "com.jubayer.racing",
+  "appName": "Jubayer Racing",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false,
+    "backgroundColor": "#090a0c"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "launchAutoHide": true,
+      "backgroundColor": "#090a0c",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP"
+    },
+    "StatusBar": {
+      "overlaysWebView": true,
+      "style": "DARK"
+    },
+    "ScreenOrientation": {
+      "orientation": "sensorLandscape"
+    }
+  }
+}
