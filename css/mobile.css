@@ -1,0 +1,174 @@
+/* ==========================================================================
+   Redline — css/mobile.css
+   Mobile game design & shell architecture for Redline (JUBAYER / As-Sunnah).
+   Phase 1: Mobile Shell & Viewport Fixes
+   ========================================================================== */
+
+/* 1. Viewport & Shell Foundation: Fixed, Non-Scrollable, Non-Bounce */
+:root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+}
+
+html, body {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+  -webkit-overscroll-behavior: none !important;
+  -webkit-overflow-scrolling: auto !important;
+  touch-action: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+#app-root,
+.cb-screen,
+#screen-hub,
+#screen-race,
+#screen-drift,
+#screen-arcade,
+#screen-derby,
+#screen-drag,
+#screen-f1 {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+  touch-action: none !important;
+}
+
+/* 2. Interactive Game Canvases & Touch Controls */
+canvas,
+#race-root,
+#studio-root,
+.rx-canvas,
+.pw-tpad {
+  touch-action: none !important;
+  overscroll-behavior: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+/* 3. Scrollable List Areas Only */
+.cb-scrollable,
+.menu-scrollable,
+.dialog-scrollable,
+.rx-scroll,
+.hub-scroll,
+.settings-scroll,
+.garage-scroll,
+.gh-main,
+.settings-grid,
+.modes-carousel,
+.garage-roster-strip,
+.gh-ledger {
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  -webkit-overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
+}
+
+.modes-carousel,
+.garage-roster-strip,
+.gh-ledger {
+  overflow-x: auto !important;
+  touch-action: pan-x pan-y !important;
+}
+
+/* 4. Safe-Area Inset Handling across HUD & Controls */
+#gnav {
+  padding-top: max(8px, var(--sat)) !important;
+  padding-left: max(16px, var(--sal)) !important;
+  padding-right: max(16px, var(--sar)) !important;
+}
+
+#race-root .rx-hud,
+#race-root .hud-overlay {
+  top: max(10px, var(--sat)) !important;
+  left: max(10px, var(--sal)) !important;
+  right: max(10px, var(--sar)) !important;
+  bottom: max(10px, var(--sab)) !important;
+}
+
+#race-root .pw-tpad {
+  padding-bottom: max(16px, var(--sab)) !important;
+  padding-left: max(16px, var(--sal)) !important;
+  padding-right: max(16px, var(--sar)) !important;
+}
+
+/* 5. Phase 0 Debug overlay HUD */
+#cb-debug-overlay {
+  position: fixed;
+  top: max(10px, var(--sat));
+  right: max(10px, var(--sar));
+  z-index: 2147483640;
+  background: rgba(8, 10, 14, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #f4f5f7;
+  font-family: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  min-width: 170px;
+}
+
+#cb-debug-overlay .dbg-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+#cb-debug-overlay .dbg-label {
+  color: rgba(244, 245, 247, 0.55);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+
+#cb-debug-overlay .dbg-val {
+  font-weight: 700;
+  color: #3fdc8a;
+}
+
+#cb-debug-overlay .dbg-val.warn {
+  color: #ffd23f;
+}
+
+#cb-debug-overlay .dbg-val.bad {
+  color: #ff5a4d;
+}
+
+#cb-debug-overlay .dbg-hdr {
+  font-weight: 800;
+  font-size: 10px;
+  color: #c9a56b;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 3px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+}

@@ -3715,6 +3715,23 @@ html.cb-routed .gnav::after {
   border-radius: var(--radius-sm);
   color: var(--accent);
 }
+.gnav-brand-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  height: 34px !important;
+  padding: 0 12px !important;
+  background: var(--panel, #ffffff) !important;
+  border: 1px solid var(--line, #dedad2) !important;
+  border-radius: var(--pill, 999px) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
+}
+.gnav-as-logo {
+  height: 20px !important;
+  width: auto !important;
+  object-fit: contain !important;
+  display: block !important;
+}
 .gnav-brand:hover .gnav-mark { transform: rotate(-8deg) scale(1.06); }
 .gnav-mark { flex: none; filter: drop-shadow(0 2px 8px var(--accent-ring)); transition: transform var(--dur-3) var(--ease-spring); }
 .gnav-name {
@@ -3778,6 +3795,36 @@ html.cb-routed .gnav::after {
 .gnav-level { color: var(--text-dim); font-family: var(--font); font-weight: 650; }
 .gnav-icon.is-active { color: var(--accent); background: var(--accent-soft); }
 .gnav-s { display: none; }
+/* Clean mobile presentation: eliminate the 10-button navigation clutter on mobile */
+@media (max-width: 900px), (pointer: coarse) {
+  html.cb-routed .gnav-links {
+    display: none !important;
+  }
+  html.cb-routed .gnav-chip {
+    display: none !important;
+  }
+  html.cb-routed .gnav {
+    justify-content: space-between;
+    height: 48px;
+  }
+  .gnav-mobile-home-btn {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(56,189,248,0.25), rgba(249,115,22,0.25));
+    border: 1px solid rgba(56,189,248,0.5);
+    color: #fff !important;
+    font-size: 13px;
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  }
+}
+.gnav-mobile-home-btn {
+  display: none;
+}
 /* the brand is the way home: lit while the main menu is showing */
 .gnav-brand.is-active { background: var(--accent-softer); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent); }
 .gnav-brand:focus-visible, .gnav-link:focus-visible, .gnav-chip:focus-visible { outline: none; box-shadow: var(--focus); }
@@ -3854,26 +3901,138 @@ html.cb-routed #btn-menu, html.cb-routed #btn-hub { display: none !important; }
   .cb-modal-card .cb-modal-foot { padding-top: 6px; padding-bottom: max(6px, env(safe-area-inset-bottom)); }
   #viewer { height: clamp(190px, calc(100vh - var(--gnav-h) - var(--bottomnav-h) - 80px), 320px); height: clamp(190px, calc(100dvh - var(--gnav-h) - var(--bottomnav-h) - env(safe-area-inset-bottom, 0px) - 80px), 320px); }
 }
-@media (max-width: 520px) {
-  html.cb-routed .gnav-name { display: none; }
-  html.cb-routed .gnav-brand { margin-right: 4px; }
-  /* phones in portrait: 7 links + brand + credits + settings do not fit one 390px row (the last links were clipped
-     behind the credits chip) — two rows: brand / credits / settings, then the links spread full width */
-  :root { --gnav-h: 98px; }
-  @supports (padding-top: env(safe-area-inset-top)) { :root { --gnav-h: calc(98px + env(safe-area-inset-top, 0px)); } }
-  html.cb-routed .gnav { flex-wrap: wrap; align-content: center; row-gap: 4px; }
-  html.cb-routed .gnav-links { order: 10; flex: 1 0 100%; justify-content: space-between; overflow: visible; gap: 0; }
-  html.cb-routed .gnav-links .gnav-link { flex: 1 1 0; min-width: 0; padding: 0; height: 44px; }
-  html.cb-routed .gnav-link.is-active::after { bottom: -3px; }
-  /* 10 links share ~360 px: 9 px labels with slightly tightened tracking so "Garage" / "Arcade" / "Career" fit whole */
-  html.cb-routed .gnav-link .gnav-s { font-size: calc(var(--fs-2xs) - 1.5px); letter-spacing: -.02em; max-width: 100%; overflow: hidden; text-overflow: clip; }
+/* Clean clutter removal */
+#btn-spec,
+.gh-foot,
+.rx-hints,
+.dg-keys,
+.cw-ov,
+.cw-pip,
+.cw-hud,
+.cw-intro,
+.cw-tipx,
+[data-cw-act],
+.ss-seg button[data-src="webcam"],
+.gnav-settings-link {
+  display: none !important;
 }
-/* narrow Android phones (360 px and under): a little less side padding and 8.5 px labels so every label stays whole */
-@media (max-width: 380px) {
-  html.cb-routed .gnav { padding-left: max(6px, env(safe-area-inset-left)); padding-right: max(6px, env(safe-area-inset-right)); }
-  html.cb-routed .gnav-link .gnav-s { font-size: calc(var(--fs-2xs) - 2px); letter-spacing: -.03em; }
+
+@media (max-width: 768px) {
+  :root { --gnav-h: 48px; --mob-bottom-h: 56px; }
+  @supports (padding-top: env(safe-area-inset-top)) { :root { --gnav-h: calc(48px + env(safe-area-inset-top, 0px)); } }
+  html.cb-routed body { padding-bottom: calc(var(--mob-bottom-h) + env(safe-area-inset-bottom, 0px)); }
+  html.cb-routed .gnav {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background: rgba(14, 14, 18, 0.96);
+    flex-wrap: nowrap;
+    height: var(--gnav-h);
+    padding: 0 max(12px, env(safe-area-inset-left));
+    padding-top: env(safe-area-inset-top, 0px);
+    justify-content: space-between;
+  }
+  html.cb-routed:not(.cb-driving) .cb-screen:not(#screen-atelier) {
+    bottom: calc(var(--mob-bottom-h) + env(safe-area-inset-bottom, 0px));
+  }
+  html.cb-routed .gnav-name {
+    display: inline-block !important;
+    font-size: var(--fs-md);
+    font-weight: 800;
+  }
+  html.cb-routed .gnav-sub {
+    display: inline-block !important;
+  }
+  html.cb-routed .gnav-icon {
+    display: none !important;
+  }
+  /* Thumb-friendly 4-tab mobile bottom bar (Race, Garage, My Cars, Settings) */
+  html.cb-routed .gnav-links {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    z-index: 850;
+    height: var(--mob-bottom-h);
+    padding: 0 max(8px, env(safe-area-inset-left));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    display: flex !important;
+    justify-content: space-around;
+    align-items: center;
+    background: rgba(11, 11, 13, 0.95);
+    -webkit-backdrop-filter: saturate(160%) blur(20px);
+    backdrop-filter: saturate(160%) blur(20px);
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+  }
+  html.cb-routed .gnav-links .gnav-link {
+    display: none;
+    flex: 1 1 0;
+    min-width: 0;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 4px 0;
+    color: var(--text-dim, #9b9890);
+    text-decoration: none;
+  }
+  html.cb-routed .gnav-links .gnav-link svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+  html.cb-routed .gnav-links .gnav-link .gnav-l {
+    display: none;
+  }
+  html.cb-routed .gnav-links .gnav-link .gnav-s {
+    display: block !important;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  /* Show thumb-friendly driving tabs on mobile */
+  html.cb-routed .gnav-links [data-nav-route="race"],
+  html.cb-routed .gnav-links [data-nav-route="f1"],
+  html.cb-routed .gnav-links [data-nav-route="derby"],
+  html.cb-routed .gnav-links [data-nav-route="drift"],
+  html.cb-routed .gnav-links [data-nav-route="arcade"],
+  html.cb-routed .gnav-links [data-nav-route="atelier"],
+  html.cb-routed .gnav-links [data-nav-route="garage"],
+  html.cb-routed .gnav-links [data-nav-route="settings"] {
+    display: flex !important;
+  }
+  html.cb-routed .gnav-links [data-nav-route="race"] { order: 1; }
+  html.cb-routed .gnav-links [data-nav-route="atelier"] { order: 2; }
+  html.cb-routed .gnav-links [data-nav-route="garage"] { order: 3; }
+  html.cb-routed .gnav-links [data-nav-route="settings"] { order: 4; }
+
+  html.cb-routed .gnav-links [data-nav-route="garage"] .gnav-l {
+    display: block !important;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  html.cb-routed .gnav-links [data-nav-route="garage"] .gnav-s {
+    display: none !important;
+  }
+
+  html.cb-routed .gnav-links .gnav-link.is-active {
+    color: var(--race, #e0412f);
+  }
+  html.cb-routed .gnav-links .gnav-link.is-active svg {
+    color: var(--race, #e0412f);
+  }
 }
-/* phones in landscape: one slim nav row so the short viewport keeps its height for the screen */
+
+/* While driving: hide bottom bar and top nav */
+html.cb-driving .gnav,
+html.cb-driving .gnav-links {
+  display: none !important;
+}
+
+/* phones in landscape: one slim nav row */
 @media (max-height: 520px) and (max-width: 1024px) {
   :root { --gnav-h: 44px; }
   @supports (padding-top: env(safe-area-inset-top)) { :root { --gnav-h: calc(44px + env(safe-area-inset-top, 0px)); } }
@@ -4030,6 +4189,14 @@ html.cb-routed #btn-menu, html.cb-routed #btn-hub { display: none !important; }
   .mx-foot { flex-wrap: wrap; gap: var(--sp-2); padding-left: max(var(--sp-4), env(safe-area-inset-left)); padding-right: max(var(--sp-4), env(safe-area-inset-right)); }
   .mx-cta { width: 100%; }
   .mx-cta .cb-btn.primary { flex: 1; min-width: 0; }
+}
+
+@media (max-width: 768px) {
+  .mx-foot, .dd-foot {
+    position: sticky !important;
+    bottom: var(--mob-bottom-h, 56px) !important;
+    z-index: 860 !important;
+  }
 }
 
 /* in-session overlay + pause / confirm card (sits over the dark 3D view in both themes) */
@@ -4345,3 +4512,1635 @@ html.cb-routed #btn-menu, html.cb-routed #btn-hub { display: none !important; }
 @media (max-height: 500px) { .dg-coach.is-low { bottom: auto; top: 76px; left: calc(env(safe-area-inset-left) + 76px); right: auto; transform: none; width: min(260px, 32vw); min-width: 0; padding: 6px 10px; } .dg-coach.is-low .dg-coach-b, .dg-coach.is-low .dg-coach-a, .dg-coach.is-low .dg-coach-k { display: none; } .dg-coach.is-low .dg-coach-t { font-size: var(--fs-sm); } }
 /* short landscape phones: the pause card lays its actions out in two columns so nothing falls below the fold */
 @media (max-height: 500px) { .dg-menu { grid-template-columns: 1fr 1fr; max-height: calc(100dvh - 2 * var(--sp-3)); overflow-y: auto; padding: var(--sp-3) var(--sp-4); max-width: min(560px, 92vw); } .dg-menu > .mx-kicker, .dg-menu > h2, .dg-menu > .cb-btn.primary { grid-column: 1 / -1; } .dg-menu > h2 { font-size: var(--fs-lg); margin: 0; } }
+
+/* ==========================================================================
+   ARCADE CLEAN GARAGE & MOBILE STREAMLINING
+   Hides heavy desktop dyno, acceleration curves, and technical spec sheets
+   ========================================================================== */
+
+#btn-presets,
+#btn-stock,
+#btn-garage,
+#btn-compare,
+#btn-spec,
+#btn-share,
+.topbar-group[role="group"][aria-label="History"],
+.summary-spec,
+.gx-dyno-block,
+.gx-accel-block,
+#summary-tabs,
+#summary {
+  display: none !important;
+}
+
+#layout {
+  grid-template-columns: minmax(0, 1fr) !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+#stage {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+#viewer {
+  min-height: 55vh !important;
+  height: 60vh !important;
+}
+
+/* Big prominent DRIVE button in the car showroom */
+.arcade-drive-action {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 16px !important;
+  gap: 16px !important;
+}
+
+.arcade-drive-btn {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+  color: #fff !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  padding: 14px 36px !important;
+  border-radius: 999px !important;
+  border: 2px solid #fdba74 !important;
+  box-shadow: 0 8px 28px rgba(234, 88, 12, 0.45) !important;
+  cursor: pointer !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* Orientation Enforcer for Mobile Portrait */
+.orientation-enforcer {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: rgba(10, 14, 24, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  color: #fff;
+  font-family: system-ui, sans-serif;
+}
+
+@media (pointer: coarse) and (orientation: portrait) {
+  .orientation-enforcer {
+    display: flex !important;
+  }
+}
+
+.oe-icon {
+  font-size: 54px;
+  animation: oe-rot 2s ease-in-out infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes oe-rot {
+  0%, 20% { transform: rotate(0deg); }
+  50%, 70% { transform: rotate(-90deg); }
+  90%, 100% { transform: rotate(0deg); }
+}
+
+.oe-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #38bdf8;
+  margin-bottom: 8px;
+}
+
+.oe-bn {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f97316;
+  margin-bottom: 16px;
+}
+
+.oe-btn {
+  background: #0284c7;
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(2, 132, 199, 0.5);
+}
+
+/* ==========================================================================
+   HUB MENU - CLEANUP BORING LISTS WHILE KEEPING ALL GAMEPLAY MODES
+   ========================================================================== */
+#game-hub .gh-link[data-id="challenges"],
+#game-hub .gh-link[data-id="achievements"],
+#game-hub .gh-link[data-id="replays"],
+#game-hub .gh-link[data-id="profile"] {
+  display: none !important;
+}
+
+/* ==========================================================================
+   DERBY DR. DRIVING STYLE TACTILE TOUCH STEERING
+   ========================================================================== */
+.dd-t.steer {
+  display: flex !important;
+  gap: 10px !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+.dd-steer-btn {
+  flex: 1 1 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.85);
+  border: 2px solid rgba(56, 189, 248, 0.55);
+  border-radius: 18px;
+  color: #38bdf8;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+  transition: transform 0.08s ease, background 0.08s ease;
+}
+.dd-steer-btn span {
+  font-size: 28px;
+  line-height: 1;
+}
+.dd-steer-btn b {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+  margin-top: 2px;
+}
+.dd-steer-btn.is-down {
+  background: rgba(2, 132, 199, 0.9);
+  color: #fff;
+  border-color: #7dd3fc;
+  transform: scale(0.94);
+  box-shadow: 0 2px 10px rgba(56, 189, 248, 0.6);
+}
+
+/* ==========================================================================
+   SETUP / SELECTION FOOTER (ALWAYS VISIBLE ABOVE MOBILE BARS)
+   ========================================================================== */
+.mx-foot, .dd-foot {
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 9999 !important;
+  background: rgba(11, 15, 25, 0.96) !important;
+  box-shadow: 0 -6px 25px rgba(0, 0, 0, 0.7) !important;
+}
+.mx-foot .cb-btn.primary, .dd-foot .cb-btn.primary {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.6) !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.04em !important;
+}
+
+/* ==========================================================================
+   MOBILE ZERO-SCROLL ENGINE (NO VERTICAL SCROLLING ON MOBILE)
+   ========================================================================== */
+@media (max-width: 950px), (max-height: 520px) {
+  html, body {
+    overflow: hidden !important;
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    overscroll-behavior-x: none !important;
+    touch-action: manipulation !important;
+  }
+  #app-root {
+    position: fixed !important;
+    inset: 0 !important;
+    overflow: hidden !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+  }
+  html.cb-routed body {
+    overflow: hidden !important;
+    padding-bottom: 0 !important;
+  }
+}
+
+/* Landscape Phones / Short Viewports (iPhone / Android landscape: height <= 520px) */
+@media (max-height: 520px) {
+  :root {
+    --gnav-h: 42px;
+    --mob-bottom-h: 46px;
+  }
+  html.cb-routed #topbar {
+    display: none !important;
+  }
+  html.cb-routed #layout {
+    display: flex !important;
+    flex-direction: column !important;
+    height: calc(100dvh - var(--gnav-h) - var(--mob-bottom-h)) !important;
+    overflow: hidden !important;
+    position: fixed !important;
+    top: var(--gnav-h) !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: var(--mob-bottom-h) !important;
+  }
+  html.cb-routed #stage {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 0 !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    position: relative !important;
+  }
+  html.cb-routed #viewer {
+    flex: 1 1 0 !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    position: relative !important;
+    touch-action: pan-x !important;
+    overflow: hidden !important;
+  }
+  html.cb-routed .car-mount {
+    position: absolute !important;
+    inset: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  html.cb-routed .viewer-controls {
+    position: absolute !important;
+    bottom: 8px !important;
+    left: max(12px, env(safe-area-inset-left)) !important;
+    right: max(12px, env(safe-area-inset-right)) !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    z-index: 50 !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+  html.cb-routed .view-buttons {
+    display: flex !important;
+    gap: 4px !important;
+  }
+  html.cb-routed .viewer-controls .cb-btn {
+    min-height: 32px !important;
+    padding: 0 10px !important;
+    font-size: 11px !important;
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+  }
+  html.cb-routed .arcade-drive-btn {
+    min-height: 34px !important;
+    padding: 0 14px !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.04em !important;
+  }
+  /* In landscape mobile visualizer, hide bulky desktop panels that break single-screen view */
+  html.cb-routed #perf-strip,
+  html.cb-routed #panel-host,
+  html.cb-routed #summary,
+  html.cb-routed #sidenav {
+    display: none !important;
+  }
+
+  /* Main Menu (Home Screen) in Landscape Mobile: Fits in single 100dvh screen */
+  #game-hub .gh-home {
+    max-height: calc(100dvh - var(--gnav-h) - var(--mob-bottom-h) - 4px) !important;
+    height: calc(100dvh - var(--gnav-h) - var(--mob-bottom-h) - 4px) !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    padding: 4px 12px !important;
+  }
+  #game-hub .gh-home-hero {
+    display: grid !important;
+    grid-template-columns: 1.15fr 1fr !important;
+    gap: 12px !important;
+    padding: 10px 16px !important;
+    align-items: center !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    border-radius: var(--radius-lg, 16px) !important;
+  }
+  #game-hub .gh-home-hero .gh-hero-name {
+    font-size: clamp(16px, 3.2vw, 24px) !important;
+    line-height: 1.1 !important;
+  }
+  #game-hub .gh-home-txt {
+    gap: 4px !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+  #game-hub .gh-home-cta {
+    margin-top: 4px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    max-width: 100% !important;
+  }
+  #game-hub .gh-home-cta .gh-btn {
+    min-height: 32px !important;
+    padding: 3px 10px !important;
+    font-size: 11px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 100% !important;
+  }
+  #game-hub .gh-home-prog {
+    display: none !important;
+  }
+  #game-hub .gh-home-car {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+  #game-hub .gh-home-car .car {
+    margin: 0 !important;
+    width: 100% !important;
+    max-height: 110px !important;
+  }
+  #game-hub .gh-home-car .car svg,
+  #game-hub .gh-home-car .car canvas {
+    max-height: 100px !important;
+    width: auto !important;
+    margin: 0 auto !important;
+  }
+  #game-hub .gh-hero-stats {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 4px !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin-top: 4px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+  #game-hub .gh-hero-stats .gh-stat-box {
+    background: rgba(15, 23, 42, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 6px !important;
+    padding: 3px 2px !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+  #game-hub .gh-hero-stats .gh-stat-val {
+    font-family: var(--gh-mono, 'JetBrains Mono', monospace) !important;
+    font-size: clamp(10px, 1.8vw, 13px) !important;
+    font-weight: 800 !important;
+    color: #00e5ff !important;
+    line-height: 1.1 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 100% !important;
+  }
+  #game-hub .gh-hero-stats .gh-stat-lbl {
+    font-size: clamp(8px, 1.1vw, 9.5px) !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.04em !important;
+    text-transform: uppercase !important;
+    color: #94a3b8 !important;
+    line-height: 1.1 !important;
+    margin-top: 1px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 100% !important;
+  }
+  #game-hub .gh-h2 {
+    display: none !important;
+  }
+  #game-hub .gh-modes {
+    display: flex !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    gap: 8px !important;
+    padding: 4px 0 !important;
+    scrollbar-width: none !important;
+    flex: none !important;
+  }
+  #game-hub .gh-modes::-webkit-scrollbar {
+    display: none !important;
+  }
+  #game-hub .gh-mode {
+    flex: 0 0 auto !important;
+    width: 110px !important;
+    min-height: 48px !important;
+    padding: 6px 8px !important;
+    gap: 2px !important;
+    border-radius: var(--radius-sm, 8px) !important;
+  }
+  #game-hub .gh-mode-art {
+    display: none !important;
+  }
+  #game-hub .gh-mode-ic svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+  #game-hub .gh-mode-lbl {
+    font-size: 11px !important;
+    margin-top: 0 !important;
+    font-weight: 700 !important;
+  }
+  #game-hub .gh-mode-ds {
+    display: none !important;
+  }
+  #game-hub .gh-mode-garage {
+    background: linear-gradient(135deg, #0a72cc, #004b93) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 2px 8px rgba(10, 114, 204, 0.4) !important;
+  }
+  #game-hub .gh-mode-garage .gh-mode-lbl {
+    color: #fff !important;
+    font-weight: 800 !important;
+  }
+  #game-hub .gh-garage-cta-btn {
+    background: linear-gradient(135deg, #0a72cc, #004b93) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 3px 10px rgba(10, 114, 204, 0.4) !important;
+    color: #fff !important;
+  }
+  #game-hub .gh-links {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   GLOBAL NAV SMOOTH BACK BUTTON
+   ========================================================================== */
+.gnav-back-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm, 8px);
+  background: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(37, 99, 235, 0.35);
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease, transform 0.1s ease;
+  flex: none;
+}
+.gnav-back-pill:active {
+  background: rgba(37, 99, 235, 0.25);
+  transform: scale(0.96);
+}
+
+/* ==========================================================================
+   SHOWROOM 53-CAR SWITCHER OVER TURNTABLE (#viewer)
+   ========================================================================== */
+/* ==========================================================================
+   SHOWROOM 53-CAR FORZA HORIZON & WRECKFEST STYLE ONE-PAGE CAROUSEL (#viewer)
+   Matching user Pinterest references (media_1795242600535_cdca9313 & media_1795242624961_2eab229e)
+   ========================================================================== */
+.cb-showroom-ctrls {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 30;
+}
+
+/* 1. Hero Spec Card (Top-Left) */
+.cb-showroom-hero-card {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  padding: 10px 16px;
+  max-width: min(92vw, 420px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  color: #fff;
+  pointer-events: auto;
+  z-index: 35;
+  transition: transform 0.2s ease;
+}
+.cb-showroom-hero-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cb-showroom-make {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #38bdf8;
+  text-transform: uppercase;
+}
+.cb-showroom-hero-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #ffffff !important;
+  margin: 3px 0 8px 0;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+.cb-showroom-hero-stats {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.hero-stat-pill {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 7px;
+  padding: 3px 8px;
+  display: flex;
+  flex-direction: column;
+  min-width: 58px;
+}
+.hero-stat-pill .k {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.hero-stat-pill b {
+  font-size: 11.5px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+/* 2. Top-Right Action Button */
+.cb-showroom-top-actions {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  pointer-events: auto;
+  z-index: 35;
+}
+.cb-showroom-race-btn {
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  padding: 10px 22px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: transform 0.1s ease, filter 0.15s ease, box-shadow 0.15s ease;
+  text-transform: uppercase;
+}
+.cb-showroom-race-btn:hover {
+  filter: brightness(1.12);
+  box-shadow: 0 8px 26px rgba(249, 115, 22, 0.65);
+  transform: translateY(-1px);
+}
+.cb-showroom-race-btn:active {
+  transform: scale(0.96);
+}
+
+/* 3. Bottom Horizontal Carousel (Forza Horizon Rail) */
+.cb-showroom-carousel-wrap {
+  position: absolute;
+  bottom: 12px;
+  left: max(12px, env(safe-area-inset-left));
+  right: max(12px, env(safe-area-inset-right));
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+  z-index: 35;
+}
+.cb-showroom-nav-btn {
+  width: 36px;
+  height: 52px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+.cb-showroom-nav-btn:hover {
+  background: rgba(37, 99, 235, 0.7);
+  border-color: #60a5fa;
+}
+.cb-showroom-nav-btn:active {
+  transform: scale(0.92);
+}
+.cb-showroom-rail {
+  flex: 1 1 0;
+  height: 100%;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 6px;
+  scrollbar-width: none;
+  align-items: center;
+}
+.cb-showroom-rail::-webkit-scrollbar {
+  display: none;
+}
+.cb-showroom-card-thumb {
+  flex: 0 0 130px;
+  height: 52px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255, 255, 255, 0.16);
+  border-radius: 9px;
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+  transition: transform 0.12s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.cb-showroom-card-thumb:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+.cb-showroom-card-thumb.is-active {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.65), 0 6px 18px rgba(0, 0, 0, 0.5) !important;
+  background: rgba(14, 116, 144, 0.45) !important;
+  transform: scale(1.04);
+}
+.card-thumb-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-thumb-drive {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+}
+.card-thumb-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  box-shadow: 0 0 6px currentColor;
+}
+.card-thumb-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+.card-thumb-check {
+  display: none;
+  position: absolute;
+  right: 6px;
+  bottom: 4px;
+  font-size: 11px;
+  font-weight: 900;
+  color: #38bdf8;
+}
+.cb-showroom-card-thumb.is-active .card-thumb-check {
+  display: block;
+}
+
+@media (max-height: 520px) {
+  .cb-showroom-hero-card {
+    top: 8px;
+    left: max(10px, env(safe-area-inset-left));
+    padding: 8px 12px;
+    max-width: 320px;
+  }
+  .cb-showroom-hero-title {
+    font-size: 15px;
+    margin: 2px 0 5px 0;
+  }
+  .hero-stat-pill {
+    padding: 2px 6px;
+    min-width: 48px;
+  }
+  .hero-stat-pill .k { font-size: 7.5px; }
+  .hero-stat-pill b { font-size: 10.5px; }
+  .cb-showroom-race-btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+  .cb-showroom-carousel-wrap {
+    bottom: 6px;
+    height: 56px;
+  }
+  .cb-showroom-card-thumb {
+    flex: 0 0 115px;
+    height: 46px;
+    padding: 4px 8px;
+  }
+  .card-thumb-title { font-size: 10px; }
+  .cb-showroom-nav-btn {
+    width: 30px;
+    height: 46px;
+  }
+}
+
+/* ==========================================================================
+   STRICT MOBILE ONE-PAGE LANDSCAPE ENFORCEMENT (NO VERTICAL SCROLL)
+   ========================================================================== */
+@media (max-height: 600px), (max-width: 920px) and (orientation: landscape) {
+  html, body, #app, #app-root {
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-height: 100vh !important;
+    max-height: 100dvh !important;
+    overflow: hidden !important;
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+  }
+  html body #screen-atelier,
+  html.cb-routed #screen-atelier {
+    position: fixed !important;
+    top: var(--gnav-h, 42px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: calc(100vh - var(--gnav-h, 42px)) !important;
+    height: calc(100dvh - var(--gnav-h, 42px)) !important;
+    max-height: calc(100vh - var(--gnav-h, 42px)) !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  html body #layout,
+  html.cb-routed #layout {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 0 !important;
+    height: calc(100vh - var(--gnav-h, 42px)) !important;
+    height: calc(100dvh - var(--gnav-h, 42px)) !important;
+    max-height: calc(100vh - var(--gnav-h, 42px)) !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  html body #stage,
+  html.cb-routed #stage {
+    flex: 1 1 0 !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    position: relative !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  html body #viewer,
+  html.cb-routed #viewer {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+  #toast-root,
+  #game-ach-toasts {
+    top: 50px !important;
+    right: 12px !important;
+    bottom: auto !important;
+    max-width: 280px !important;
+    transform: scale(0.85);
+    transform-origin: top right;
+  }
+  /* In landscape mobile visualizer, hide bulky desktop panels that break single-screen view */
+  #topbar,
+  #perf-strip,
+  #panel-host,
+  #summary,
+  #sidenav,
+  #bottomnav,
+  .mob-bottomnav,
+  html.cb-routed .viewer-controls,
+  html.cb-routed .view-buttons,
+  html.cb-routed .view-toggles,
+  html.cb-routed .arcade-drive-btn,
+  #viewer-controls,
+  .viewer-controls,
+  .showroom-drive-cta,
+  #cb-showroom-drive-cta-old,
+  .rx-stage-cta {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   REFERENCE TOUCH HUD CONTROLS (media_1795149761565_46a2b6dc.jpg)
+   ========================================================================== */
+.rx-mobile-back-btn {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  z-index: 150;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  touch-action: manipulation;
+  transition: transform 0.08s ease, background 0.12s ease;
+}
+.rx-mobile-back-btn:active {
+  transform: scale(0.92);
+  background: rgba(37, 99, 235, 0.6);
+}
+
+.rx-mobile-hud-topright {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: none;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 0 4px rgba(0, 0, 0, 0.7);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.rx-hud-mph-box {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.rx-hud-mph-val {
+  font-size: 38px;
+  font-weight: 900;
+  font-style: italic;
+  color: #ffffff;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-family: var(--rx-mono, system-ui);
+}
+.rx-hud-mph-unit {
+  font-size: 13px;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.rx-hud-pos-box {
+  font-size: 24px;
+  font-weight: 900;
+  color: #ffffff;
+  font-family: var(--rx-mono, system-ui);
+  margin-top: 2px;
+  line-height: 1.1;
+}
+.rx-hud-time-box {
+  font-size: 14px;
+  font-weight: 800;
+  color: #38bdf8;
+  font-family: var(--rx-mono, monospace);
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}
+
+.rx-touch-steering-ref {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  z-index: 150;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  pointer-events: auto;
+}
+.rx-steer-circle-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(30, 41, 59, 0.92) 0%, rgba(15, 23, 42, 0.96) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid rgba(0, 229, 255, 0.65);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.25), 0 0 14px rgba(0, 229, 255, 0.3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.08s ease, background 0.08s ease, border-color 0.08s ease, box-shadow 0.08s ease;
+}
+.rx-steer-circle-btn:active,
+.rx-steer-circle-btn.is-down {
+  background: radial-gradient(circle at 35% 35%, rgba(0, 210, 255, 0.5) 0%, rgba(0, 119, 182, 0.75) 100%);
+  border-color: #00e5ff;
+  transform: scale(0.92);
+  box-shadow: 0 0 28px rgba(0, 229, 255, 0.85), inset 0 0 12px rgba(0, 229, 255, 0.6);
+}
+.rx-steer-circle-btn svg {
+  filter: drop-shadow(0 0 5px rgba(0, 229, 255, 0.75));
+}
+
+.rx-pedals-cluster-ref {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  z-index: 150;
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  pointer-events: auto;
+}
+.rx-nitro-bottle-btn {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 40% 35%, #00b4d8, #0077b6 70%, #023e8a);
+  border: 2px solid #90e0ef;
+  box-shadow: 0 0 20px rgba(0, 180, 216, 0.7), inset 0 2px 4px rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.06s ease, box-shadow 0.08s ease;
+  margin-bottom: 8px;
+}
+.rx-nitro-bottle-btn:active,
+.rx-nitro-bottle-btn.is-down {
+  transform: scale(0.92);
+  box-shadow: 0 0 32px #00f0ff, inset 0 0 12px #ffffff;
+}
+.rx-nitro-gauge-svg {
+  position: absolute;
+  inset: -8px;
+  width: calc(100% + 16px);
+  height: calc(100% + 16px);
+  pointer-events: none;
+}
+.rx-nitro-icon-svg {
+  width: 32px;
+  height: 32px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+.rx-pedal-metal-brake {
+  width: 68px;
+  height: 68px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 45%, #4b5563 100%);
+  border: 2px solid #e5e7eb;
+  border-bottom: 4px solid #1f2937;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.05s ease, border-bottom-width 0.05s ease;
+}
+.rx-pedal-metal-brake::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  background-image: radial-gradient(#1f2937 32%, transparent 33%);
+  background-size: 15px 15px;
+  opacity: 0.75;
+  pointer-events: none;
+}
+.rx-pedal-metal-brake span {
+  position: relative;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: #111827;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.rx-pedal-metal-brake:active,
+.rx-pedal-metal-brake.is-down {
+  transform: translateY(3px);
+  border-bottom-width: 1px;
+  filter: brightness(0.9);
+}
+
+.rx-pedal-metal-gas {
+  width: 58px;
+  height: 116px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #e5e7eb 0%, #9ca3af 50%, #374151 100%);
+  border: 2px solid #f3f4f6;
+  border-bottom: 5px solid #111827;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.65);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 12px;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.05s ease, border-bottom-width 0.05s ease;
+}
+.rx-pedal-metal-gas::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  bottom: 26px;
+  background: repeating-linear-gradient(0deg, #1f2937 0px, #1f2937 5px, #9ca3af 5px, #9ca3af 16px);
+  opacity: 0.8;
+  border-radius: 6px;
+  pointer-events: none;
+}
+.rx-pedal-metal-gas span {
+  position: relative;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: #111827;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.rx-pedal-metal-gas:active,
+.rx-pedal-metal-gas.is-down {
+  transform: translateY(4px);
+  border-bottom-width: 1px;
+  filter: brightness(0.9);
+}
+
+/* ---------------------------------------------------------------- Mobile Landscape Title Screen Zero-Cutoff */
+html.has-title-screen .gnav,
+html.has-title-screen #topbar,
+html:has(#game-hub[data-screen="title"]) .gnav,
+html:has(#game-hub[data-screen="title"]) #topbar,
+html:has(.gh-title) .gnav,
+html:has(.gh-title) #topbar {
+  display: none !important;
+}
+
+html.has-title-screen body,
+html:has(#game-hub[data-screen="title"]) body,
+html:has(.gh-title) body {
+  padding-top: 0 !important;
+}
+
+html.has-title-screen .cb-screen,
+html:has(#game-hub[data-screen="title"]) .cb-screen,
+html:has(.gh-title) .cb-screen {
+  top: 0 !important;
+  bottom: 0 !important;
+}
+
+/* Landscape Phones (height <= 520px): Fit Title Screen elements completely inside 100dvh */
+@media (max-height: 520px) {
+  #game-hub .gh-title {
+    padding: max(8px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(8px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)) !important;
+    justify-content: center !important;
+  }
+  #game-hub .gh-title-badge {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 12px !important;
+    padding: 6px !important;
+    margin-bottom: 4px !important;
+    margin-top: 0 !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+  }
+  #game-hub .gh-title-logo {
+    font-size: clamp(28px, 9vh, 48px) !important;
+    line-height: 0.95 !important;
+    margin: 0 !important;
+  }
+  #game-hub .gh-title-sub {
+    margin-top: 3px !important;
+    font-size: clamp(10px, 2.6vh, 13px) !important;
+    letter-spacing: 0.14em !important;
+  }
+  #game-hub .gh-title-tag {
+    margin-top: 2px !important;
+    font-size: clamp(8px, 2vh, 11px) !important;
+    letter-spacing: 0.22em !important;
+  }
+  #game-hub .gh-title-car {
+    width: min(520px, 62vw) !important;
+    max-height: 28vh !important;
+    margin-top: 1vh !important;
+  }
+  #game-hub .gh-title-press {
+    margin-top: 1.5vh !important;
+  }
+  #game-hub .gh-title-meta {
+    display: none !important;
+  }
+}
+
+/* Title Screen CTA Button */
+.gh-title-press-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 28px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff !important;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 18px rgba(37, 99, 235, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.25) inset;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  animation: gh-pulse-btn 2s infinite ease-in-out;
+}
+.gh-title-press-btn:hover {
+  transform: scale(1.04);
+  box-shadow: 0 6px 22px rgba(37, 99, 235, 0.65);
+}
+@keyframes gh-pulse-btn {
+  0%, 100% { transform: scale(1); box-shadow: 0 4px 18px rgba(37, 99, 235, 0.45); }
+  50% { transform: scale(1.05); box-shadow: 0 6px 26px rgba(37, 99, 235, 0.75); }
+}
+
+/* ---------------------------------------------------------------- Clean In-Race HUD Overhaul */
+.rx-mobile-hud-topright {
+  position: absolute;
+  top: max(12px, env(safe-area-inset-top, 0px));
+  right: max(16px, env(safe-area-inset-right, 0px));
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.rmh-pos-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  background: rgba(15, 23, 42, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.55);
+  margin-bottom: 4px;
+}
+.rmh-pos-flag {
+  display: flex;
+  align-items: center;
+  color: #38bdf8;
+}
+.rmh-pos-lbl {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+.rmh-pos-val {
+  font-size: 19px;
+  font-weight: 900;
+  color: #ffffff;
+  font-family: var(--rx-mono, system-ui, sans-serif);
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+}
+.rmh-time-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: rgba(15, 23, 42, 0.55);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #cbd5e1;
+  font-family: var(--rx-mono, system-ui, sans-serif);
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+.rmh-time-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: #94a3b8;
+}
+
+/* Quickbar (Camera, Sound, Pause): Clean circular floating buttons at top */
+#race-root .rx-quickbar {
+  position: absolute !important;
+  top: max(12px, env(safe-area-inset-top, 0px)) !important;
+  right: calc(max(16px, env(safe-area-inset-right, 0px)) + 125px) !important;
+  bottom: auto !important;
+  transform: none !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  z-index: 160 !important;
+  pointer-events: auto !important;
+  opacity: 0.95 !important;
+}
+
+#race-root .rx-quickbar .rx-btn {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(15, 23, 42, 0.72) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
+  color: #ffffff !important;
+  cursor: pointer !important;
+  transition: transform 0.1s ease, background 0.15s ease !important;
+}
+
+#race-root .rx-quickbar .rx-btn:active {
+  transform: scale(0.92) !important;
+  background: rgba(30, 41, 59, 0.9) !important;
+}
+
+#race-root .rx-quickbar .rx-cam-btn {
+  width: auto !important;
+  min-width: 44px !important;
+  height: 38px !important;
+  padding: 0 12px !important;
+  border-radius: 19px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  background: rgba(15, 23, 42, 0.78) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+#race-root .rx-quickbar .rx-cam-btn:active {
+  transform: scale(0.94) !important;
+  background: rgba(30, 41, 59, 0.95) !important;
+  border-color: #00e5ff !important;
+}
+
+#race-root .rx-quickbar .rx-cam-ico {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#race-root .rx-quickbar .rx-cam-lbl {
+  display: inline-block !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.8px !important;
+  color: #ffffff !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+}
+
+/* Global Nav: Refresh and Install App Buttons */
+.gnav-refresh-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 50% !important;
+  color: var(--text, #1e293b) !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  cursor: pointer !important;
+  touch-action: manipulation !important;
+  transition: transform 0.25s ease, background 0.15s ease !important;
+}
+.gnav-refresh-btn:hover {
+  background: rgba(37, 99, 235, 0.1) !important;
+  color: #2563eb !important;
+}
+.gnav-refresh-btn:active {
+  transform: rotate(180deg) scale(0.92) !important;
+}
+
+.gnav-install-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  color: #ffffff !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.6px !important;
+  padding: 5px 12px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.45) !important;
+  cursor: pointer !important;
+  touch-action: manipulation !important;
+  transition: transform 0.1s ease, filter 0.15s ease !important;
+}
+.gnav-install-btn:hover {
+  filter: brightness(1.1) !important;
+}
+.gnav-install-btn:active {
+  transform: scale(0.94) !important;
+}
+
+/* Portrait Orientation Guard: Forces Widescreen Landscape on Mobile */
+#portrait-orientation-guard {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  background: #090b10;
+  color: #ffffff;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+@media (orientation: portrait) and (max-width: 920px),
+       (orientation: portrait) and (pointer: coarse) {
+  #portrait-orientation-guard {
+    display: flex !important;
+  }
+}
+
+.pg-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 320px;
+}
+
+.pg-tilt-svg {
+  animation: pgPhoneTilt 2.2s ease-in-out infinite;
+}
+
+@keyframes pgPhoneTilt {
+  0%, 15% { transform: rotate(0deg); }
+  50%, 75% { transform: rotate(90deg); }
+  90%, 100% { transform: rotate(0deg); }
+}
+
+.pg-brand {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #38bdf8;
+  text-transform: uppercase;
+}
+
+.pg-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+}
+
+.pg-sub {
+  margin: 0;
+  font-size: 13.5px;
+  color: #94a3b8;
+  line-height: 1.45;
+}
+
+.pg-force-btn {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 13px 22px;
+  border-radius: 999px;
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.5);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.pg-force-btn:active {
+  transform: scale(0.95);
+  background: #1e40af;
+}
+
+.pg-play-anyway-btn {
+  margin-top: 10px;
+  background: var(--bg-card, rgba(255, 255, 255, 0.08));
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.22));
+  color: var(--text, #ecebe6);
+  padding: 10px 18px;
+  border-radius: var(--pill, 999px);
+  font-size: var(--fs-sm, 13px);
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  touch-action: manipulation;
+}
+
+/* Hide old empty race rotate element */
+.rx-rotate,
+#race-root .rx-rotate {
+  display: none !important;
+}
+
+/* ==========================================================================
+   2030 FUTURISTIC AAA MOBILE UI & ZERO TEXT-CLIPPING ENGINE
+   Guarantees zero text overflow, safe-area camera notch clearance,
+   and cyber-emerald / crimson Bangladesh Racing Edition aesthetics
+   ========================================================================== */
+
+/* Universal text-truncation and safety margins on mobile screens */
+@media (max-width: 1024px) {
+  /* Prevent any heading, title, or button label from clipping */
+  .gh-title-name,
+  .gh-hero-title,
+  .gh-card-title,
+  .gh-item-name,
+  .cb-card-title,
+  .cb-title,
+  .gnav-name,
+  .gnav-brand,
+  .gnav-link span,
+  .cb-btn span,
+  .rx-hud-title,
+  .rx-mobile-hud span {
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  /* Safe margins for camera punch-holes and rounded screen corners */
+  #gnav,
+  .gnav {
+    padding-left: max(12px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(12px, env(safe-area-inset-right, 0px)) !important;
+  }
+
+  #game-hub,
+  .cb-screen {
+    padding-left: max(8px, env(safe-area-inset-left, 0px));
+    padding-right: max(8px, env(safe-area-inset-right, 0px));
+  }
+
+  /* Responsive font scaling for titles and stat numbers */
+  .gh-hero-title {
+    font-size: clamp(20px, 4.5vw, 36px) !important;
+    line-height: 1.15 !important;
+  }
+
+  .gh-card-title {
+    font-size: clamp(14px, 2.2vw, 18px) !important;
+  }
+
+  .cb-btn {
+    font-size: clamp(11.5px, 1.8vw, 13.5px) !important;
+    letter-spacing: 0.5px !important;
+  }
+}
+
+/* 2030 Futuristic Bangladeshi Racing Edition Badge & Accents */
+.gnav-brand-pill {
+  border: 1px solid rgba(16, 185, 129, 0.45) !important;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.25), inset 0 0 8px rgba(0, 229, 255, 0.15) !important;
+  background: linear-gradient(135deg, rgba(6, 40, 26, 0.85), rgba(10, 20, 36, 0.85)) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+.gnav-install-btn {
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%) !important;
+  border: 1px solid rgba(52, 211, 153, 0.6) !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.5) !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.5px !important;
+}
+
+html.pwa-installed .gnav-install-btn,
+body.pwa-installed .gnav-install-btn,
+.gnav-install-btn.pwa-hidden {
+  display: none !important;
+}
+
+@media all and (display-mode: standalone), (display-mode: fullscreen) {
+  .gnav-install-btn {
+    display: none !important;
+  }
+}
+
+.gnav-refresh-btn {
+  background: rgba(15, 23, 42, 0.75) !important;
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  color: #38bdf8 !important;
+  backdrop-filter: blur(8px) !important;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.2) !important;
+}
+
+/* In-game HUD 2030 Glassmorphism styling */
+.rx-hud-panel,
+.rx-mobile-hud-topright,
+.rx-speedo-panel {
+  backdrop-filter: blur(16px);
+  background: rgba(8, 14, 26, 0.78) !important;
+  border: 1px solid rgba(0, 229, 255, 0.22) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 12px rgba(0, 229, 255, 0.15) !important;
+  border-radius: 12px !important;
+}
+
+
+

@@ -1,59 +1,107 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light" class="notranslate" translate="no">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="google" content="notranslate">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="description" content="Redline — build a car in the Garage to your exact specification (body, engine, gearbox, chassis, aero, paint and cabin, with live physics and pricing), then race it, drift it and run a career.">
-  <meta property="og:title" content="Redline — Build it. Race it. Drift it.">
-  <meta property="og:description" content="Build a car in the Garage, then race it, drift it and run a career. Plays in the browser, on desktop and phone.">
+  <meta property="og:title" content="Redline — JUBAYER · As-Sunnah Skill Development Institute">
+  <meta property="og:description" content="JUBAYER — As-Sunnah Skill Development Institute. Build your car, race it, drift it and run a career. Plays in the browser, on desktop and phone.">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Redline">
-  <meta name="application-name" content="Redline">
-  <meta name="apple-mobile-web-app-title" content="Redline">
-  <meta name="color-scheme" content="dark light">
-  <meta name="theme-color" content="#0b0b0d">
+  <meta property="og:site_name" content="JUBAYER — As-Sunnah Skill Development">
+  <meta name="application-name" content="JUBAYER — As-Sunnah Skill Development">
+  <meta name="apple-mobile-web-app-title" content="JUBAYER">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f6f5f2">
   <!-- iPhone has no Fullscreen API: "Add to Home Screen" launches standalone (no browser bars) -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="format-detection" content="telephone=no">
-  <title>Redline — Build it. Race it. Drift it.</title>
+  <title>Redline — JUBAYER · As-Sunnah Skill Development Institute</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0b0d'/%3E%3Cpath d='M14 42a18 18 0 0 1 28.5-14.6' fill='none' stroke='%23c9a96e' stroke-width='5' stroke-linecap='round'/%3E%3Cpath d='M46.4 31.4A18 18 0 0 1 50 42' fill='none' stroke='%23e0412f' stroke-width='5' stroke-linecap='round'/%3E%3Cpath d='M32 42l13-9' stroke='%23ecebe6' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='42' r='4.5' fill='%23ecebe6'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles.css?v=install_refresh_orient_v1">
+  <link rel="stylesheet" href="css/ui2.css">
+  <link rel="stylesheet" href="css/mobile.css">
 </head>
 <body>
-  <!-- Boot screen: painted as soon as the stylesheet arrives, while the ~90 classic scripts below download and run
-       (several seconds on a phone network). Self-contained styles; removed after DOMContentLoaded. -->
-  <div id="cb-boot" role="status" aria-live="polite" data-scripts="157">
-    <script>try{var t=JSON.parse(localStorage.getItem("forge.theme.v1")||"null");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
-    <style>#cb-boot{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:var(--bg,#0b0b0d);color:var(--text,#ecebe6);font:600 var(--fs-sm,12.5px)/1.4 var(--font,system-ui,sans-serif);letter-spacing:.04em;transition:opacity .35s ease;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}#cb-boot.is-done{opacity:0;pointer-events:none}#cb-boot .cbb{display:flex;flex-direction:column;align-items:center;gap:14px;width:min(260px,70vw)}#cb-boot .cbb-bar{width:100%;height:4px;border-radius:var(--pill,999px);background:var(--line,#2b2c33);overflow:hidden}#cb-boot .cbb-bar i{display:block;height:100%;width:3%;background:var(--accent-grad,var(--accent,#c9a56b));border-radius:inherit;transition:width .2s ease}#cb-boot .cbb-t{color:var(--text-dim,#9b9890);font-variant-numeric:tabular-nums}#cb-boot svg{opacity:.9}#cb-boot .g{stroke:var(--accent,#c9a56b)}#cb-boot .r{stroke:var(--race,#e0412f)}#cb-boot .n{stroke:var(--text,#ecebe6);fill:var(--text,#ecebe6)}@media (prefers-reduced-motion:reduce){#cb-boot,#cb-boot .cbb-bar i{transition:none}}</style>
+  <!-- Boot screen: painted as soon as the stylesheet arrives, while the classic scripts below download and run.
+       Self-contained styles; removed after router completes boot. -->
+  <div id="cb-boot" role="status" aria-live="polite" data-scripts="158">
+    <script>try{var t=JSON.parse(localStorage.getItem("forge.theme.v1")||"null");if(t!=="light"&&t!=="dark")t="light";document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+    <style>#cb-boot{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:var(--bg,#0b0b0d);color:var(--text,#ecebe6);font:600 var(--fs-sm,12.5px)/1.4 var(--font,system-ui,sans-serif);letter-spacing:.04em;transition:opacity .35s ease;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}#cb-boot.is-done{opacity:0;pointer-events:none}#cb-boot .cbb{display:flex;flex-direction:column;align-items:center;gap:14px;width:min(260px,70vw)}#cb-boot .cbb-bar{width:100%;height:4px;border-radius:var(--pill,999px);background:var(--line,#2b2c33);overflow:hidden}#cb-boot .cbb-bar i{display:block;height:100%;width:3%;background:var(--accent-grad,var(--accent,#c9a56b));border-radius:inherit;transition:width .2s ease}#cb-boot .cbb-t{color:var(--text-dim,#9b9890);font-variant-numeric:tabular-nums}#cb-boot svg{opacity:.9}#cb-boot .g{stroke:var(--accent,#c9a56b)}#cb-boot .r{stroke:var(--race,#e0412f)}#cb-boot .n{stroke:var(--text,#ecebe6);fill:var(--text,#ecebe6)}#cb-boot-error{display:none;margin-top:10px;text-align:center}#cb-boot-retry{background:var(--race,#e0412f);color:var(--text,#ecebe6);border:none;border-radius:var(--radius-sm,6px);padding:8px 16px;font-weight:700;cursor:pointer;margin-top:6px}@media (prefers-reduced-motion:reduce){#cb-boot,#cb-boot .cbb-bar i{transition:none}}</style>
     <div class="cbb">
       <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true"><path class="g" d="M8 44a24 24 0 0 1 40.4-17.6" fill="none" stroke="#c9a56b" stroke-width="5" stroke-linecap="round"/><path class="r" d="M51.4 30.3A24 24 0 0 1 56 44" fill="none" stroke="#e0412f" stroke-width="5" stroke-linecap="round"/><path class="n" d="M32 44l12-14" stroke="#ecebe6" stroke-width="4" stroke-linecap="round"/><circle class="n" cx="32" cy="44" r="4" fill="#ecebe6"/></svg>
       <div class="cbb-bar"><i id="cb-boot-bar"></i></div>
       <div class="cbb-t" id="cb-boot-text">Loading… 0%</div>
+      <div id="cb-boot-error">
+        <div style="color:var(--fail,#ef4444);font-size:var(--fs-xs,12px);margin-bottom:4px;">Slow network or loading issue</div>
+        <button id="cb-boot-retry" onclick="window.location.reload(true)">Retry</button>
+      </div>
     </div>
     <script>
     (function () {
-      var boot = document.getElementById('cb-boot'), bar = document.getElementById('cb-boot-bar'), txt = document.getElementById('cb-boot-text');
-      var total = +boot.getAttribute('data-scripts') || 90, n = 0, done = false;
-      function show() { if (done) return; var p = Math.min(97, Math.round(n / total * 100)); bar.style.width = Math.max(3, p) + '%'; txt.textContent = 'Loading… ' + p + '%'; }
+      var boot = document.getElementById('cb-boot'), bar = document.getElementById('cb-boot-bar'), txt = document.getElementById('cb-boot-text'), err = document.getElementById('cb-boot-error');
+      var total = +boot.getAttribute('data-scripts') || 158, n = 0, done = false;
+      function show() { if (done) return; var p = Math.min(96, Math.round(n / total * 100)); bar.style.width = Math.max(5, p) + '%'; txt.textContent = 'Loading… ' + Math.max(5, p) + '%'; }
       function onLoad(e) { var t = e && e.target; if (t && t.tagName === 'SCRIPT' && t.src) { n++; show(); } }
       document.addEventListener('load', onLoad, true);
-      document.addEventListener('error', function (e) { onLoad(e); }, true);
+      document.addEventListener('error', function (e) { n++; show(); }, true);
+
+      var progressTicker = setInterval(function () {
+        if (done) { clearInterval(progressTicker); return; }
+        if (n < total * 0.9) { n = Math.min(total * 0.9, n + Math.max(2, Math.floor(total * 0.04))); show(); }
+      }, 70);
+
       function finish() {
         if (done) return; done = true;
+        clearInterval(progressTicker);
+        if (errTimeout) clearTimeout(errTimeout);
         document.removeEventListener('load', onLoad, true);
         bar.style.width = '100%'; txt.textContent = 'Loading… 100%';
         var raf = window.requestAnimationFrame || function (f) { return setTimeout(f, 16); };
         raf(function () { raf(function () { boot.className = 'is-done'; setTimeout(function () { if (boot.parentNode) boot.parentNode.removeChild(boot); }, 400); }); });
       }
-      document.addEventListener('DOMContentLoaded', finish);
-      window.addEventListener('load', finish);
+
+      window.addEventListener('cb:router-ready', finish);
+      document.addEventListener('cb:router-ready', finish);
+      document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(function () {
+          if (window.CB && CB.router && typeof CB.router.isBooted === 'function' && CB.router.isBooted()) {
+            finish();
+          }
+        }, 100);
+      });
+
+      // Show real error screen with retry button if loading stalls for over 14s
+      var errTimeout = setTimeout(function () {
+        if (!done) {
+          if (err) err.style.display = 'block';
+        }
+      }, 14000);
     })();
     </script>
   </div>
   <a class="skip-link" href="#app-root">Skip to content</a>
+
+  <audio id="as-sunnah-theme-audio" src="audio/as_sunnah_theme.mp3" loop preload="auto"></audio>
+  <script>
+    (function () {
+      function startGlobalAudio() {
+        var a = document.getElementById('as-sunnah-theme-audio');
+        if (a && a.paused) {
+          a.volume = 0.85;
+          var pr = a.play();
+          if (pr && pr.catch) pr.catch(function () {});
+        }
+      }
+      ['pointerdown', 'touchstart', 'click', 'keydown'].forEach(function (ev) {
+        window.addEventListener(ev, startGlobalAudio, { once: false, passive: true });
+      });
+    })();
+  </script>
 
   <!-- ONE game, one UI (docs/UNIFY-SPEC.md): the global nav bar + one full-viewport layer per CB.router screen. -->
   <header id="gnav" class="gnav" role="banner"><!-- rendered by js/router.js --></header>
@@ -64,7 +112,7 @@
   <header id="topbar">
     <div class="brand" aria-label="Redline Garage">
       <svg class="brand-mark" viewBox="0 0 64 64" width="28" height="28" aria-hidden="true"><rect width="64" height="64" rx="14" fill="currentColor" opacity=".12"/><path d="M14 42a18 18 0 0 1 28.5-14.6" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M46.4 31.4A18 18 0 0 1 50 42" fill="none" style="stroke:var(--race,#e0412f)" stroke-width="5" stroke-linecap="round"/><path d="M32 42l13-9" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><circle cx="32" cy="42" r="4.5" fill="currentColor"/></svg>
-      <span class="brand-name">RED<b>LINE</b></span><span class="brand-sub">Garage</span>
+      <span class="brand-name" style="color:rgb(56,189,248);letter-spacing:0.04em;">JUBA<b style="color:rgb(96,165,250);">YER</b></span><span class="brand-sub" style="color:rgb(249,115,22);font-weight:700;">As-Sunnah</span>
     </div>
     <button id="btn-menu" class="cb-btn ghost menu-btn" type="button" title="Main menu: career, races, my cars (M)" hidden>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg><span>Menu</span>
@@ -122,6 +170,11 @@
           <div class="view-toggles" role="group" aria-label="Overlays">
             <button id="btn-xray" class="cb-btn ghost" type="button" aria-pressed="false" title="X-ray: drivetrain, weight distribution and centre of gravity">X-Ray</button>
             <button id="btn-spin" class="cb-btn ghost" type="button" aria-pressed="false" title="Spin the wheels">Spin</button>
+          </div>
+          <div class="viewer-drive" style="margin-left:auto;">
+            <a href="#/race" class="cb-btn primary arcade-drive-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:8px;">
+              <span>🏎️ RACE NOW</span>
+            </a>
           </div>
         </div>
       </section>
@@ -188,6 +241,31 @@
 
   <div id="modal-root"></div>
   <div id="toast-root" aria-live="polite"></div>
+
+  <!-- Portrait Guard: Prevents broken vertical layout on phones; prompts rotation / forces landscape -->
+  <div id="portrait-orientation-guard" class="portrait-guard" aria-live="assertive">
+    <div class="pg-content">
+      <div class="pg-phone-icon">
+        <svg viewBox="0 0 100 100" width="84" height="84" class="pg-tilt-svg">
+          <rect x="25" y="12" width="50" height="76" rx="8" fill="none" stroke="#38bdf8" stroke-width="4.5"/>
+          <line x1="42" y1="18" x2="58" y2="18" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="50" cy="80" r="3.5" fill="#38bdf8"/>
+          <path d="M 78 35 A 36 36 0 0 1 78 65" fill="none" stroke="#f97316" stroke-width="4" stroke-linecap="round"/>
+          <polyline points="72,64 78,71 85,64" fill="none" stroke="#f97316" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="pg-brand">JUBAYER RACING</div>
+      <h2 class="pg-title">ROTATE YOUR DEVICE</h2>
+      <p class="pg-sub">This 3D racing game is designed exclusively for widescreen Landscape orientation.</p>
+      <button id="pg-force-btn" type="button" class="pg-force-btn">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+        <span>Play in Fullscreen Landscape</span>
+      </button>
+      <button id="pg-play-anyway-btn" type="button" class="pg-play-anyway-btn">
+        <span>↻ Play in this orientation</span>
+      </button>
+    </div>
+  </div>
 
   <noscript>
     <div class="noscript">
@@ -265,6 +343,7 @@
   <script src="js/race/renderer.js" charset="utf-8"></script>
   <script src="js/race/gl/gl-core.js" charset="utf-8"></script>
   <script src="js/race/gl/lowpoly.js" charset="utf-8"></script>
+  <script src="js/race/gl/as_sunnah_assets.js" charset="utf-8"></script>
   <script src="js/race/gl/textures.js" charset="utf-8"></script>
   <script src="js/race/gl/envmap.js" charset="utf-8"></script>
   <script src="js/race/gl/post.js" charset="utf-8"></script>
@@ -381,7 +460,157 @@
   <script src="js/input/camwheel-hands.js" charset="utf-8"></script>
   <script src="js/input/camwheel.js" charset="utf-8"></script>
   <script src="js/input/camwheel-ui.js" charset="utf-8"></script>
+  <!-- Redline UI v2.0 mobile-first presentation layer (Step 3: ?ui=2, fallback ?ui=1) -->
+  <script src="js/ui2/ui2.js" charset="utf-8"></script>
+  <!-- Mobile Shell Viewport & Gesture Controller (Phase 1) -->
+  <script src="js/mobile/shell.js" charset="utf-8"></script>
+  <!-- Mobile Performance & Diagnostic Debug Overlay (Phase 0) -->
+  <script src="js/mobile/debug-overlay.js" charset="utf-8"></script>
   <!-- The single entry point's router (docs/UNIFY-SPEC.md): loads last, boots to #/menu on DOMContentLoaded. -->
   <script src="js/router.js" charset="utf-8"></script>
+
+  <!-- PWA Service Worker, App Installation, Quick Refresh & Screen Orientation Lock -->
+  <script>
+  (function () {
+    'use strict';
+
+    // 1. Service Worker for PWA installability
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js').catch(function (e) {
+          console.warn('[PWA] SW register skipped:', e);
+        });
+      });
+    }
+
+    // Check if the app is already running as standalone or previously installed
+    var isStandaloneApp = window.matchMedia('(display-mode: standalone)').matches ||
+                          window.matchMedia('(display-mode: fullscreen)').matches ||
+                          !!window.navigator.standalone ||
+                          (typeof localStorage !== 'undefined' && localStorage.getItem('pwa_installed') === 'true');
+    if (isStandaloneApp) {
+      document.documentElement.classList.add('pwa-installed');
+      try { localStorage.setItem('pwa_installed', 'true'); } catch (e) {}
+    }
+
+    // 2. Capture beforeinstallprompt for native App Installation
+    window.deferredInstallPrompt = null;
+    window.addEventListener('beforeinstallprompt', function (e) {
+      if (document.documentElement.classList.contains('pwa-installed')) {
+        return;
+      }
+      e.preventDefault();
+      window.deferredInstallPrompt = e;
+      var btn = document.getElementById('gnav-btn-install');
+      if (btn && !document.documentElement.classList.contains('pwa-installed')) btn.style.display = 'inline-flex';
+    });
+
+    window.addEventListener('appinstalled', function () {
+      window.deferredInstallPrompt = null;
+      document.documentElement.classList.add('pwa-installed');
+      try { localStorage.setItem('pwa_installed', 'true'); } catch (e) {}
+      var btn = document.getElementById('gnav-btn-install');
+      if (btn) btn.remove();
+      if (typeof CB !== 'undefined' && CB.toast) {
+        CB.toast('Jubayer Racing installed successfully!');
+      }
+    });
+
+    // 3. Quick Refresh & Install Click Handlers
+    document.addEventListener('click', function (e) {
+      // Refresh Button
+      var ref = e.target && e.target.closest && e.target.closest('#gnav-btn-refresh, .cb-refresh-btn');
+      if (ref) {
+        e.preventDefault();
+        ref.style.transform = 'rotate(360deg)';
+        ref.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        setTimeout(function () {
+          window.location.reload(true);
+        }, 180);
+        return;
+      }
+
+      // Install Button
+      var inst = e.target && e.target.closest && e.target.closest('#gnav-btn-install, .cb-install-btn');
+      if (inst) {
+        e.preventDefault();
+        if (window.deferredInstallPrompt) {
+          window.deferredInstallPrompt.prompt();
+          window.deferredInstallPrompt.userChoice.then(function (res) {
+            if (res && res.outcome === 'accepted') {
+              inst.style.display = 'none';
+            }
+            window.deferredInstallPrompt = null;
+          });
+        } else {
+          var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+          if (isIOS) {
+            alert("To install Jubayer Racing on iOS:\n1. Tap the Share button [ ⎋ ] in Safari.\n2. Select 'Add to Home Screen'.\nIt will open in full-screen landscape like a native app!");
+          } else {
+            alert("To install Jubayer Racing on Android / PC:\n1. Open the browser menu [ ⋮ ] (top right).\n2. Tap 'Install app' or 'Add to Home screen'.\nIt will launch directly in fullscreen landscape!");
+          }
+        }
+        return;
+      }
+
+      // Try Locking Landscape on user interaction
+      tryLockLandscape();
+    });
+
+    // 4. Force Landscape helper function
+    function tryLockLandscape() {
+      try {
+        if (screen.orientation && typeof screen.orientation.lock === 'function') {
+          screen.orientation.lock('landscape').catch(function () {});
+        }
+      } catch (err) {}
+    }
+
+    // 5. Rotate Guard Button Action
+    document.addEventListener('DOMContentLoaded', function () {
+      var pgBtn = document.getElementById('pg-force-btn');
+      if (pgBtn) {
+        pgBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          try {
+            var docEl = document.documentElement;
+            var reqFs = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+            if (reqFs) reqFs.call(docEl).catch(function () {});
+          } catch (eFs) {}
+          tryLockLandscape();
+        });
+      }
+
+      var pgAnyway = document.getElementById('pg-play-anyway-btn');
+      if (pgAnyway) {
+        pgAnyway.addEventListener('click', function (e) {
+          e.preventDefault();
+          // Fallback when phone is physically sideways but OS orientation lock is ON:
+          // Dismiss the overlay and lock into 90deg counter-rotation once at race start.
+          var guard = document.getElementById('portrait-orientation-guard');
+          if (guard) guard.style.display = 'none';
+          document.documentElement.classList.add('force-orientation-dismissed');
+          if (typeof CB !== 'undefined' && CB.input && CB.input.orient && typeof CB.input.orient.forceLandscapeFallback === 'function') {
+            CB.input.orient.forceLandscapeFallback();
+          }
+        });
+      }
+    });
+
+    // Attempt orientation lock whenever visibility changes to active
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') {
+        tryLockLandscape();
+      }
+    });
+
+    // Keep landscape locked on user interaction during mobile gameplay
+    window.addEventListener('pointerdown', function () {
+      if (window.innerWidth < 1100 && ('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
+        tryLockLandscape();
+      }
+    }, { passive: true });
+  })();
+  </script>
 </body>
 </html>
