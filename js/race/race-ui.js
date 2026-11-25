@@ -3656,6 +3656,16 @@ CB.race = CB.race || {};
         R.hudDrawsCountdown = !R.fallbackHud && R.hud.drawsCountdown !== false && !(CB.race.hud && CB.race.hud.drawsCountdown === false);
         R.hudDrawsBanners = !R.fallbackHud && R.hud.drawsBanners !== false;
       },
+      function () { // shader & GPU pipeline warm-up
+        if (R.renderer && typeof R.renderer.render === 'function') {
+          try {
+            var initialSnap = R.session.snapshot();
+            R.renderer.render(initialSnap, 1.0);
+          } catch (eWarm) {
+            if (typeof console !== 'undefined' && console.warn) console.warn('[race-ui] warm-up render error', eWarm);
+          }
+        }
+      },
       function () { // input + first frame
         R.input = createInput({ settings: R.settings, onAction: onRaceAction });
         R.input.leftSign = probeLeftSign(U.build, U.metricsInfo.estimated ? null : U.metricsInfo.m);
@@ -3679,7 +3689,7 @@ CB.race = CB.race || {};
       mark(stepIdx, 'is-active');
       var exec = function () {
         if (!U || U.race !== R) return;
-        try { tasks[stepIdx](); } catch (e) { fail(e, ['grid', 'session', 'renderer', 'input'][stepIdx]); return; }
+        try { tasks[stepIdx](); } catch (e) { fail(e, ['grid', 'session', 'renderer', 'warmup', 'input'][stepIdx]); return; }
         mark(stepIdx, 'is-done');
         stepIdx++;
         run();
@@ -4140,8 +4150,8 @@ CB.race = CB.race || {};
     var S = U.race.settings, st = trackStats(def);
     var drifting = S.discipline === 'drift';
     var stepNames = drifting
-      ? [S.driftMode === 'tandem' ? 'Briefing the lead driver' : 'Rolling out to the line', 'Mapping drift zones', 'Calibrating the judge', 'Warming tyres']
-      : ['Assembling the grid', 'Surveying circuit & racing line', 'Rigging cameras & timing', 'Warming tyres'];
+      ? [S.driftMode === 'tandem' ? 'Briefing the lead driver' : 'Rolling out to the line', 'Mapping drift zones', 'Calibrating the judge', 'Pre-warming shaders & GPU pipeline', 'Warming tyres']
+      : ['Assembling the grid', 'Surveying circuit & racing line', 'Rigging cameras & timing', 'Pre-warming shaders & GPU pipeline', 'Warming tyres'];
     var steps = stepNames.map(function (n) { return h('div', null, h('i'), h('span', { text: n })); });
     var bar = h('i');
     var go = h('button', { class: 'cb-btn rx-btn primary big', type: 'button', disabled: true, onclick: goRace }, icon('play', 16), S.discipline === 'drift' ? 'Start the run' : S.mode === 'race' ? 'Take the grid' : 'Go to track');

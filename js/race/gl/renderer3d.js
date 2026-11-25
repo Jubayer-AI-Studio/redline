@@ -3761,9 +3761,23 @@ CB.race.renderer3d = (function () {
     return null;
   }
 
+  function warmUpShaders(canvasIn) {
+    if (!hasCore()) return;
+    try {
+      var cv = canvasIn || (typeof document !== 'undefined' ? document.createElement('canvas') : null);
+      if (!cv) return;
+      var ctx = CB.gl.context(cv);
+      if (!ctx) return;
+      CB.gl.shaders(ctx);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
   var exported = {
     isSupported: isSupported,
     create: create,
+    warmUpShaders: warmUpShaders,
     CAMERA_MODES: CAMERA_MODES.slice(),
     CAMERA_LABELS: CAMERA_LABELS,
     QUALITY: QUALITY,
