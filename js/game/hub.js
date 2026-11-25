@@ -2751,21 +2751,39 @@ animation:gh-in .3s both;box-shadow:var(--shadow-lg,0 10px 30px rgba(0,0,0,.5));
         { id: 'drag', short: 'Christmas tree, quarter-mile slips', mc: 'drag' },
         { id: 'f1', short: 'Pick a team, real circuits', mc: 'f1' }, { id: 'timetrial', short: 'Hot laps against your ghost', mc: 'career' }
       ];
+      var MODE_LEVELS = {
+        race: 1, timetrial: 1, career: 1,
+        drift: 2, challenges: 2,
+        arcade: 3, multiplayer: 3,
+        derby: 4, drag: 5, f1: 7
+      };
+      var isModeLocked = function (id) {
+        if (CB.isDevUnlock && CB.isDevUnlock()) return false;
+        var req = MODE_LEVELS[id] || 1;
+        var curLevel = (p && p.level) ? p.level : 1;
+        return curLevel < req ? { locked: true, level: req } : false;
+      };
       var playIds = {};
       var tiles = PLAY.filter(function (t) { return byId[t.id]; }).map(function (t) {
         var m = byId[t.id]; playIds[t.id] = 1;
-        return '<button class="gh-mode" role="menuitem" data-nav data-key="mi-' + m.id + '" data-act="go" data-id="' + m.id + '" title="' + esc(m.desc) + '" style="--mc:var(--mode-' + t.mc + ');--mcs:var(--mode-' + t.mc + '-soft)">' +
+        var mlk = isModeLocked(m.id);
+        var lockBadge = mlk && mlk.locked ? '<span class="badge" style="background:var(--danger);color:var(--paper);" title="Unlocks at Driver Level ' + mlk.level + '">🔒 Lv ' + mlk.level + '</span>' : badgeOf(m.id);
+        var subtitle = mlk && mlk.locked ? '🔒 Unlocks at Driver Level ' + mlk.level : esc(t.short);
+        return '<button class="gh-mode' + (mlk && mlk.locked ? ' is-locked' : '') + '" role="menuitem" data-nav data-key="mi-' + m.id + '" data-act="go" data-id="' + m.id + '" title="' + esc(m.desc) + '" style="--mc:var(--mode-' + t.mc + ');--mcs:var(--mode-' + t.mc + '-soft)">' +
           '<span class="gh-mode-art" aria-hidden="true">' + icon(m.icon, 120) + '</span><span class="gh-mode-ic">' + icon(m.icon, 20) + '</span>' +
-          '<span class="gh-mode-lbl">' + esc(m.id === 'derby' ? 'Derby' : m.id === 'drag' ? 'Drag' : m.label) + badgeOf(m.id) + '</span><span class="gh-mode-ds">' + esc(t.short) + '</span></button>';
+          '<span class="gh-mode-lbl">' + esc(m.id === 'derby' ? 'Derby' : m.id === 'drag' ? 'Drag' : m.label) + lockBadge + '</span><span class="gh-mode-ds">' + subtitle + '</span></button>';
       });
       // Prominent Garage Tile at position #1
-      tiles.unshift('<button class="gh-mode gh-mode-garage" role="menuitem" data-nav data-key="mi-garage" data-act="go" data-id="atelier" title="53 Cars Garage - Choose and drive any car 100% free" style="--mc:#0a72cc;--mcs:rgba(10,114,204,0.25);background:linear-gradient(135deg,#0a72cc,#004b93);color:#fff;border-color:rgba(255,255,255,0.25);">' +
+      tiles.unshift('<button class="gh-mode gh-mode-garage" role="menuitem" data-nav data-key="mi-garage" data-act="go" data-id="atelier" title="Garage — 53 vehicles to collect and customize" style="--mc:#0a72cc;--mcs:rgba(10,114,204,0.25);background:linear-gradient(135deg,#0a72cc,#004b93);color:#fff;border-color:rgba(255,255,255,0.25);">' +
         '<span class="gh-mode-art" aria-hidden="true">' + icon('wrench', 120) + '</span><span class="gh-mode-ic" style="color:#ffd000;">' + icon('wrench', 20) + '</span>' +
-        '<span class="gh-mode-lbl" style="color:#fff;font-weight:800;">🚗 Garage (53)</span><span class="gh-mode-ds" style="color:#d9eaff;">53 Cars Free</span></button>');
+        '<span class="gh-mode-lbl" style="color:#fff;font-weight:800;">Garage (53)</span><span class="gh-mode-ds" style="color:#d9eaff;">53 Vehicles</span></button>');
       if (routerMod()) {
-        tiles.push('<button class="gh-mode" role="menuitem" data-nav data-key="mi-multiplayer" data-act="go" data-id="multiplayer" title="Peer-to-peer races with friends, each in their own build" style="--mc:var(--mode-online);--mcs:var(--mode-online-soft)">' +
+        var multiLck = isModeLocked('multiplayer');
+        var multiBadge = multiLck && multiLck.locked ? '<span class="badge" style="background:var(--danger);color:var(--paper);">🔒 Lv ' + multiLck.level + '</span>' : '';
+        var multiSub = multiLck && multiLck.locked ? '🔒 Unlocks at Driver Level ' + multiLck.level : 'Race friends online';
+        tiles.push('<button class="gh-mode' + (multiLck && multiLck.locked ? ' is-locked' : '') + '" role="menuitem" data-nav data-key="mi-multiplayer" data-act="go" data-id="multiplayer" title="Peer-to-peer races with friends, each in their own build" style="--mc:var(--mode-online);--mcs:var(--mode-online-soft)">' +
           '<span class="gh-mode-art" aria-hidden="true">' + icon('users', 120) + '</span><span class="gh-mode-ic">' + icon('users', 20) + '</span>' +
-          '<span class="gh-mode-lbl">Multiplayer</span><span class="gh-mode-ds">Race friends online</span></button>');
+          '<span class="gh-mode-lbl">Multiplayer' + multiBadge + '</span><span class="gh-mode-ds">' + multiSub + '</span></button>');
       }
       var links = items.filter(function (m) { return !playIds[m.id]; }).map(function (m) {
         return '<button class="gh-link" role="menuitem" data-nav data-key="mi-' + m.id + '" data-act="go" data-id="' + m.id + '">' +
@@ -2773,7 +2791,7 @@ animation:gh-in .3s both;box-shadow:var(--shadow-lg,0 10px 30px rgba(0,0,0,.5));
           '<span class="gh-link-go" aria-hidden="true">' + icon('chev', 16) + '</span></button>';
       });
       var garageCta = '<button class="gh-btn primary big gh-garage-cta-btn" data-nav data-key="cta-garage-hero" data-act="go" data-id="atelier" style="background:linear-gradient(135deg,#0a72cc,#0052a3);color:#fff;font-weight:700;box-shadow:0 4px 14px rgba(10,114,204,0.4);border:none;">' +
-        icon('wrench', 18) + '<span>🚗 Garage (53 Cars)<small>Choose &amp; customize any car FREE</small></span></button>';
+        icon('wrench', 18) + '<span>Garage (53 Cars)<small>Choose &amp; tune any car in 3D</small></span></button>';
       var careerCta = nextChamp
         ? '<button class="gh-btn big" data-nav data-key="cta-career" data-act="go" data-id="career">' + icon('career', 18) + '<span>Continue career<small>' + esc(nextChamp.name) + ' · round ' + (nextChamp.roundsDone + 1) + ' of ' + nextChamp.rounds.length + '</small></span></button>'
         : '<button class="gh-btn big" data-nav data-key="cta-career" data-act="go" data-id="career">' + icon('career', 18) + '<span>Start career<small>Rookie Cup to Hypercar Masters</small></span></button>';

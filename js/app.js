@@ -1668,7 +1668,7 @@ window.CB = window.CB || {};
     var heroCard = el('div', { id: 'cb-showroom-hero-card', class: 'cb-showroom-hero-card' },
       el('div', { class: 'cb-showroom-hero-top' },
         el('span', { id: 'cb-showroom-hero-make', class: 'cb-showroom-make' }, 'PORSCHE'),
-        el('span', { class: 'cb-showroom-chip free' }, '100% FREE · UNLOCKED'),
+        el('span', { id: 'cb-showroom-hero-chip', class: 'cb-showroom-chip free' }, 'UNLOCKED'),
         el('span', { id: 'cb-showroom-hero-count', class: 'cb-showroom-chip count' }, '1 / 53')
       ),
       el('h1', { id: 'cb-showroom-hero-title', class: 'cb-showroom-hero-title' }, 'Porsche 911 Carrera S'),
@@ -1776,6 +1776,15 @@ window.CB = window.CB || {};
       return (CB.stock && typeof CB.stock.spec === 'function') ? CB.stock.spec(id) : null;
     }
 
+    function isCarLocked(model) {
+      if (!model || (CB.isDevUnlock && CB.isDevUnlock())) return false;
+      var p = (CB.game && CB.game.profile && CB.game.profile.get) ? CB.game.profile.get() : null;
+      var lvl = (p && p.level) ? p.level : 1;
+      var style = (model.bodyStyle || (model.ref && model.ref.style) || 'coupe');
+      var req = (CB.game && CB.game.economy && CB.game.economy.bodyStyleUnlockLevel) ? CB.game.economy.bodyStyleUnlockLevel(style) : 1;
+      return lvl < req ? { locked: true, level: req } : false;
+    }
+
     function updateBadge(model, index, total) {
       if (!model) return;
       var countEl = $('cb-showroom-hero-count');
@@ -1786,13 +1795,25 @@ window.CB = window.CB || {};
       var accEl = $('cb-stat-acc');
       var speedEl = $('cb-stat-speed');
       var driveEl = $('cb-stat-drive');
+      var chipEl = $('cb-showroom-hero-chip');
 
       var sp = getStock(model.id);
+      var lockInfo = isCarLocked(model);
+
       if (countEl) countEl.textContent = (index + 1) + ' / ' + total;
       if (makeEl) makeEl.textContent = (model.make || 'REDLINE').toUpperCase();
       if (titleEl) {
         var tStr = (model.make ? model.make + ' ' : '') + (model.name || model.id) + (sp && sp.t ? ' ' + sp.t : '');
         titleEl.textContent = tStr;
+      }
+      if (chipEl) {
+        if (lockInfo && lockInfo.locked) {
+          chipEl.className = 'cb-showroom-chip locked';
+          chipEl.textContent = '🔒 LOCKED · LV ' + lockInfo.level;
+        } else {
+          chipEl.className = 'cb-showroom-chip free';
+          chipEl.textContent = (CB.isDevUnlock && CB.isDevUnlock()) ? 'DEV UNLOCKED' : 'UNLOCKED';
+        }
       }
       if (hpEl) hpEl.textContent = (sp && sp.hp ? sp.hp : (model.ref && model.ref.horsepower || 440)) + ' HP';
       if (nmEl) nmEl.textContent = (sp && sp.nm ? sp.nm : 520) + ' Nm';
@@ -1866,17 +1887,21 @@ window.CB = window.CB || {};
         var col = (sp && sp.p && sp.p[0]) || MODEL_COLORS[m.id] || '#38bdf8';
         var drive = ((sp && sp.d) || m.drivetrain || 'RWD').toUpperCase();
         var shortName = (m.name || m.id) + (sp && sp.t ? ' ' + sp.t : '');
+        var lockInfo = isCarLocked(m);
         var card = el('div', {
-          class: 'cb-showroom-card-thumb' + (m.id === curId ? ' is-active' : ''),
+          class: 'cb-showroom-card-thumb' + (m.id === curId ? ' is-active' : '') + (lockInfo && lockInfo.locked ? ' is-locked' : ''),
           'data-idx': String(idx),
-          'data-id': m.id
+          'data-id': m.id,
+          title: lockInfo && lockInfo.locked ? 'Unlocks at Driver Level ' + lockInfo.level : shortName
         },
           el('div', { class: 'card-thumb-top' },
             el('span', { class: 'card-thumb-drive' }, drive),
-            el('span', { class: 'card-thumb-dot', style: 'background:' + col })
+            lockInfo && lockInfo.locked
+              ? el('span', { class: 'card-thumb-lock' }, '🔒 Lv ' + lockInfo.level)
+              : el('span', { class: 'card-thumb-dot', style: 'background:' + col })
           ),
           el('div', { class: 'card-thumb-title' }, shortName),
-          el('div', { class: 'card-thumb-check' }, '✓')
+          el('div', { class: 'card-thumb-check' }, lockInfo && lockInfo.locked ? '🔒' : '✓')
         );
 
         card.addEventListener('click', function (e) {

@@ -25,8 +25,8 @@ CB.derby = CB.derby || {};
 (function () {
   'use strict';
   var PI = Math.PI, TAU = PI * 2, DEG = PI / 180;
-  var MODES = ['chase', 'far'];
-  var LABELS = { chase: 'Chase (Near)', far: 'Chase (High)' };
+  var MODES = ['chase', 'far', 'hood', 'overhead'];
+  var LABELS = { chase: 'Chase', far: 'Chase (far)', hood: 'Hood', overhead: 'Overhead' };
   var QUALITY = {
     low: { dpr: 1, scale: 0.75, shadow: 0, post: false, particles: 420, aiLod: 'low', far: 900, shake: false, debris: 16, subHero: 1, subAI: 1, deformBudget: 1, deformMs: 2, decals: 0, fx: 0 },
     medium: { dpr: 1.25, scale: 1, shadow: 1024, post: true, particles: 1100, aiLod: 'high', far: 1200, shake: true, debris: 44, subHero: 2, subAI: 1, deformBudget: 2, deformMs: 3, decals: 40, fx: 1 },
@@ -2141,9 +2141,10 @@ CB.derby = CB.derby || {};
         Object.keys(R.cars).forEach(function (k) { var e = R.cars[k]; e.prev = null; if (e.model && e.model._deform && e.dkey) { deformModel(e.model, {}); } e.seq = -1; e.dkey = null; e._dark = null; e._tk = null; e.char = 0; e.dirt = 0; e.vparts = {}; e.roof = 0; e.soot = 0; e.glass = 0; e.scrapes = []; e.wasRolled = false; e.outT = 0; });
       },
       setCamera: function (m) {
-        if (m === 'chase-far' || m === 'far') m = 'far';
-        else m = 'chase';
-        R.mode = m; R.rig.init = false;
+        if (m === 'chase-far') m = 'far';
+        if (m === 'tv' || m === 'heli') m = 'overhead';
+        if (m === 'cockpit' || m === 'bumper') m = 'hood';
+        if (MODES.indexOf(m) >= 0) { R.mode = m; R.rig.init = false; }
         return R.mode;
       },
       cycleCamera: function () { R.mode = MODES[(MODES.indexOf(R.mode) + 1) % MODES.length]; R.rig.init = false; return R.mode; },
