@@ -354,14 +354,38 @@ var CB = (globalThis.CB = globalThis.CB || {});
     var nav = document.getElementById('gnav');
     if (!nav) return;
     nav.innerHTML =
-      '<a class="gnav-brand" href="#/menu" data-go="menu" data-nav-route="menu" title="Main menu" aria-label="Redline — main menu">' + brandMark(26) +
-        '<span class="gnav-name">RED<b>LINE</b></span></a>' +
+      '<a class="gnav-back-pill" id="gnav-back-pill" href="#/menu" data-go="menu" title="Back to menu" aria-label="Back to menu" style="display:none;">' +
+        '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>' +
+        '<span>Back</span></a>' +
+      '<a class="gnav-brand gnav-brand-pill" href="#/menu" data-go="menu" data-nav-route="menu" title="Main menu" aria-label="Jubayer — main menu">' +
+        '<img class="gnav-as-logo" src="img/as_sunnah_logo.png" alt="As-Sunnah Logo" width="22" height="22">' +
+        '<span class="gnav-name" style="color:#2563eb;font-weight:800;letter-spacing:0.05em;font-size:14px;margin-left:4px;">JUBAYER</span>' +
+        '<span class="gnav-sub" style="color:#ea580c;font-weight:800;font-size:11px;letter-spacing:0.04em;margin-left:6px;text-transform:uppercase;">AS-SUNNAH</span></a>' +
       '<nav class="gnav-links" aria-label="Main">' + NAV.map(function (n) {
         // phones show the short label under the icon (.gnav-s, aria-hidden); the full label stays for screen readers
         return '<a class="gnav-link" href="' + format(n.route) + '" data-go="' + n.route + '" data-nav-route="' + n.route + '" title="' + esc(n.label) + '">' + svg(n.icon, 16) +
           '<span class="gnav-l">' + esc(n.label) + '</span><span class="gnav-s" aria-hidden="true">' + esc(n.short || n.label) + '</span></a>';
-      }).join('') + '</nav>' +
+      }).join('') +
+      '<a class="gnav-link gnav-settings-link" href="#/settings" data-go="settings" data-nav-route="settings" title="Settings">' +
+        svg('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>', 16) +
+        '<span class="gnav-l">Settings</span><span class="gnav-s" aria-hidden="true">Settings</span></a>' +
+      '</nav>' +
       '<div class="gnav-spacer"></div>' +
+      '<button class="cb-btn ghost icon-btn gnav-icon gnav-refresh-btn" id="gnav-btn-refresh" type="button" title="Refresh Game" aria-label="Refresh Game">' +
+        '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>' +
+      '</button>' +
+      ((typeof window !== 'undefined' && (
+        window.matchMedia('(display-mode: standalone)').matches ||
+        window.matchMedia('(display-mode: fullscreen)').matches ||
+        !!window.navigator.standalone ||
+        (typeof document !== 'undefined' && document.documentElement.classList.contains('pwa-installed')) ||
+        (typeof localStorage !== 'undefined' && localStorage.getItem('pwa_installed') === 'true')
+      )) ? '' : (
+        '<button class="cb-btn gnav-install-btn" id="gnav-btn-install" type="button" title="Install Jubayer Racing (App / APK)">' +
+          '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
+          '<span>INSTALL APP</span>' +
+        '</button>'
+      )) +
       '<a class="gnav-chip" href="#/profile" data-go="profile" data-nav-route="profile" title="Profile & stats"><span class="gnav-credits">—</span><span class="gnav-level"></span></a>' +
       '<a class="cb-btn ghost icon-btn gnav-icon" href="#/settings" data-go="settings" data-nav-route="settings" title="Settings" aria-label="Settings">' +
         svg('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>', 18) + '</a>';
@@ -399,6 +423,11 @@ var CB = (globalThis.CB = globalThis.CB || {});
     var nav = document.getElementById('gnav');
     if (!nav || !navBuilt) return;
     var r = navRoute();
+    var backBtn = nav.querySelector('#gnav-back-pill');
+    if (backBtn) {
+      var isMenu = !r || r === 'menu';
+      backBtn.style.display = isMenu ? 'none' : 'inline-flex';
+    }
     Array.prototype.forEach.call(nav.querySelectorAll('[data-nav-route]'), function (a) {
       var on = a.getAttribute('data-nav-route') === r;
       a.classList.toggle('is-active', on);

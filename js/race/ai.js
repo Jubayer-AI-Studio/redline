@@ -156,26 +156,11 @@ CB.race = CB.race || {};
     { id: 'mirage',    name: 'Mirage Autosport',       short: 'MIR', color: '#2b2d42', accent: '#8d99ae', country: 'AE', stripe: 'center' },
   ];
 
-  // Entirely invented names (no real-world racing drivers).
-  var DRIVERS = [
-    ['Lukas', 'Brandvold', 'NO'], ['Aiko', 'Tanabe', 'JP'], ['Mateus', 'Corvalho', 'BR'], ['Isolde', 'Varga', 'HU'],
-    ['Ravi', 'Kundapur', 'IN'], ['Elodie', 'Fontanel', 'FR'], ['Tobias', 'Wetterling', 'DE'], ['Sienna', 'Marchetti', 'IT'],
-    ['Kofi', 'Asantewaa', 'GH'], ['Freya', 'Lindqvist', 'SE'], ['Dmitri', 'Volkonin', 'LV'], ['Camila', 'Ortaz', 'AR'],
-    ['Hugo', 'Ravensworth', 'GB'], ['Mei', 'Shirozawa', 'JP'], ['Joaquín', 'Ibarrola', 'ES'], ['Annika', 'Dvořáková', 'CZ'],
-    ['Callum', 'Ferriday', 'AU'], ['Noor', 'Al-Haddani', 'AE'], ['Oskar', 'Penttinen', 'FI'], ['Priya', 'Venkatram', 'IN'],
-    ['Teodor', 'Albescu', 'RO'], ['Yara', 'Okonkwo-Lisle', 'NG'], ['Bastien', 'Garrigou', 'FR'], ['Ines', 'Malheiro', 'PT'],
-    ['Jonah', 'Whitlock', 'US'], ['Saskia', 'van Dorsten', 'NL'], ['Emil', 'Kragstrup', 'DK'], ['Leilani', 'Kahaleo', 'US'],
-    ['Marco', 'Tessaroli', 'IT'], ['Hana', 'Jelinek', 'AT'], ['Diego', 'Santurce', 'MX'], ['Zofia', 'Wierzbicka', 'PL'],
-    ['Rory', 'McAllister-Quinn', 'IE'], ['Kaito', 'Morikane', 'JP'], ['Valentina', 'Rocafuerte', 'CL'], ['Anders', 'Holmfrid', 'SE'],
-    ['Thandi', 'Mabuza', 'ZA'], ['Felix', 'Oberhauser', 'CH'], ['Nadia', 'Petrosyan', 'AM'], ['Silas', 'Thornbury', 'NZ'],
-    ['Ximena', 'Valderrama', 'CO'], ['Arjun', 'Sethuraman', 'SG'], ['Clémence', 'Aubertin', 'BE'], ['Mikkel', 'Sandvær', 'NO'],
-    ['Juno', 'Park-Halloway', 'KR'], ['Stellan', 'Brisk', 'SE'], ['Orla', 'Fennimore', 'GB'], ['Takeshi', 'Ubukata', 'JP'],
-    ['Paolo', 'Ventimiglia', 'IT'], ['Ezra', 'Calloway', 'CA'], ['Linnea', 'Sjöberg', 'SE'], ['Bruno', 'Esteves-Lacerda', 'BR'],
-  ].map(function (d) {
-    var last = d[1];
-    var code = last.replace(/^(van |de |von )/i, '').replace(/[^A-Za-zÀ-ž]/g, '').slice(0, 3).toUpperCase();
-    return { first: d[0], last: last, nat: d[2], code: code, name: d[0] + ' ' + last };
-  });
+  // AI Opponents: Neutral racing identities (no fictitious personal character names)
+  var DRIVERS = [];
+  for (var di = 1; di <= 53; di++) {
+    DRIVERS.push({ first: 'Racer', last: '#' + di, nat: 'INT', code: 'R' + (di < 10 ? '0' : '') + di, name: 'Racer #' + di });
+  }
 
   var DIFFICULTIES = {
     rookie:  { id: 'rookie',  label: 'Rookie',  skill: [0.48, 0.64], consistency: [0.50, 0.70], aggression: [0.10, 0.35], perf: -0.08, spread: 0.07, reaction: [0.38, 0.65], mistakeMult: 1.6 },
@@ -623,11 +608,11 @@ CB.race = CB.race || {};
 
       out.push({
         id: 'ai-' + (i + 1),
-        name: driver.name,
-        firstName: driver.first,
-        lastName: driver.last,
-        code: driver.code,
-        nationality: driver.nat,
+        name: carModel ? ((carModel.make ? carModel.make + ' ' : '') + (carModel.name || carModel.id)) : ('Racer #' + number),
+        firstName: 'Racer',
+        lastName: '#' + number,
+        code: 'R' + (number < 10 ? '0' : '') + number,
+        nationality: 'INT',
         team: team.name,
         teamId: team.id,
         teamShort: team.short,

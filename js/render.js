@@ -1401,12 +1401,21 @@ if (typeof window !== 'undefined') window.CB = CB;
       var bx = (G.fa + G.aRF * 0.55 + G.doors[0].x0) / 2, by = lerp(G.yb, G.yBelt, 0.7);
       if (d.style === 'van') bx = G.fa + G.aRF + 60;
       var fsz = 52 * s;
-      out.push(textEl(px(bx), py(by), d.engineLabel || 'REDLINE', { 'text-anchor': 'middle', 'font-family': SANS, 'font-weight': 800, 'font-style': 'italic', 'font-size': f2(fsz), 'letter-spacing': f2(fsz * 0.08), fill: d.badge === 'black' ? '#0c0c0e' : url(P, 'chrome'), stroke: d.badge === 'black' ? 'none' : '#3a3d42', 'stroke-width': 0.25 }));
+      out.push(textEl(px(bx), py(by), d.engineLabel || 'JUBAYER', { 'text-anchor': 'middle', 'font-family': SANS, 'font-weight': 800, 'font-style': 'italic', 'font-size': f2(fsz), 'letter-spacing': f2(fsz * 0.08), fill: d.badge === 'black' ? '#0c0c0e' : url(P, 'chrome'), stroke: d.badge === 'black' ? 'none' : '#3a3d42', 'stroke-width': 0.25 }));
+    }
+    // As-Sunnah Skill Development branding on the door (official PNG decal) - large, crisp, clearly visible
+    if (G.doors && G.doors[0]) {
+      var dr0 = G.doors[0], rx = (dr0.x0 + dr0.x1) / 2 + (d.style === 'hypercar' ? -40 : 0), ry = lerp(G.yb, G.yBelt, 0.48);
+      var doorW = Math.abs(dr0.x1 - dr0.x0) * s;
+      var doorH = Math.abs(G.yBelt - G.yb) * s;
+      var imgW = Math.min(doorW * 0.90, doorH * 1.85);
+      var imgH = imgW * 0.5;
+      out.push('<image href="img/as_sunnah_door_decal.png" xlink:href="img/as_sunnah_door_decal.png" x="' + f2(px(rx) - imgW / 2) + '" y="' + f2(py(ry) - imgH / 2) + '" width="' + f2(imgW) + '" height="' + f2(imgH) + '" preserveAspectRatio="xMidYMid meet"/>');
     }
     // race roundel
     if (d.number || d.stripe === 'le-mans') {
       var dr0 = G.doors[0], rx = (dr0.x0 + dr0.x1) / 2 + (d.style === 'hypercar' ? -40 : 0), ry = lerp(G.yb, G.yBelt, 0.47), rr = Math.min(210, (G.yBelt - G.yb) * 0.34);
-      out.push(circleEl(px(rx), py(ry), rr * s, { fill: '#f6f3ea', stroke: '#111', 'stroke-width': Math.max(1, rr * s * 0.07) }));
+      if (!G.doors || !G.doors[0]) out.push(circleEl(px(rx), py(ry), rr * s, { fill: '#f6f3ea', stroke: '#111', 'stroke-width': Math.max(1, rr * s * 0.07) }));
       if (d.number) out.push(textEl(px(rx), py(ry) + rr * s * 0.36, d.number, { 'text-anchor': 'middle', 'font-family': SANS, 'font-weight': 900, 'font-size': f2(rr * s * (d.number.length > 2 ? 0.82 : 1.05)), 'letter-spacing': f2(-rr * s * 0.04), fill: '#111' }));
     }
     return out.join('');
@@ -3260,11 +3269,14 @@ if (typeof window !== 'undefined') window.CB = CB;
       }
     }
     det.push(aeroSide(G, sp, o));
-    // race roundel on the door
-    if (d.number || d.stripe === 'le-mans') {
-      var dr0 = G.doors[0], rx = (dr0.x0 + dr0.x1) / 2, ry = lerp(G.yb, G.yBelt, 0.5), rr = Math.min(210, (G.yBelt - G.yb) * 0.32);
-      det.push(circleEl(px(rx), py(ry), rr * s, { fill: '#f6f3ea', stroke: '#111', 'stroke-width': Math.max(1, rr * s * 0.07) }));
-      if (d.number) det.push(textEl(px(rx), py(ry) + rr * s * 0.36, d.number, { 'text-anchor': 'middle', 'font-family': SANS, 'font-weight': 900, 'font-size': f2(rr * s * (d.number.length > 2 ? 0.82 : 1.05)), fill: '#111' }));
+    // As-Sunnah Skill Development branding on the door (official PNG decal) - large, crisp, clearly visible
+    if (G.doors && G.doors[0]) {
+      var dr0 = G.doors[0], rx = (dr0.x0 + dr0.x1) / 2, ry = lerp(G.yb, G.yBelt, 0.48);
+      var doorW = Math.abs(dr0.x1 - dr0.x0) * s;
+      var doorH = Math.abs(G.yBelt - G.yb) * s;
+      var imgW = Math.min(doorW * 0.90, doorH * 1.85);
+      var imgH = imgW * 0.5;
+      det.push('<image href="img/as_sunnah_door_decal.png" xlink:href="img/as_sunnah_door_decal.png" x="' + f2(px(rx) - imgW / 2) + '" y="' + f2(py(ry) - imgH / 2) + '" width="' + f2(imgW) + '" height="' + f2(imgH) + '" preserveAspectRatio="xMidYMid meet"/>');
     }
     car.push(g({ class: 'cbr-ghost' }, det.join('')));
     // arch lips, then the detailed wheels at the fitted axles
@@ -3598,7 +3610,7 @@ if (typeof window !== 'undefined') window.CB = CB;
     }
     // number plate and badge last, so grille / diffuser slats and details never run through them
     X.slot(det, v.plateArea, 'plate');
-    X.text(det, v.plateArea, d.number ? 'RDL ' + d.number : 'RPM WORKS', true);
+    X.text(det, v.plateArea, d.number ? 'JUB ' + d.number : 'AS-SUNNAH', true);
     if (d.badge !== 'delete') {
       var bt = fm.badgeText, side = rear ? 'rear' : 'front';
       var btxt = v.badgeText != null ? v.badgeText : bt && typeof bt === 'object' ? (bt[side] != null ? bt[side] : rear ? fm.name : fm.make) : bt || (rear ? fm.name : fm.make);

@@ -285,7 +285,7 @@ window.CB = window.CB || {};
     if (bottom) U.clear(bottom);
     navItems = {};
     document.documentElement.setAttribute('data-garage-mode', mode());
-    if (simpleAvailable()) nav.appendChild(modeSwitch('is-nav'));
+    // Mode switch omitted: only simple 1-tap mobile tuning is shown
     var list = panels();
     if (!list.length) {
       nav.appendChild(el('div', { class: 'nav-empty cb-hint' }, 'No configuration panels are loaded.'));
@@ -421,7 +421,6 @@ window.CB = window.CB || {};
         el('h2', { class: 'panel-title', id: 'panel-title' }, def.title || def.id),
         def.subtitle ? el('p', { class: 'panel-subtitle' }, def.subtitle) : null),
       el('div', { class: 'panel-head-nav' },
-        simpleAvailable() ? modeSwitch('is-head') : null,
         navBtn(prevDef, -1, 'Previous section'),
         navBtn(nextDef, 1, 'Next section')));
     var foot = el('footer', { class: 'panel-foot' },
@@ -429,8 +428,8 @@ window.CB = window.CB || {};
         el('span', { class: 'panel-foot-dir' }, 'Back'), el('span', { class: 'panel-foot-name' }, prevDef.title)) : el('span'),
       nextDef ? el('button', { type: 'button', class: 'cb-btn panel-foot-next', onclick: function () { goto(nextDef.id, { focus: true }); } },
         el('span', { class: 'panel-foot-dir' }, 'Continue to'), el('span', { class: 'panel-foot-name' }, nextDef.title))
-        : el('button', { type: 'button', class: 'cb-btn primary panel-foot-next', onclick: function () { openGarage('openSpec'); } },
-          el('span', { class: 'panel-foot-dir' }, 'Finished?'), el('span', { class: 'panel-foot-name' }, 'Review the spec sheet')));
+        : el('button', { type: 'button', class: 'cb-btn primary panel-foot-next', onclick: function () { if (CB.router && CB.router.go) CB.router.go('race'); else location.hash = '#/race'; } },
+          el('span', { class: 'panel-foot-dir' }, 'Ready?'), el('span', { class: 'panel-foot-name' }, 'Start Race')));
     var frame = el('article', { class: 'panel-frame' + (def.simple ? ' is-simple' : ''), 'aria-labelledby': 'panel-title' }, head, body, foot);
     host.appendChild(frame);
 
@@ -954,7 +953,7 @@ window.CB = window.CB || {};
     host.appendChild(el('div', { class: 'summary-block' }, el('div', { class: 'price-lines-head' }, el('span', { class: 'cb-label' }, 'Itemised build'),
       el('button', { type: 'button', class: 'cb-btn ghost small', onclick: function () { toggleAllSections(); } }, 'Expand all')), price.lines, price.totals));
     host.appendChild(price.donut);
-    host.appendChild(el('div', { class: 'summary-block fin-block' }, el('div', { class: 'cb-label' }, 'Pay for it'), modeSeg, price.finWrap, price.leaseWrap, price.cashWrap));
+    // Auto-Loan Financing Amortization Calculator removed for super-smooth mobile experience
     host.appendChild(price.meta);
     syncFinMode();
   }
@@ -1655,6 +1654,296 @@ window.CB = window.CB || {};
     setView(view.view);
     if (view.xray) toggleXray(true);
     if (view.spin) toggleSpin(true);
+
+    initShowroom53Switcher();
+  }
+
+  function initShowroom53Switcher() {
+    var viewer = $('viewer');
+    if (!viewer || document.getElementById('cb-showroom-ctrls')) return;
+
+    var wrap = el('div', { id: 'cb-showroom-ctrls', class: 'cb-showroom-ctrls' });
+
+    // 1. Top-Left Hero Spec Card (Forza Horizon style, matching user reference media_1795242600535_cdca9313)
+    var heroCard = el('div', { id: 'cb-showroom-hero-card', class: 'cb-showroom-hero-card' },
+      el('div', { class: 'cb-showroom-hero-top' },
+        el('span', { id: 'cb-showroom-hero-make', class: 'cb-showroom-make' }, 'PORSCHE'),
+        el('span', { class: 'cb-showroom-chip free' }, '100% FREE · UNLOCKED'),
+        el('span', { id: 'cb-showroom-hero-count', class: 'cb-showroom-chip count' }, '1 / 53')
+      ),
+      el('h1', { id: 'cb-showroom-hero-title', class: 'cb-showroom-hero-title' }, 'Porsche 911 Carrera S'),
+      el('div', { class: 'cb-showroom-hero-stats' },
+        el('div', { class: 'hero-stat-pill' }, el('span', { class: 'k' }, 'POWER'), el('b', { id: 'cb-stat-hp' }, '443 HP')),
+        el('div', { class: 'hero-stat-pill' }, el('span', { class: 'k' }, 'TORQUE'), el('b', { id: 'cb-stat-nm' }, '530 Nm')),
+        el('div', { class: 'hero-stat-pill' }, el('span', { class: 'k' }, '0-100'), el('b', { id: 'cb-stat-acc' }, '3.5s')),
+        el('div', { class: 'hero-stat-pill' }, el('span', { class: 'k' }, 'TOP SPEED'), el('b', { id: 'cb-stat-speed' }, '308 KM/H')),
+        el('div', { class: 'hero-stat-pill' }, el('span', { class: 'k' }, 'DRIVE'), el('b', { id: 'cb-stat-drive' }, 'RWD'))
+      )
+    );
+
+    // 2. Top-Right Action CTA (Matching Pinterest reference media_1795242673524_0c3030db)
+    var topAction = el('div', { class: 'cb-showroom-top-actions' },
+      el('button', {
+        id: 'cb-showroom-drive-cta',
+        class: 'cb-showroom-race-btn',
+        type: 'button'
+      }, '🏎️ RACE NOW')
+    );
+
+    // 3. Bottom Horizontal Car Carousel (Forza / Wreckfest 2 Rail, matching media_1795242600535_cdca9313)
+    var carouselWrap = el('div', { class: 'cb-showroom-carousel-wrap' },
+      el('button', {
+        id: 'cb-showroom-prev',
+        class: 'cb-showroom-nav-btn prev',
+        type: 'button',
+        'aria-label': 'Previous Car'
+      }, '◀'),
+      el('div', { id: 'cb-showroom-rail', class: 'cb-showroom-rail' }),
+      el('button', {
+        id: 'cb-showroom-next',
+        class: 'cb-showroom-nav-btn next',
+        type: 'button',
+        'aria-label': 'Next Car'
+      }, '▶')
+    );
+
+    wrap.appendChild(heroCard);
+    wrap.appendChild(topAction);
+    wrap.appendChild(carouselWrap);
+    viewer.appendChild(wrap);
+
+    var MODEL_COLORS = {
+      'porsche-911-992': '#c8102e',            // Guards Red
+      'bmw-m4-g82': '#0066b1',                 // Marina Bay Blue
+      'toyota-gr-supra-a90': '#ea580c',        // Horizon Orange
+      'vw-golf-gti-mk8': '#a30d11',            // Kings Red Metallic
+      'honda-civic-type-r-fl5': '#0066b2',     // Boost Blue
+      'toyota-gr-yaris': '#d00000',            // Flame Red
+      'ferrari-sf90-stradale': '#d40000',      // Rosso Corsa
+      'mclaren-p1': '#ff6f00',                 // Volcano Papaya Orange
+      'bugatti-chiron': '#0f2b5c',             // Atlantic Deep Blue
+      'lamborghini-huracan-evo': '#39b54a',    // Mantis Green
+      'ferrari-296-gtb': '#ffd000',            // Giallo Modena Yellow
+      'porsche-918-spyder': '#88929a',         // Liquid Metal Silver
+      'koenigsegg-jesko': '#0a72cc',           // Apex Blue
+      'audi-r8-v10-gen2': '#ffd200',           // Vegas Yellow
+      'nissan-silvia-s15': '#f5c518',          // Lightning Yellow
+      'nissan-skyline-gtr-r34': '#1a4480',     // Bayside Blue
+      'toyota-sprinter-trueno-ae86': '#f3f4f6',// High-Contrast White
+      'mazda-rx7-fd3s': '#c41212',             // Vintage Red
+      'nissan-gtr-r35': '#e05206',             // Katsura Orange
+      'bmw-m2-g87': '#4a8bc2',                 // Zandvoort Blue
+      'bmw-m3-e46': '#1e73be',                 // Laguna Seca Blue
+      'alpine-a110': '#1b5fa8',                // Alpine Blue
+      'aston-martin-vantage-2018': '#004225',  // British Racing Green
+      'lotus-emira': '#ffc400',                // Hethel Yellow
+      'subaru-wrx-sti-va': '#0f4c81',          // WR Blue Pearl
+      'mitsubishi-lancer-evo-x': '#1660a5',    // Octane Blue
+      'ford-mustang-gt-s650': '#d01414',       // Race Red
+      'chevrolet-camaro-zl1-2019': '#0a72cc',  // Rapid Blue
+      'dodge-challenger-srt-hellcat': '#e21b23', // TorRed
+      'chevrolet-corvette-c8': '#d62226',      // Torch Red
+      'ford-gt-2017': '#004b93',               // Liquid Blue
+      'jeep-wrangler-rubicon-jl': '#3e4f3a',   // Sarge Green
+      'ford-f150-raptor-gen3': '#e04f16',      // Code Orange
+      'toyota-tacoma-trdpro-2024': '#9c4126',  // Terra Red
+      'tesla-cybertruck': '#8f9499',           // Stainless Steel
+      'mazda-mx5-nd': '#990012',               // Soul Red Crystal
+      'bmw-z4-g29': '#13538a',                 // Misano Blue
+      'porsche-718-boxster-982': '#00a3cc',    // Miami Blue
+      'bmw-m3-g80': '#167e42',                 // Isle of Man Green
+      'mercedes-amg-c63-w206': '#4a4e52',      // Selenite Grey
+      'tesla-model-s-2021': '#9c121b',         // Ultra Red
+      'porsche-taycan-cross-turismo': '#235789', // Neptune Blue
+      'ferrari-gtc4lusso': '#0e3159',          // Blu Tour de France
+      'mercedes-cls-shooting-brake-x218': '#152c4a', // Cavansite Blue
+      'porsche-cayenne-e3': '#961824',         // Carmine Red
+      'range-rover-sport-l461': '#c2410c',     // Firenze Red
+      'lamborghini-urus': '#ffd200',           // Giallo Auge Yellow
+      'mercedes-sprinter-vs30': '#9ca3af',     // Brilliant Silver
+      'vw-id-buzz': '#f97316',                 // Energetic Orange
+      'ford-transit-hr': '#1f2428',            // Agate Black
+      'audi-rs6-avant-c8': '#6e7477',          // Nardo Grey
+      'mercedes-amg-e63s-estate-s213': '#374151', // Designo Magno Grey
+      'volvo-v60-polestar-engineered': '#2563eb' // Rebel Blue
+    };
+
+    function getModels() {
+      return (CB.shapes && typeof CB.shapes.list === 'function') ? CB.shapes.list() : [];
+    }
+
+    function getStock(id) {
+      return (CB.stock && typeof CB.stock.spec === 'function') ? CB.stock.spec(id) : null;
+    }
+
+    function updateBadge(model, index, total) {
+      if (!model) return;
+      var countEl = $('cb-showroom-hero-count');
+      var makeEl = $('cb-showroom-hero-make');
+      var titleEl = $('cb-showroom-hero-title');
+      var hpEl = $('cb-stat-hp');
+      var nmEl = $('cb-stat-nm');
+      var accEl = $('cb-stat-acc');
+      var speedEl = $('cb-stat-speed');
+      var driveEl = $('cb-stat-drive');
+
+      var sp = getStock(model.id);
+      if (countEl) countEl.textContent = (index + 1) + ' / ' + total;
+      if (makeEl) makeEl.textContent = (model.make || 'REDLINE').toUpperCase();
+      if (titleEl) {
+        var tStr = (model.make ? model.make + ' ' : '') + (model.name || model.id) + (sp && sp.t ? ' ' + sp.t : '');
+        titleEl.textContent = tStr;
+      }
+      if (hpEl) hpEl.textContent = (sp && sp.hp ? sp.hp : (model.ref && model.ref.horsepower || 440)) + ' HP';
+      if (nmEl) nmEl.textContent = (sp && sp.nm ? sp.nm : 520) + ' Nm';
+      if (accEl) accEl.textContent = (sp && sp.s ? sp.s : 3.6) + 's';
+      if (speedEl) speedEl.textContent = (sp && sp.v ? sp.v : 290) + ' KM/H';
+      if (driveEl) driveEl.textContent = ((sp && sp.d) || model.drivetrain || 'RWD').toUpperCase();
+
+      // Highlight active card in bottom carousel
+      var rail = $('cb-showroom-rail');
+      if (rail) {
+        var cards = rail.querySelectorAll('.cb-showroom-card-thumb');
+        cards.forEach(function (c, ci) {
+          if (ci === index) {
+            c.classList.add('is-active');
+            c.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          } else {
+            c.classList.remove('is-active');
+          }
+        });
+      }
+    }
+
+    function selectCar(index) {
+      var list = getModels();
+      if (!list || !list.length) return;
+      var nextIdx = ((index % list.length) + list.length) % list.length;
+      var nextModel = list[nextIdx];
+      if (nextModel && CB.state.applyModel) {
+        CB.state.applyModel(nextModel.id);
+        var sigPaint = (MODEL_COLORS && MODEL_COLORS[nextModel.id]) || '#c8102e';
+        var sp = getStock(nextModel.id);
+        if (sp && sp.p && sp.p[0]) sigPaint = sp.p[0];
+        if (CB.state && CB.state.patch) {
+          CB.state.patch({
+            exterior: {
+              paint: sigPaint,
+              finish: 'metallic',
+              stripe: 'le-mans',
+              stripeColor: '#ffffff',
+              caliperColor: '#ea580c',
+              livery_number: String((nextIdx % 99) + 1)
+            }
+          }, { coalesce: false });
+        }
+        updateBadge(nextModel, nextIdx, list.length);
+      }
+    }
+
+    function cycleCar(delta) {
+      var list = getModels();
+      if (!list || !list.length) return;
+      var curBuild = CB.state.get();
+      var curId = (curBuild && curBuild.body && curBuild.body.model) || list[0].id;
+      var curIdx = 0;
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].id === curId) { curIdx = i; break; }
+      }
+      selectCar(curIdx + delta);
+    }
+
+    function buildRail() {
+      var rail = $('cb-showroom-rail');
+      if (!rail || rail.children.length) return;
+      var list = getModels();
+      if (!list || !list.length) return;
+      var curBuild = CB.state.get();
+      var curId = (curBuild && curBuild.body && curBuild.body.model) || list[0].id;
+
+      list.forEach(function (m, idx) {
+        var sp = getStock(m.id);
+        var col = (sp && sp.p && sp.p[0]) || MODEL_COLORS[m.id] || '#38bdf8';
+        var drive = ((sp && sp.d) || m.drivetrain || 'RWD').toUpperCase();
+        var shortName = (m.name || m.id) + (sp && sp.t ? ' ' + sp.t : '');
+        var card = el('div', {
+          class: 'cb-showroom-card-thumb' + (m.id === curId ? ' is-active' : ''),
+          'data-idx': String(idx),
+          'data-id': m.id
+        },
+          el('div', { class: 'card-thumb-top' },
+            el('span', { class: 'card-thumb-drive' }, drive),
+            el('span', { class: 'card-thumb-dot', style: 'background:' + col })
+          ),
+          el('div', { class: 'card-thumb-title' }, shortName),
+          el('div', { class: 'card-thumb-check' }, '✓')
+        );
+
+        card.addEventListener('click', function (e) {
+          e.preventDefault();
+          selectCar(idx);
+        });
+
+        rail.appendChild(card);
+      });
+    }
+
+    var btnPrev = $('cb-showroom-prev');
+    var btnNext = $('cb-showroom-next');
+    if (btnPrev) btnPrev.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); cycleCar(-1); });
+    if (btnNext) btnNext.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); cycleCar(1); });
+
+    var driveBtn = $('cb-showroom-drive-cta');
+    if (driveBtn) {
+      driveBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        openRace();
+      });
+    }
+
+    setTimeout(function () {
+      buildRail();
+      var list = getModels();
+      if (list && list.length) {
+        var curBuild = CB.state.get();
+        var curId = (curBuild && curBuild.body && curBuild.body.model) || list[0].id;
+        var curIdx = 0;
+        for (var i = 0; i < list.length; i++) {
+          if (list[i].id === curId) { curIdx = i; break; }
+        }
+        var curPaint = (curBuild && curBuild.exterior && curBuild.exterior.paint) || '';
+        var sig = MODEL_COLORS[curId] || '#c8102e';
+        if (!curPaint || curPaint.toLowerCase() !== sig.toLowerCase()) {
+          if (CB.state && CB.state.patch) {
+            CB.state.patch({
+              exterior: {
+                paint: sig,
+                finish: 'metallic',
+                stripe: 'le-mans',
+                stripeColor: '#ffffff',
+                caliperColor: '#ea580c',
+                livery_number: '7'
+              }
+            }, { coalesce: false });
+          }
+        }
+        updateBadge(list[curIdx] || list[0], curIdx, list.length);
+      }
+    }, 150);
+
+    if (CB.state && typeof CB.state.subscribe === 'function') {
+      CB.state.subscribe(function () {
+        var list = getModels();
+        if (!list || !list.length) return;
+        var curBuild = CB.state.get();
+        var curId = (curBuild && curBuild.body && curBuild.body.model) || list[0].id;
+        var curIdx = 0;
+        for (var i = 0; i < list.length; i++) {
+          if (list[i].id === curId) { curIdx = i; break; }
+        }
+        updateBadge(list[curIdx] || list[0], curIdx, list.length);
+      });
+    }
   }
 
   /* ---------------------------------------------------------------- keyboard */

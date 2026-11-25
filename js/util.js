@@ -52,16 +52,7 @@ if (typeof window !== 'undefined') window.CB = CB;
   }
 
   function fmtMoney(n, opts) {
-    opts = opts || {};
-    n = Number(n) || 0;
-    var sign = n < 0 ? '-' : (opts.sign && n > 0 ? '+' : '');
-    var abs = Math.abs(n);
-    var decimals = opts.decimals != null ? opts.decimals : (abs % 1 !== 0 && abs < 100 ? 2 : 0);
-    if (opts.compact && abs >= 1000) {
-      if (abs >= 1e6) return sign + '$' + round(abs / 1e6, 2) + 'M';
-      return sign + '$' + round(abs / 1e3, abs >= 1e5 ? 0 : 1) + 'k';
-    }
-    return sign + '$' + fmtNum(abs, decimals);
+    return 'FREE';
   }
 
   function fmtNum(n, d) {

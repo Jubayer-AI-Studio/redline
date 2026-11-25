@@ -373,7 +373,7 @@ var CB = (globalThis.CB = globalThis.CB || {});
   var G = null, M4 = null;
   var FOV_FREE = 27 * DEG;           // vertical FOV of the free stage region (long lens = product-shot look)
   var AUTO_SPEED = 7;                // deg / s
-  var IDLE_RESUME = 6000;            // ms of no interaction before the turntable resumes
+  var IDLE_RESUME = 120000;          // ms of no interaction before the turntable resumes (disabled on mobile)
   var PX_BUDGET = 3.2e6;             // drawing-buffer pixels (2x of a 1265 x 632 stage)
   var SPIN_MAX = 15.7;
   var ZOOM_MIN = 0.55, ZOOM_MAX = 2.2;
@@ -575,10 +575,11 @@ var CB = (globalThis.CB = globalThis.CB || {});
     var reduce = false;
     try { reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e2) { reduce = false; }
     var t = nowMs(), v0 = VIEW_IDS.indexOf(opts.view) >= 0 ? opts.view : 'side', a0 = viewAngles(v0);
+    var isTouch = HAS_DOM && (('ontouchstart' in window) || (navigator && navigator.maxTouchPoints > 0) || window.innerWidth <= 900);
     st = {
       host: container, canvas: canvas, ctx: ctx, gl: ctx.gl, opts: opts, reduce: reduce, dead: false,
       view: v0, cam: { yaw: a0.yaw, pitch: a0.pitch, distK: 1 }, tween: null,
-      auto: { on: !reduce, resumeAt: t + 2200, speed: 0 }, drag: null, pointers: {}, pinch: null, inertia: 0,
+      auto: { on: !reduce && !isTouch, resumeAt: t + (isTouch ? 120000 : 2200), speed: 0 }, drag: null, pointers: {}, pinch: null, inertia: 0,
       car: null, dimsShown: null, dimsFrom: null, dimsTo: null, dimsT0: 0,
       pendingBuild: null, pendingMetrics: null, pendingSpec: null, lastBuild: null, lastMetrics: null, spec: null, key: '',
       xray: !!opts.xray, xr: null, xrKey: '', spin: { on: !!opts.spin, speed: 0, angle: 0, travel: 0 },
@@ -742,7 +743,11 @@ var CB = (globalThis.CB = globalThis.CB || {});
       try { cv.releasePointerCapture(e.pointerId); } catch (er) { /* ignore */ }
       var t = nowMs();
       if (st.drag && st.drag.id === e.pointerId) {
-        if (t - st.drag.t < 90 && !st.reduce) { st.inertia = clamp(st.drag.vx, -400, 400); st.inertiaP = clamp(st.drag.vy, -160, 160); }
+        if (t - st.drag.t < 90 && !st.reduce) {
+          // Clamp touch inertia firmly to prevent wild spinning out of control
+          st.inertia = clamp(st.drag.vx, -35, 35);
+          st.inertiaP = clamp(st.drag.vy, -20, 20);
+        }
         st.drag = null;
       }
       if (Object.keys(st.pointers).length < 2) st.pinch = null;
@@ -1231,9 +1236,9 @@ var CB = (globalThis.CB = globalThis.CB || {});
       c.yaw = lerp(tw.from.yaw, tw.to.yaw, e); c.pitch = lerp(tw.from.pitch, tw.to.pitch, e); c.distK = lerp(tw.from.distK, tw.to.distK, e);
       if (k >= 1) st.tween = null;
     }
-    // drag inertia
-    if (Math.abs(st.inertia) > 0.5 && !st.drag) { c.yaw += st.inertia * dt; st.inertia *= Math.exp(-dt * 4.5); if (Math.abs(st.inertia) <= 0.5) { st.inertia = 0; interacted(t); } }
-    if (Math.abs(st.inertiaP) > 0.5 && !st.drag) { c.pitch = clamp(c.pitch + st.inertiaP * dt, 2, 88); st.inertiaP *= Math.exp(-dt * 6); if (Math.abs(st.inertiaP) <= 0.5 || c.pitch <= 2 || c.pitch >= 88) st.inertiaP = 0; }
+    // drag inertia - smooth and controlled with fast damping so it doesn't spin wildly
+    if (Math.abs(st.inertia) > 0.5 && !st.drag) { c.yaw += st.inertia * dt; st.inertia *= Math.exp(-dt * 12); if (Math.abs(st.inertia) <= 0.5) { st.inertia = 0; interacted(t); } }
+    if (Math.abs(st.inertiaP) > 0.5 && !st.drag) { c.pitch = clamp(c.pitch + st.inertiaP * dt, 2, 88); st.inertiaP *= Math.exp(-dt * 12); if (Math.abs(st.inertiaP) <= 0.5 || c.pitch <= 2 || c.pitch >= 88) st.inertiaP = 0; }
     if (st.zoomTo != null && !st.pinch) {
       c.distK += (st.zoomTo - c.distK) * (1 - Math.exp(-dt * 11));
       if (Math.abs(st.zoomTo - c.distK) < 0.002) { c.distK = st.zoomTo; st.zoomTo = null; }

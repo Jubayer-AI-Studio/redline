@@ -619,6 +619,7 @@ CB.race.drift = CB.race.drift || {};
 
     var ecfg = assign({
       trackId: cfg.trackId, track: cfg.track, weather: cfg.weather, timeOfDay: cfg.timeOfDay, seed: cfg.seed,
+      discipline: 'drift', godMode: false,
       playerBuild: build || undefined, difficulty: cfg.difficulty || 'amateur', storage: cfg.storage, persistGhost: false,
       playerName: cfg.playerName, hooks: [hooks]
     }, isRace ? {

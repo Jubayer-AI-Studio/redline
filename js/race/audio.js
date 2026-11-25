@@ -195,7 +195,7 @@ CB.race.audio = (function () {
     var ch = Math.cos(h), sh = Math.sin(h);
     var fwd = dx * ch + dy * sh;
     var left = -dx * sh + dy * ch;
-    var pan = d > 0.01 ? clamp(-left / Math.max(d, 4), -1, 1) * 0.9 : 0;
+    var pan = d > 0.01 ? clamp(-left / Math.max(d, 10), -0.65, 0.65) : 0;
     // Doppler from radial relative velocity (positive = receding)
     var lv = num(listener.speed, 0), sv = num(source.speed, 0);
     var sh2 = num(source.heading, 0);
@@ -891,7 +891,7 @@ CB.race.audio = (function () {
         }
         var lvl = (p.ev ? 0.12 : (0.2 + 0.25 * thr + 0.15 * rn) * (0.5 + 0.8 * p.loud)) * sp.gain;
         setP(v.out.gain, lvl * 1.4, 0.05);
-        v.pan.set(sp.pan, 0.04);
+        v.pan.set(sp.pan, 0.16);
         // behind -> darker; distance -> air absorption
         setP(v.shadow.frequency, freq(lerp(9000, 2200, sp.behind * 0.8) * lerp(1, 0.45, clamp01(sp.distance / 160))), 0.08);
       });

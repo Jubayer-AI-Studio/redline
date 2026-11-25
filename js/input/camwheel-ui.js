@@ -849,7 +849,7 @@ CB.input = CB.input || {};
       return box;
     };
     if (typeof sh === 'function') u.settingsHTML = function () {
-      return (sh.apply(u, arguments) || '') + '<h2 class="gh-h2">Webcam air wheel</h2><div class="gh-row"><div class="lbl"><b>Use webcam as wheel</b><small>Hold your hands up like a steering wheel in front of the webcam (needs HTTPS; video stays on this computer)</small></div><button class="gh-btn" type="button" data-cw-act="open">' + ICON.cam + ' Set up webcam</button></div>';
+      return (sh.apply(u, arguments) || '');
     };
   }
   document.addEventListener('click', function (e) {

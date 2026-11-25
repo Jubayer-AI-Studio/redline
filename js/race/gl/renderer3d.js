@@ -38,40 +38,41 @@ CB.race.renderer3d = (function () {
 
   var CAMERA_MODES = ['cockpit', 'hood', 'bumper', 'chase', 'chase-far', 'tv', 'heli', 'map'];
   var CAMERA_LABELS = {
-    cockpit: 'Cockpit', hood: 'Hood', bumper: 'Bumper', chase: 'Chase', 'chase-far': 'Chase (far)',
-    tv: 'TV broadcast', heli: 'Helicopter', map: 'Map (2D)'
+    cockpit: 'Cockpit', hood: 'Hood', bumper: 'Bumper', chase: 'Chase', 'chase-far': 'Chase (High)',
+    tv: 'Trackside (TV)', heli: 'Helicopter', map: 'Track map'
   };
   var MODE_ALIASES = {
-    north: 'map', '2d': 'map', top: 'map', topdown: 'map', 'top-down': 'map', overhead: 'map', birdseye: 'map',
-    interior: 'cockpit', 'first-person': 'cockpit', firstperson: 'cockpit', fp: 'cockpit', fpv: 'cockpit', driver: 'cockpit',
-    bonnet: 'hood', bumpercam: 'bumper', nose: 'bumper',
     'third-person': 'chase', third: 'chase', thirdperson: 'chase', follow: 'chase', 'chase-near': 'chase',
     far: 'chase-far', chasefar: 'chase-far', 'chase_far': 'chase-far',
-    broadcast: 'tv', trackside: 'tv', helicopter: 'heli', orbit: 'heli', aerial: 'heli'
+    interior: 'cockpit', inside: 'cockpit', dash: 'cockpit', driver: 'cockpit', 'first-person': 'cockpit', fpv: 'cockpit',
+    bonnet: 'hood', roof: 'hood', front: 'hood', windshield: 'hood',
+    nose: 'bumper',
+    north: 'map', 'birds-eye': 'map', topdown: 'map', top: 'map'
   };
 
   /* ------------------------------------------------------------- quality */
+  var isMobileDevice = typeof navigator !== 'undefined' && (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && typeof window !== 'undefined' && window.innerWidth <= 1024));
   var QUALITY_ORDER = ['low', 'medium', 'high', 'ultra'];
   var QUALITY = {
     low: {
       maxDpr: 1, scale: 0.85, shadow: 0, post: false, bloom: false, msaa: 0, fxaa: false, speedBlur: false,
-      mirrorEvery: 4, mirrorScale: 0.16, lodNear: 22, maxHigh: 2, far: 1500, particles: 300, effectsNear: 90, grain: 0,
+      mirrorEvery: 4, mirrorScale: 0.16, lodNear: 20, maxHigh: 2, far: isMobileDevice ? 800 : 1500, particles: isMobileDevice ? 100 : 300, effectsNear: 60, grain: 0,
       nearShadow: 0, nearRadius: 0
     },
     medium: {
-      maxDpr: 1.25, scale: 1, shadow: 1024, post: true, bloom: false, msaa: 2, fxaa: true, speedBlur: true,
-      mirrorEvery: 2, mirrorScale: 0.2, lodNear: 40, maxHigh: 8, far: 2000, particles: 700, effectsNear: 140, grain: 0,
-      nearShadow: 1024, nearRadius: 16
+      maxDpr: isMobileDevice ? 1.0 : 1.25, scale: 1, shadow: isMobileDevice ? 0 : 1024, post: !isMobileDevice, bloom: false, msaa: 0, fxaa: !isMobileDevice, speedBlur: false,
+      mirrorEvery: isMobileDevice ? 4 : 2, mirrorScale: 0.18, lodNear: isMobileDevice ? 25 : 35, maxHigh: isMobileDevice ? 3 : 8, far: isMobileDevice ? 1000 : 2000, particles: isMobileDevice ? 150 : 700, effectsNear: 80, grain: 0,
+      nearShadow: 0, nearRadius: 16
     },
     high: {
-      maxDpr: 1.5, scale: 1, shadow: 2048, post: true, bloom: true, msaa: 4, fxaa: true, speedBlur: true,
-      mirrorEvery: 2, mirrorScale: 0.25, lodNear: 65, maxHigh: 12, far: 2600, particles: 1400, effectsNear: 200, grain: 0.012,
-      nearShadow: 2048, nearRadius: 18
+      maxDpr: isMobileDevice ? 1.0 : 1.5, scale: 1, shadow: isMobileDevice ? 0 : 2048, post: !isMobileDevice, bloom: false, msaa: 0, fxaa: !isMobileDevice, speedBlur: !isMobileDevice,
+      mirrorEvery: isMobileDevice ? 3 : 2, mirrorScale: 0.22, lodNear: isMobileDevice ? 35 : 65, maxHigh: isMobileDevice ? 4 : 12, far: isMobileDevice ? 1200 : 2600, particles: isMobileDevice ? 200 : 1400, effectsNear: 100, grain: isMobileDevice ? 0 : 0.012,
+      nearShadow: isMobileDevice ? 0 : 2048, nearRadius: 18
     },
     ultra: {
-      maxDpr: 2, scale: 1, shadow: 4096, post: true, bloom: true, msaa: 4, fxaa: true, speedBlur: true,
-      mirrorEvery: 1, mirrorScale: 0.3, lodNear: 120, maxHigh: 12, far: 3400, particles: 2600, effectsNear: 300, grain: 0.014,
-      nearShadow: 2048, nearRadius: 22
+      maxDpr: isMobileDevice ? 1.05 : 2, scale: 1, shadow: isMobileDevice ? 512 : 4096, post: true, bloom: !isMobileDevice, msaa: isMobileDevice ? 0 : 4, fxaa: true, speedBlur: true,
+      mirrorEvery: isMobileDevice ? 2 : 1, mirrorScale: 0.25, lodNear: isMobileDevice ? 50 : 120, maxHigh: isMobileDevice ? 6 : 12, far: isMobileDevice ? 1500 : 3400, particles: isMobileDevice ? 350 : 2600, effectsNear: 150, grain: 0.014,
+      nearShadow: isMobileDevice ? 0 : 2048, nearRadius: 22
     }
   };
   function normQuality(q) { return QUALITY[q] ? q : (q === 'med' ? 'medium' : q === 'max' || q === 'epic' ? 'ultra' : null); }
@@ -1547,7 +1548,7 @@ CB.race.renderer3d = (function () {
 
     var S = {
       mode: 'cockpit', lookBack: false, labels: true,
-      quality: normQuality(opts.quality) || 'high',
+      quality: normQuality(opts.quality) || (isMobileDevice ? 'medium' : 'high'),
       autoQuality: opts.autoQuality !== false,
       timeOfDay: opts.timeOfDay || 'day', weather: opts.weather || 'dry',
       racingLine: !!opts.racingLine, manualFx: opts.manualEffects === true,
@@ -1569,7 +1570,7 @@ CB.race.renderer3d = (function () {
 
     var hasCockpit = true;   // the built-in interior guarantees a first-person view
     var initial = normMode(opts.camera);
-    S.mode = initial && initial !== 'map' ? initial : (initial === 'map' ? 'map' : (hasCockpit ? 'cockpit' : 'chase'));
+    S.mode = initial && initial !== 'map' ? initial : 'chase';
 
     /* ---------------- DOM: GL canvas layered behind the HUD canvas */
     var glCanvas = doc.createElement('canvas');
@@ -2439,12 +2440,11 @@ CB.race.renderer3d = (function () {
     /* ---------------- cameras */
     var tmpA = [0, 0, 0], tmpB = [0, 0, 0], tmpC = [0, 0, 0];
     function availableModes() {
-      return CAMERA_MODES.filter(function (m) {
-        if (m === 'cockpit') return hasCockpitNow();
-        if (m === 'map') return !!(CB.race.renderer && typeof CB.race.renderer.create === 'function');
-        if (m === 'tv') return true;
-        return true;
-      });
+      var list = ['chase'];
+      if (!S.cockpitBroken) list.push('cockpit');
+      list.push('hood');
+      list.push('chase-far');
+      return list;
     }
     // first person is always available: CB.gl.cockpit when present, otherwise the built-in interior
     function hasCockpitNow() { return !S.cockpitBroken; }   // false after a cockpit failure (render() fell back to chase)
@@ -2503,32 +2503,60 @@ CB.race.renderer3d = (function () {
         var base = mode === 'cockpit' ? 62 : mode === 'hood' ? 60 : 64, mx = mode === 'cockpit' ? 74 : mode === 'hood' ? 75 : 80;
         fov = fovForSpeed(speed, base, mx);
         near = mode === 'cockpit' ? (S.cockpit && isNum(S.cockpit.nearPlane) ? clamp(S.cockpit.nearPlane, 0.01, 0.3) : 0.05) : 0.12;
-        shakeScale = mode === 'cockpit' ? 0.5 : 0.6;
+        shakeScale = mode === 'cockpit' ? 0.12 : mode === 'hood' ? 0.14 : 0.25;
       } else if (mode === 'chase' || mode === 'chase-far' || (mode === 'tv' && !S.world.tvCams.length)) {
         var far1 = mode !== 'chase';
-        var yawT = h + (S.lookBack ? PI : 0);
-        if (snapNow || Math.abs(wrapAngle(yawT - C.yaw.x)) > 2.6) springSet(C.yaw, yawT);
-        var yaw = spring(C.yaw, C.yaw.x + wrapAngle(yawT - C.yaw.x), far1 ? 3.6 : 5.2, dt);
-        var dBase = far1 ? dims.length * 1.6 + 5.5 : dims.length * 1.05 + 2.4;
-        if (dims.f1) dBase *= far1 ? 0.88 : 0.84;   // F1 (docs/F1-SPEC.md): long low car, a closer and lower chase camera
-        var dWant = dBase + speed * (far1 ? 0.02 : 0.012) + clamp(longG, -1, 1.5) * 0.35;
+        var yawT = wrapAngle(h + (S.lookBack ? PI : 0));
+        // Continuous shortest-arc yaw tracking without snapping discontinuities or unbounded drift
+        if (snapNow || C.yaw == null) {
+          springSet(C.yaw, yawT);
+        } else {
+          var dyaw = wrapAngle(yawT - C.yaw.x);
+          spring(C.yaw, C.yaw.x + dyaw, far1 ? 6.5 : 12.0, dt);
+          C.yaw.x = wrapAngle(C.yaw.x);
+        }
+        var yaw = C.yaw.x;
+
+        var dBase = far1 ? dims.length * 1.35 + 3.5 : dims.length * 0.95 + 1.2;
+        if (dims.f1) dBase *= far1 ? 0.9 : 0.88;   // F1: long low car, tight and stable
+        var dWant = dBase + speed * (far1 ? 0.012 : 0.002) + clamp(longG, -0.5, 0.8) * 0.05;
         var cyaw = Math.cos(yaw), syaw = Math.sin(yaw);
         var hint = player ? sampleIndexAt(geom, player.s) : null;
-        var tSafe = chaseSafeFraction(geom, px, py, px - cyaw * dWant, py - syaw * dWant, hint, 0.45);
-        var dEff = Math.max(dims.length * 0.6, dWant * tSafe);
-        if (snapNow || dEff < C.dist.x) springSet(C.dist, snapNow ? dEff : lerp(C.dist.x, dEff, clamp01(dt * 18)));
-        else spring(C.dist, dEff, 2.8, dt);
+        var tSafeRaw = chaseSafeFraction(geom, px, py, px - cyaw * dWant, py - syaw * dWant, hint, 0.35);
+
+        // Smoothly filter tSafe to eliminate wall/fence jitter oscillations
+        if (C.tSafeSmooth == null || snapNow) C.tSafeSmooth = tSafeRaw;
+        else C.tSafeSmooth = lerp(C.tSafeSmooth, tSafeRaw, 1 - Math.exp(-dt * 8));
+        var tSafe = C.tSafeSmooth;
+
+        // Never crush camera into car side; maintain distance and lift camera smoothly over barriers
+        var minClearDist = dims.length * 0.85 + 0.8;
+        var dEff = Math.max(minClearDist, dWant * tSafe);
+        if (snapNow) springSet(C.dist, dEff);
+        else spring(C.dist, dEff, 9.0, dt);
         var d = C.dist.x;
-        var hgt = (far1 ? 2.4 + dims.height * 0.8 : 1.15 + dims.height * 0.5) * (dims.f1 ? 0.82 : 1) + Math.max(0, dWant - d) * 0.22;
+
+        var wallLift = (1 - tSafe) * 0.65;
+        var hgt = (far1 ? 2.1 + dims.height * 0.7 : 1.22 + dims.height * 0.44 + wallLift) * (dims.f1 ? 0.84 : 1);
         eye[0] = px - cyaw * d; eye[2] = -(py - syaw * d); eye[1] = elev + hgt;
         var gY = S.world.groundY ? num(call4('groundY', S.world, S.world.groundY, eye[0], eye[2], undefined, undefined, 0), 0) : 0;
         eye[1] = Math.max(eye[1], gY + 0.5);
-        var fwdK = S.lookBack ? -1 : 1, ahead = far1 ? 2.5 : 2.0;
-        target[0] = px + Math.cos(h) * ahead * fwdK; target[2] = -(py + Math.sin(h) * ahead * fwdK);
-        target[1] = elev + (far1 ? 0.9 : 0.85) + dims.height * 0.15;
-        fov = far1 ? fovForSpeed(speed, 56, 68) : fovForSpeed(speed, 60, 75);
-        near = 0.2;
-        shakeScale = 0.8;
+
+        // Smooth camera aim heading to prevent violent screen vibration on collision impulses
+        var fwdK = S.lookBack ? -1 : 1, ahead = far1 ? 2.8 : 3.5;
+        if (C.aimHeading == null || snapNow) {
+          C.aimHeading = h;
+        } else {
+          var dh = wrapAngle(h - C.aimHeading);
+          C.aimHeading = wrapAngle(C.aimHeading + dh * (1 - Math.exp(-dt * 14)));
+        }
+        var aimH = C.aimHeading;
+
+        target[0] = px + Math.cos(aimH) * ahead * fwdK; target[2] = -(py + Math.sin(aimH) * ahead * fwdK);
+        target[1] = elev + (far1 ? 0.85 : 0.72) + dims.height * 0.35;
+        fov = far1 ? fovForSpeed(speed, 56, 68) : fovForSpeed(speed, 58, 64);
+        near = 0.15;
+        shakeScale = 0.28;
       } else if (mode === 'tv') {
         var cams = S.world.tvCams, L = num(geom.length, num(geom.length_m, 1));
         var spacing = cams.length > 1 ? L / cams.length : 200;
@@ -2594,23 +2622,8 @@ CB.race.renderer3d = (function () {
       C.fovDeg = mode === 'tv' ? spring(C.fov, fov, fov > C.fov.x ? 14 : 5, dt) : spring(C.fov, fov, 3.2, dt);
       C.near = near; C.far = far;
 
-      // shake: trauma (events) + kerb rumble + high-speed buffeting
-      C.trauma = Math.max(0, C.trauma - dt * 1.4);
-      var kerb = player && player.surface === 'kerb' ? 0.32 * smoothstep(3, 22, speed) : 0;
-      var rough = player && (player.surface === 'grass' || player.surface === 'sand' || player.surface === 'gravel') ? 0.28 * smoothstep(2, 18, speed) : 0;
-      var buffet = 0.12 * smoothstep(48, 92, speed);
-      var amp = Math.max(C.trauma * C.trauma, kerb, rough, buffet) * shakeScale;
-      if (amp > 0.001) {
-        var t = S.time, fr = kerb > 0 ? 1.7 : 1;
-        var n1 = shakeNoise(t * fr, 1.3), n2 = shakeNoise(t * fr, 7.9), n3 = shakeNoise(t * fr, 3.7);
-        var k1 = mode === 'cockpit' ? 0.022 : 0.06;
-        eye[1] += n2 * k1 * amp; target[1] += n2 * k1 * 0.4 * amp + n3 * 0.09 * amp;
-        // lateral (perpendicular to view)
-        var vx = target[0] - eye[0], vz = target[2] - eye[2], vl = Math.hypot(vx, vz) || 1;
-        var rx = -vz / vl, rz = vx / vl;
-        eye[0] += rx * n1 * k1 * amp; eye[2] += rz * n1 * k1 * amp;
-        target[0] += rx * n3 * 0.07 * amp; target[2] += rz * n3 * 0.07 * amp;
-      }
+      // Rock-solid camera tracking: disable shake/trauma noise to keep view clean, smooth, and stable
+      C.trauma = 0;
       S.flash = Math.max(0, num(S.flash, 0) - dt * 3);
     }
 
@@ -2892,10 +2905,10 @@ CB.race.renderer3d = (function () {
           if (dp < 7) mine = true;
         }
         if (mine) {
-          S.cam.trauma = Math.min(1, S.cam.trauma + 0.3 + inten * (ev.type === 'wall' ? 0.75 : 0.55));
-          if (inten > 0.55) S.flash = Math.max(num(S.flash, 0), (inten - 0.5) * 0.25);
+          S.cam.trauma = 0;
+          if (inten > 0.55) S.flash = Math.max(num(S.flash, 0), (inten - 0.5) * 0.18);
           var ckI = S.cockpit;
-          if (ckI && typeof ckI.impulse === 'function' && S.mode === 'cockpit') safe('cockpit.impulse', function () { ckI.impulse(0.25 + inten * 0.75); });
+          if (ckI && typeof ckI.impulse === 'function' && S.mode === 'cockpit') safe('cockpit.impulse', function () { ckI.impulse(0.2 + inten * 0.4); });
         }
       }
       if (!FX || !S.manualFx) return;
@@ -3547,6 +3560,7 @@ CB.race.renderer3d = (function () {
         if (call4('post2.end', P2, P2.end, prm, undefined, undefined, undefined, 'err') === 'err') { S.post2Broken = true; destroyPost2(); }
       }
       if (S.gpuTimer) S.gpuTimer.end();
+
       S.cpuLast = now() - t0;
       S.cpuMs = lerp(S.cpuMs, S.cpuLast, 0.1);
     }
@@ -3742,8 +3756,9 @@ CB.race.renderer3d = (function () {
   function normMode(m) {
     if (m == null) return null;
     var k = String(m).toLowerCase().trim();
+    if (MODE_ALIASES[k]) return MODE_ALIASES[k];
     if (CAMERA_MODES.indexOf(k) >= 0) return k;
-    return MODE_ALIASES[k] || null;
+    return null;
   }
 
   var exported = {

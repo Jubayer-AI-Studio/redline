@@ -1811,50 +1811,97 @@ var CB = (globalThis.CB = globalThis.CB || {});
     }
   }
   function numberDecals(S, G, hasTex) {
-    if (!S.number) return false;
-    var size = clamp((S.beltY - S.rh) * 0.62, 0.26, 0.46), xc = S.doorMid, yc = lerp(S.rh, S.beltY, 0.55);
+    var sizeY = clamp((S.beltY - S.rh) * 0.88, 0.38, 0.65);
+    var sizeX = sizeY * 2.0; // 2:1 aspect ratio for official door decal
+    var xc = S.doorMid, yc = lerp(S.rh, S.beltY, 0.50);
     var drawn = false;
+
+    // 1. Both Doors: Exact As-Sunnah Door Decal (top half of atlas)
     function sideDecal(side) {
       var rows = [], n = 6;
       for (var i = 0; i <= n; i++) {
-        var x = xc + size / 2 - size * i / n, row = [];
+        var x = xc + sizeX / 2 - sizeX * i / n, row = [];
         for (var j = 0; j <= n; j++) {
-          var y = yc + size / 2 - size * j / n, z = sideAt(S, x, y);
-          if (z === null) return;
-          row.push([x, y, (z + 0.004) * side]);
+          var y = yc + sizeY / 2 - sizeY * j / n, z = sideAt(S, x, y);
+          if (z === null) z = (S.W ? S.W * 0.48 : 0.95);
+          row.push([x, y, (z + 0.007) * side]);
         }
         rows.push(row);
       }
-      if (hasTex) {
-        emitGrid(rows, {
-          geos: G, bucket: function () { return 'decal'; }, outward: [0, 0, side], color: function () { return WHITE; },
-          uv: function (k, i, j) { var u = i / n; return [side > 0 ? 1 - u : u, j / n]; }
-        });
-      } else {
-        // texture-less fallback: white roundel with a coloured ring
-        emitGrid(rows, {
-          geos: G, bucket: function (i, j) { var u = (i + 0.5) / n * 2 - 1, v = (j + 0.5) / n * 2 - 1; return u * u + v * v < 1.05 ? 'trimG' : null; }, outward: [0, 0, side],
-          color: function (k, i, j) { var u = i / n * 2 - 1, v = j / n * 2 - 1, r = Math.sqrt(u * u + v * v); return r > 0.82 ? lhex(S.numberColor, '#d01818').concat([1]) : [0.92, 0.92, 0.9, 1]; }
-        });
-      }
+      emitGrid(rows, {
+        geos: G, bucket: function () { return 'decal'; }, outward: [0, 0, side], color: function () { return WHITE; },
+        uv: function (k, i, j) { var u = i / n, v = j / n; return [side > 0 ? 1 - u : u, v * 0.5]; }
+      });
       drawn = true;
     }
     sideDecal(1); sideDecal(-1);
-    // roof / hood roundel (readable from above, top of the number towards the nose)
-    var xr = S.openTop ? S.xA + (S.xF - S.xA) * 0.4 : (S.xR0 + S.xR1) / 2, sz = Math.min(size, S.openTop ? 0.4 : (S.xR0 - S.xR1) * 0.8);
-    if (hasTex && sz > 0.18) {
-      var rows2 = [], n2 = 5, ok = true;
-      for (var i2 = 0; i2 <= n2 && ok; i2++) {
-        var x = xr + sz / 2 - sz * i2 / n2, row2 = [];
-        for (var j2 = 0; j2 <= n2; j2++) {
-          var z2 = -sz / 2 + sz * j2 / n2, y2 = topAt(S, x, z2, !S.openTop);
-          if (y2 === null) { ok = false; break; }
-          row2.push([x, y2 + 0.004, z2]);
-        }
-        rows2.push(row2);
+
+    // 2. Hood (Bonnet): Exact As-Sunnah Emblem (bottom half of atlas)
+    var xHood = S.xF + (S.xA - S.xF) * 0.45;
+    var szHood = clamp(sizeY * 0.92, 0.26, 0.42);
+    var rowsHood = [], n2 = 5;
+    for (var i2 = 0; i2 <= n2; i2++) {
+      var x2 = xHood + szHood / 2 - szHood * i2 / n2, row2 = [];
+      for (var j2 = 0; j2 <= n2; j2++) {
+        var z2 = -szHood / 2 + szHood * j2 / n2, y2 = topAt(S, x2, z2, false);
+        if (y2 === null) y2 = Math.max(0.4, (S.rh || 0.15) + (S.H || 1.3) * 0.45);
+        row2.push([x2, y2 + 0.005, z2]);
       }
-      if (ok && S.roof !== 'glass') emitGrid(rows2, { geos: G, bucket: function () { return 'decal'; }, outward: [0, 1, 0], color: function () { return WHITE; }, uv: function (k, i, j) { return [j / n2, i / n2]; } });
+      rowsHood.push(row2);
     }
+    emitGrid(rowsHood, {
+      geos: G, bucket: function () { return 'decal'; }, outward: [0, 1, 0], color: function () { return WHITE; },
+      uv: function (k, i, j) { return [j / n2, 0.5 + (i / n2) * 0.5]; }
+    });
+
+    // 2b. Roof: Large As-Sunnah Emblem (readable from above / chase camera)
+    if (!S.openTop) {
+      var xRoof = (S.xR0 + S.xR1) / 2;
+      var szRoof = clamp((S.xR0 - S.xR1) * 0.85, 0.32, 0.60);
+      var rowsRoof = [], nRoof = 5;
+      for (var iR = 0; iR <= nRoof; iR++) {
+        var xR = xRoof + szRoof / 2 - szRoof * iR / nRoof, rowR = [];
+        for (var jR = 0; jR <= nRoof; jR++) {
+          var zR = -szRoof / 2 + szRoof * jR / nRoof, yR = topAt(S, xR, zR, true);
+          if (yR === null) yR = Math.max(0.6, (S.rh || 0.15) + (S.H || 1.3) * 0.85);
+          rowR.push([xR, yR + 0.005, zR]);
+        }
+        rowsRoof.push(rowR);
+      }
+      emitGrid(rowsRoof, {
+        geos: G, bucket: function () { return 'decal'; }, outward: [0, 1, 0], color: function () { return WHITE; },
+        uv: function (k, i, j) { return [j / nRoof, 0.5 + (i / nRoof) * 0.5]; }
+      });
+    }
+
+      // 3. Rear (Deck / Tail): Exact As-Sunnah Emblem (bottom half of atlas)
+      var xRear = S.xC - 0.18;
+      var szRear = clamp(sizeY * 0.8, 0.22, 0.36);
+      var rowsRear = [], n3 = 5, okRear = true;
+      for (var i3 = 0; i3 <= n3 && okRear; i3++) {
+        var x3 = xRear + szRear / 2 - szRear * i3 / n3, row3 = [];
+        for (var j3 = 0; j3 <= n3; j3++) {
+          var z3 = -szRear / 2 + szRear * j3 / n3, y3 = topAt(S, x3, z3, false);
+          if (y3 === null) { okRear = false; break; }
+          row3.push([x3, y3 + 0.005, z3]);
+        }
+        rowsRear.push(row3);
+      }
+      if (okRear) {
+        emitGrid(rowsRear, {
+          geos: G, bucket: function () { return 'decal'; }, outward: [0, 1, 0], color: function () { return WHITE; },
+          uv: function (k, i, j) { return [j / n3, 0.5 + (i / n3) * 0.5]; }
+        });
+      }
+
+      // Rear tail face patch
+      var bt = projPatch(S, 3, 3, function (u, v) { return [S.xR - 0.35, S.deckY - 0.08 + (v - 0.5) * 0.16, (u - 0.5) * 0.16]; }, [-1, 0, 0], 0.005, 1.6);
+      if (bt) {
+        emitGrid(bt, {
+          geos: G, bucket: function () { return 'decal'; }, outward: [-1, 0, 0], color: function () { return WHITE; },
+          uv: function (k, i, j) { return [i / 3, 0.5 + (j / 3) * 0.5]; }
+        });
+      }
     return drawn;
   }
 
@@ -4636,7 +4683,7 @@ var CB = (globalThis.CB = globalThis.CB || {});
   function lowpolyOn(opts) {
     var LP = CB.lowpoly;
     if (!LP || typeof LP.build !== 'function' || opts.shapes === false || opts.realModel === false) return false;
-    return (typeof LP.carStyle === 'function' ? LP.carStyle(opts) : 'lowpoly') !== 'detailed';
+    return (typeof LP.carStyle === 'function' ? LP.carStyle(opts) : 'detailed') === 'lowpoly';
   }
   function geoFromArrays(p) {
     var g = new Geo();
@@ -4663,6 +4710,24 @@ var CB = (globalThis.CB = globalThis.CB || {});
       tris += q.triangles;
       parts.push(p);
     });
+
+    // Attach Official As-Sunnah Livery Decals (both doors + hood + roof) to lowpoly car
+    try {
+      var Gdec = { decal: new Geo() };
+      numberDecals(S, Gdec, true);
+      if (Gdec.decal && Gdec.decal.count > 0) {
+        parts.push({
+          geo: Gdec.decal,
+          material: { name: 'decal', baseColor: [1, 1, 1, 1], color: [1, 1, 1, 1], uBaseColor: [1, 1, 1, 1], roughness: 0.6, metallic: 0 },
+          kind: 'decal',
+          local: m4(),
+          castShadow: false,
+          attach: 'body',
+          texture: 'number'
+        });
+        tris += Gdec.decal.count / 3;
+      }
+    } catch (eDec) {}
     var A = lp.anchors || {};
     A.wheels = A.wheels || [];
     var d = lp.dims, sm = shapeModel;
@@ -4702,6 +4767,7 @@ var CB = (globalThis.CB = globalThis.CB || {});
       tris += q.triangles;
       parts.push(p);
     });
+
     return {
       S: lp.S, parts: parts, dims: lp.dims, lod: lp.lod, lowpoly: true, f1: true,
       cockpitEye: lp.cockpitEye, hoodCam: lp.hoodCam, bumperCam: lp.bumperCam, anchors: lp.anchors,
@@ -4990,7 +5056,14 @@ var CB = (globalThis.CB = globalThis.CB || {});
             if (co) { mm.roughnessMap = co; mm.aoMap = co; mm.aoStrength = 0.5; }
           }
           mat = mm;
-        } else if (p.texture === 'number') return;   // no texture -> the decal part is useless
+        } else if (p.texture === 'number') {
+          var tFallback = (T && typeof T.white === 'function') ? T.white(ctx) : null;
+          if (tFallback) {
+            var mmF = {}; for (var kF in mat) mmF[kF] = mat[kF];
+            setMap(mmF, tFallback);
+            mat = mmF;
+          } else return;
+        }
         else if (p.texture === 'plate') {           // no plate map: plain plate grey instead of the white vertex colour
           var mp = {}; for (var kp in mat) mp[kp] = mat[kp];
           mp.baseColor = mp.uBaseColor = mp.color = [0.62, 0.62, 0.6, 1];

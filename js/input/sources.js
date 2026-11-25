@@ -116,10 +116,7 @@ CB.input = CB.input || {};
     name: 'Webcam air wheel', short: 'Webcam',
     hint: 'Hold your hands up like a steering wheel in front of the webcam and turn.',
     available: function () {
-      var cw = CB.input.camwheel;
-      if (!cw) return { ok: false, reason: 'Not loaded' };
-      if (typeof cw.supported === 'function' && !cw.supported()) return { ok: false, reason: typeof cw.secure === 'function' && !cw.secure() ? 'Needs HTTPS' : 'No camera API in this browser' };
-      return { ok: true };
+      return { ok: false, reason: 'Disabled' };
     },
     enable: function () {
       var u = CB.input.ui, cw = CB.input.camwheel;

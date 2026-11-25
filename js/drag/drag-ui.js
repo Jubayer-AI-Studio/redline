@@ -950,7 +950,7 @@ CB.drag = CB.drag || {};
         if (typeof m === 'string') { if (R.cam) R.cam.manual(m); if (U.S.camera !== 'auto') { U.S.camera = m; persist(); } }
       }
     }
-    else if (a === 'mute') { U.S.muted = !U.S.muted; persist(); if (R.sfx) R.sfx.setMuted(U.S.muted); }
+    else if (a === 'mute') { U.S.muted = !U.S.muted; persist(); if (R.sfx) R.sfx.setMuted(U.S.muted); if (CB.music && CB.music.setMuted) CB.music.setMuted(U.S.muted); }
     else if (a === 'restart') { if (!R.ended && !R.net) startRun(R.ctx.tour ? { opp: R.cfg.lanes[1], tour: R.ctx.tour } : R.ctx.tutorial ? { tutorial: true } : {}); }
     else if (a === 'confirm') {
       var sn = R.lastSnap;

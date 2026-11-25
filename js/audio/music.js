@@ -509,6 +509,54 @@ var CB = (globalThis.CB = globalThis.CB || {});
     race: { last: 0, pos: null, surge: 0, surgeT: 0, base: 0.55, lastI: -1, duck: -1 }, listeners: []
   };
 
+  var asSunnahBgm = null;
+  function getAsSunnahBgm() {
+    if (!asSunnahBgm && hasWin) {
+      try {
+        asSunnahBgm = new Audio('audio/as_sunnah_theme.mp3');
+        asSunnahBgm.loop = true;
+        asSunnahBgm.preload = 'auto';
+        var unlock = function () {
+          if (asSunnahBgm && asSunnahBgm.paused && effectiveVolume() > 0) {
+            var pr = asSunnahBgm.play();
+            if (pr && pr.catch) pr.catch(function () {});
+          }
+          try {
+            window.removeEventListener('pointerdown', unlock);
+            window.removeEventListener('touchstart', unlock);
+            window.removeEventListener('click', unlock);
+          } catch (e) {}
+        };
+        window.addEventListener('pointerdown', unlock, { passive: true });
+        window.addEventListener('touchstart', unlock, { passive: true });
+        window.addEventListener('click', unlock, { passive: true });
+      } catch (e) { /* ignore */ }
+    }
+    return asSunnahBgm;
+  }
+  function playAsSunnahTheme(context) {
+    if (!hasWin) return;
+    var bgm = getAsSunnahBgm();
+    if (!bgm) return;
+    var v = effectiveVolume();
+    if (v <= 0.0005) {
+      try { bgm.pause(); } catch (e) {}
+      return;
+    }
+    var ctxName = context || (S.wanted && S.wanted.context) || 'menu';
+    var isRacing = ctxName === 'race' || ctxName === 'drift' || ctxName === 'derby' || ctxName === 'drag' || ctxName === 'f1' || ctxName === 'arcade';
+    if (isRacing) {
+      // In race mode, duck/pause vocal BGM so engine and tyre SFX are clear and directional audio doesn't clash
+      try { bgm.pause(); } catch (e) {}
+      return;
+    }
+    bgm.volume = clamp(v * 0.8, 0, 1);
+    if (bgm.paused && v > 0) {
+      var pr = bgm.play();
+      if (pr && pr.catch) pr.catch(function () {});
+    }
+  }
+
   function audible() { return S.gestured && effectiveVolume() > 0.0005 && !S.hidden; }
   function ensureCtx() {
     if (S.ctx && S.ctx.state !== 'closed') return S.ctx;
@@ -522,6 +570,18 @@ var CB = (globalThis.CB = globalThis.CB || {});
   }
   function applyVolume(force) {
     var v = effectiveVolume();
+    var bgm = getAsSunnahBgm();
+    if (bgm) {
+      if (v <= 0.0005) {
+        try { bgm.pause(); } catch (e) {}
+      } else if (!S.wanted || (S.wanted.context !== 'race' && S.wanted.context !== 'drift' && S.wanted.context !== 'derby' && S.wanted.context !== 'drag' && S.wanted.context !== 'f1' && S.wanted.context !== 'arcade')) {
+        bgm.volume = clamp(v * 0.8, 0, 1);
+        if (bgm.paused && S.gestured) {
+          var pr = bgm.play();
+          if (pr && pr.catch) pr.catch(function () {});
+        }
+      }
+    }
     if (!S.E) return v;
     if (!force && Math.abs(v - S.lastVol) < 0.002) return v;
     S.lastVol = v;
@@ -568,29 +628,29 @@ var CB = (globalThis.CB = globalThis.CB || {});
   function newSeed() { return (Math.floor(Math.random() * 4294967296)) >>> 0; }
 
   function startWanted() {
-    var w = S.wanted; if (!w || !audible()) return false;
-    var M = TR(); if (!M) return false;
+    if (!S.wanted) return false;
+    if (!audible()) return false;
     var ctx = ensureCtx(); if (!ctx) return false;
-    if (ctx.state === 'suspended') { try { var pr = ctx.resume(); if (pr && pr.catch) pr.catch(function () {}); } catch (e) { /* ignore */ } }
-    var o = w.opts || {}, id = M.trackFor(w.context, o), T = M.TRACKS[id];
-    if (o.intensity != null) S.intensity = clamp(o.intensity, 0, 1);
-    var t = ctx.currentTime;
-    if (S.cur && !S.cur.dead && S.cur.id === id && !o.restart && S.cur.killAt == null && !T.oneShot) {
-      if (o.phase) S.cur.setPhase(o.phase, t);
-      S.cur.setIntensity(S.intensity, t);
+    if (ctx.state === 'suspended') { var p = ctx.resume(); if (p && p.catch) p.catch(function () {}); }
+    startTimer();
+    var tr = TR(); if (!tr) return false;
+    var tid = tr.trackFor(S.wanted.context, S.wanted.opts);
+    if (!tid || !tr.TRACKS[tid]) return false;
+    var prev = S.cur;
+    if (prev && prev.id === tid && !prev.done && prev.killAt == null) {
+      if (S.wanted.opts && S.wanted.opts.phase) prev.setPhase(S.wanted.opts.phase);
+      playAsSunnahTheme(S.wanted.context);
       return true;
     }
-    var fade = num(o.fade, T.oneShot ? 0.25 : 1.8);
-    if (S.cur && !S.cur.dead) S.cur.fadeOut(t, T.oneShot ? 0.35 : fade);
-    var d = createDeck(S.E, id, o.seed != null ? o.seed : newSeed(), { intensity: S.intensity, phase: o.phase });
-    d.after = o.after || null;
-    d.context = w.context;
-    d.start(t + 0.06, T.oneShot ? 0.02 : fade);
-    S.cur = d; S.stats.decksMade++;
-    if (!S.stats.since) S.stats.since = nowMs();
-    S.idleSince = 0;
-    startTimer();
-    tick();
+    var seed = S.wanted.opts && S.wanted.opts.seed != null ? S.wanted.opts.seed : newSeed();
+    var d = createDeck(S.E, tid, seed, { intensity: S.intensity, phase: S.wanted.opts && S.wanted.opts.phase });
+    d.after = S.wanted.opts && S.wanted.opts.after;
+    S.stats.decksMade++;
+    var now = ctx.currentTime, fade = num(S.wanted.opts && S.wanted.opts.fade, 1.2);
+    if (prev) prev.fadeOut(now, fade);
+    d.start(now + 0.04, fade);
+    S.cur = d;
+    playAsSunnahTheme(S.wanted.context);
     return true;
   }
 
@@ -613,6 +673,9 @@ var CB = (globalThis.CB = globalThis.CB || {});
     opts = opts || {};
     if (!opts.keepWanted) S.wanted = null;
     fadeAll(num(opts.fade, 1.2));
+    if (asSunnahBgm) {
+      try { asSunnahBgm.pause(); } catch (e) {}
+    }
   }
   function setIntensity(x) {
     S.intensity = clamp(num(x, 0.5), 0, 1);
@@ -628,9 +691,16 @@ var CB = (globalThis.CB = globalThis.CB || {});
   }
   function settingsChanged() {
     var v = effectiveVolume();
-    if (v <= 0.0005) { if (S.cur || (S.E && S.E.decks.length)) { applyVolume(); fadeAll(0.4); } return; }
+    if (v <= 0.0005) {
+      if (asSunnahBgm) { try { asSunnahBgm.pause(); } catch (e) {} }
+      if (S.cur || (S.E && S.E.decks.length)) { applyVolume(); fadeAll(0.4); }
+      return;
+    }
     applyVolume();
     if (!S.cur && S.wanted) startWanted();
+    else if (asSunnahBgm && asSunnahBgm.paused && S.wanted) {
+      playAsSunnahTheme(S.wanted.context);
+    }
   }
   function setVolume(v) {
     v = clamp(num(v, 0.5), 0, 1);
@@ -639,6 +709,14 @@ var CB = (globalThis.CB = globalThis.CB || {});
     else local.music = v;
     settingsChanged();
     return v;
+  }
+  function setMuted(m) {
+    var P = CB.game && CB.game.profile;
+    if (P && typeof P.setSetting === 'function') { try { P.setSetting('audio.muted', !!m); } catch (e) { local.muted = !!m; } }
+    else local.muted = !!m;
+    if (m && asSunnahBgm) { try { asSunnahBgm.pause(); } catch (e) {} }
+    settingsChanged();
+    return !!m;
   }
   function setEnabled(on) {
     var P = CB.game && CB.game.profile;
@@ -810,7 +888,7 @@ var CB = (globalThis.CB = globalThis.CB || {});
   }
 
   var api = {
-    play: play, stop: stop, setVolume: setVolume, setEnabled: setEnabled, setIntensity: setIntensity, duck: duck,
+    play: play, stop: stop, setVolume: setVolume, setMuted: setMuted, setEnabled: setEnabled, setIntensity: setIntensity, duck: duck,
     cue: cue, frame: frame, renderOffline: renderOffline, toWav: toWav,
     isEnabled: function () { return readAudio().musicOn !== false; },
     getVolume: function () { return readAudio().music; },
@@ -832,6 +910,7 @@ var CB = (globalThis.CB = globalThis.CB || {});
       raceIntensity: raceIntensity, onGesture: onGesture, tick: tick, S: S, local: local,
       setCtor: function (C) { S.ctor = C; },
       reset: function () {
+        if (asSunnahBgm) { try { asSunnahBgm.pause(); } catch (e) {} }
         if (S.E) S.E.destroy();
         stopTimer();
         if (S.ctx && S.ctx.close) { try { S.ctx.close(); } catch (e) { /* ignore */ } }
