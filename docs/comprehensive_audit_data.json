@@ -1,0 +1,662 @@
+{
+  "carModelsTested": 53,
+  "carFailures": 0,
+  "vehicleAuditResults": [
+    {
+      "index": 1,
+      "id": "porsche-911-992",
+      "make": "Porsche",
+      "name": "911 Carrera",
+      "applied": "porsche-911-992",
+      "hp": 444,
+      "vmax": 330,
+      "status": "PASS"
+    },
+    {
+      "index": 2,
+      "id": "bmw-m4-g82",
+      "make": "BMW",
+      "name": "M4 Competition",
+      "applied": "bmw-m4-g82",
+      "hp": 444,
+      "vmax": 307,
+      "status": "PASS"
+    },
+    {
+      "index": 3,
+      "id": "toyota-gr-supra-a90",
+      "make": "Toyota",
+      "name": "GR Supra",
+      "applied": "toyota-gr-supra-a90",
+      "hp": 444,
+      "vmax": 324,
+      "status": "PASS"
+    },
+    {
+      "index": 4,
+      "id": "bmw-m3-g80",
+      "make": "BMW",
+      "name": "M3 Competition",
+      "applied": "bmw-m3-g80",
+      "hp": 444,
+      "vmax": 305,
+      "status": "PASS"
+    },
+    {
+      "index": 5,
+      "id": "mercedes-amg-c63-w206",
+      "make": "Mercedes-AMG",
+      "name": "C 63 S E PERFORMANCE",
+      "applied": "mercedes-amg-c63-w206",
+      "hp": 444,
+      "vmax": 309,
+      "status": "PASS"
+    },
+    {
+      "index": 6,
+      "id": "tesla-model-s-2021",
+      "make": "Tesla",
+      "name": "Model S",
+      "applied": "tesla-model-s-2021",
+      "hp": 444,
+      "vmax": 323,
+      "status": "PASS"
+    },
+    {
+      "index": 7,
+      "id": "vw-golf-gti-mk8",
+      "make": "Volkswagen",
+      "name": "Golf GTI",
+      "applied": "vw-golf-gti-mk8",
+      "hp": 444,
+      "vmax": 322,
+      "status": "PASS"
+    },
+    {
+      "index": 8,
+      "id": "honda-civic-type-r-fl5",
+      "make": "Honda",
+      "name": "Civic Type R",
+      "applied": "honda-civic-type-r-fl5",
+      "hp": 444,
+      "vmax": 310,
+      "status": "PASS"
+    },
+    {
+      "index": 9,
+      "id": "toyota-gr-yaris",
+      "make": "Toyota",
+      "name": "GR Yaris",
+      "applied": "toyota-gr-yaris",
+      "hp": 444,
+      "vmax": 317,
+      "status": "PASS"
+    },
+    {
+      "index": 10,
+      "id": "audi-rs6-avant-c8",
+      "make": "Audi",
+      "name": "RS 6 Avant",
+      "applied": "audi-rs6-avant-c8",
+      "hp": 444,
+      "vmax": 303,
+      "status": "PASS"
+    },
+    {
+      "index": 11,
+      "id": "mercedes-amg-e63s-estate-s213",
+      "make": "Mercedes-AMG",
+      "name": "E 63 S 4MATIC+ Estate",
+      "applied": "mercedes-amg-e63s-estate-s213",
+      "hp": 444,
+      "vmax": 310,
+      "status": "PASS"
+    },
+    {
+      "index": 12,
+      "id": "volvo-v60-polestar-engineered",
+      "make": "Volvo",
+      "name": "V60 T8 Polestar Engineered",
+      "applied": "volvo-v60-polestar-engineered",
+      "hp": 444,
+      "vmax": 324,
+      "status": "PASS"
+    },
+    {
+      "index": 13,
+      "id": "porsche-cayenne-e3",
+      "make": "Porsche",
+      "name": "Cayenne",
+      "applied": "porsche-cayenne-e3",
+      "hp": 444,
+      "vmax": 281,
+      "status": "PASS"
+    },
+    {
+      "index": 14,
+      "id": "range-rover-sport-l461",
+      "make": "Land Rover",
+      "name": "Range Rover Sport",
+      "applied": "range-rover-sport-l461",
+      "hp": 444,
+      "vmax": 278,
+      "status": "PASS"
+    },
+    {
+      "index": 15,
+      "id": "lamborghini-urus",
+      "make": "Lamborghini",
+      "name": "Urus",
+      "applied": "lamborghini-urus",
+      "hp": 444,
+      "vmax": 283,
+      "status": "PASS"
+    },
+    {
+      "index": 16,
+      "id": "mazda-mx5-nd",
+      "make": "Mazda",
+      "name": "MX-5 Miata",
+      "applied": "mazda-mx5-nd",
+      "hp": 444,
+      "vmax": 331,
+      "status": "PASS"
+    },
+    {
+      "index": 17,
+      "id": "bmw-z4-g29",
+      "make": "BMW",
+      "name": "Z4 M40i",
+      "applied": "bmw-z4-g29",
+      "hp": 444,
+      "vmax": 309,
+      "status": "PASS"
+    },
+    {
+      "index": 18,
+      "id": "porsche-718-boxster-982",
+      "make": "Porsche",
+      "name": "718 Boxster",
+      "applied": "porsche-718-boxster-982",
+      "hp": 444,
+      "vmax": 321,
+      "status": "PASS"
+    },
+    {
+      "index": 19,
+      "id": "ford-f150-raptor-gen3",
+      "make": "Ford",
+      "name": "F-150 Raptor",
+      "applied": "ford-f150-raptor-gen3",
+      "hp": 444,
+      "vmax": 231,
+      "status": "PASS"
+    },
+    {
+      "index": 20,
+      "id": "toyota-tacoma-trdpro-2024",
+      "make": "Toyota",
+      "name": "Tacoma TRD Pro",
+      "applied": "toyota-tacoma-trdpro-2024",
+      "hp": 444,
+      "vmax": 248,
+      "status": "PASS"
+    },
+    {
+      "index": 21,
+      "id": "tesla-cybertruck",
+      "make": "Tesla",
+      "name": "Cybertruck",
+      "applied": "tesla-cybertruck",
+      "hp": 444,
+      "vmax": 261,
+      "status": "PASS"
+    },
+    {
+      "index": 22,
+      "id": "ferrari-sf90-stradale",
+      "make": "Ferrari",
+      "name": "SF90 Stradale",
+      "applied": "ferrari-sf90-stradale",
+      "hp": 444,
+      "vmax": 317,
+      "status": "PASS"
+    },
+    {
+      "index": 23,
+      "id": "mclaren-p1",
+      "make": "McLaren",
+      "name": "P1",
+      "applied": "mclaren-p1",
+      "hp": 444,
+      "vmax": 320,
+      "status": "PASS"
+    },
+    {
+      "index": 24,
+      "id": "bugatti-chiron",
+      "make": "Bugatti",
+      "name": "Chiron",
+      "applied": "bugatti-chiron",
+      "hp": 444,
+      "vmax": 302,
+      "status": "PASS"
+    },
+    {
+      "index": 25,
+      "id": "porsche-taycan-cross-turismo",
+      "make": "Porsche",
+      "name": "Taycan 4S Cross Turismo",
+      "applied": "porsche-taycan-cross-turismo",
+      "hp": 444,
+      "vmax": 315,
+      "status": "PASS"
+    },
+    {
+      "index": 26,
+      "id": "ferrari-gtc4lusso",
+      "make": "Ferrari",
+      "name": "GTC4Lusso",
+      "applied": "ferrari-gtc4lusso",
+      "hp": 444,
+      "vmax": 309,
+      "status": "PASS"
+    },
+    {
+      "index": 27,
+      "id": "mercedes-cls-shooting-brake-x218",
+      "make": "Mercedes-Benz",
+      "name": "CLS 500 4MATIC Shooting Brake",
+      "applied": "mercedes-cls-shooting-brake-x218",
+      "hp": 444,
+      "vmax": 321,
+      "status": "PASS"
+    },
+    {
+      "index": 28,
+      "id": "mercedes-sprinter-vs30",
+      "make": "Mercedes-Benz",
+      "name": "Sprinter 2500 Passenger 144\" High Roof",
+      "applied": "mercedes-sprinter-vs30",
+      "hp": 444,
+      "vmax": 246,
+      "status": "PASS"
+    },
+    {
+      "index": 29,
+      "id": "vw-id-buzz",
+      "make": "Volkswagen",
+      "name": "ID. Buzz",
+      "applied": "vw-id-buzz",
+      "hp": 444,
+      "vmax": 267,
+      "status": "PASS"
+    },
+    {
+      "index": 30,
+      "id": "ford-transit-hr",
+      "make": "Ford",
+      "name": "Transit 350 Passenger 148\" High Roof",
+      "applied": "ford-transit-hr",
+      "hp": 444,
+      "vmax": 240,
+      "status": "PASS"
+    },
+    {
+      "index": 31,
+      "id": "nissan-silvia-s15",
+      "make": "Nissan",
+      "name": "Silvia Spec-R",
+      "applied": "nissan-silvia-s15",
+      "hp": 444,
+      "vmax": 349,
+      "status": "PASS"
+    },
+    {
+      "index": 32,
+      "id": "nissan-skyline-gtr-r34",
+      "make": "Nissan",
+      "name": "Skyline GT-R V-Spec",
+      "applied": "nissan-skyline-gtr-r34",
+      "hp": 444,
+      "vmax": 325,
+      "status": "PASS"
+    },
+    {
+      "index": 33,
+      "id": "toyota-sprinter-trueno-ae86",
+      "make": "Toyota",
+      "name": "Sprinter Trueno GT-APEX",
+      "applied": "toyota-sprinter-trueno-ae86",
+      "hp": 444,
+      "vmax": 336,
+      "status": "PASS"
+    },
+    {
+      "index": 34,
+      "id": "mazda-rx7-fd3s",
+      "make": "Mazda",
+      "name": "RX-7 Type R",
+      "applied": "mazda-rx7-fd3s",
+      "hp": 444,
+      "vmax": 347,
+      "status": "PASS"
+    },
+    {
+      "index": 35,
+      "id": "nissan-gtr-r35",
+      "make": "Nissan",
+      "name": "GT-R",
+      "applied": "nissan-gtr-r35",
+      "hp": 444,
+      "vmax": 323,
+      "status": "PASS"
+    },
+    {
+      "index": 36,
+      "id": "ford-mustang-gt-s650",
+      "make": "Ford",
+      "name": "Mustang GT Fastback",
+      "applied": "ford-mustang-gt-s650",
+      "hp": 444,
+      "vmax": 307,
+      "status": "PASS"
+    },
+    {
+      "index": 37,
+      "id": "chevrolet-camaro-zl1-2019",
+      "make": "Chevrolet",
+      "name": "Camaro ZL1",
+      "applied": "chevrolet-camaro-zl1-2019",
+      "hp": 444,
+      "vmax": 308,
+      "status": "PASS"
+    },
+    {
+      "index": 38,
+      "id": "dodge-challenger-srt-hellcat",
+      "make": "Dodge",
+      "name": "Challenger SRT Hellcat",
+      "applied": "dodge-challenger-srt-hellcat",
+      "hp": 444,
+      "vmax": 297,
+      "status": "PASS"
+    },
+    {
+      "index": 39,
+      "id": "chevrolet-corvette-c8",
+      "make": "Chevrolet",
+      "name": "Corvette Stingray",
+      "applied": "chevrolet-corvette-c8",
+      "hp": 444,
+      "vmax": 319,
+      "status": "PASS"
+    },
+    {
+      "index": 40,
+      "id": "ford-gt-2017",
+      "make": "Ford",
+      "name": "GT",
+      "applied": "ford-gt-2017",
+      "hp": 444,
+      "vmax": 317,
+      "status": "PASS"
+    },
+    {
+      "index": 41,
+      "id": "jeep-wrangler-rubicon-jl",
+      "make": "Jeep",
+      "name": "Wrangler Unlimited Rubicon",
+      "applied": "jeep-wrangler-rubicon-jl",
+      "hp": 444,
+      "vmax": 267,
+      "status": "PASS"
+    },
+    {
+      "index": 42,
+      "id": "lamborghini-huracan-evo",
+      "make": "Lamborghini",
+      "name": "Huracán EVO",
+      "applied": "lamborghini-huracan-evo",
+      "hp": 444,
+      "vmax": 316,
+      "status": "PASS"
+    },
+    {
+      "index": 43,
+      "id": "ferrari-296-gtb",
+      "make": "Ferrari",
+      "name": "296 GTB",
+      "applied": "ferrari-296-gtb",
+      "hp": 444,
+      "vmax": 318,
+      "status": "PASS"
+    },
+    {
+      "index": 44,
+      "id": "porsche-918-spyder",
+      "make": "Porsche",
+      "name": "918 Spyder",
+      "applied": "porsche-918-spyder",
+      "hp": 444,
+      "vmax": 307,
+      "status": "PASS"
+    },
+    {
+      "index": 45,
+      "id": "koenigsegg-jesko",
+      "make": "Koenigsegg",
+      "name": "Jesko",
+      "applied": "koenigsegg-jesko",
+      "hp": 444,
+      "vmax": 306,
+      "status": "PASS"
+    },
+    {
+      "index": 46,
+      "id": "audi-r8-v10-gen2",
+      "make": "Audi",
+      "name": "R8 V10",
+      "applied": "audi-r8-v10-gen2",
+      "hp": 444,
+      "vmax": 311,
+      "status": "PASS"
+    },
+    {
+      "index": 47,
+      "id": "bmw-m2-g87",
+      "make": "BMW",
+      "name": "M2",
+      "applied": "bmw-m2-g87",
+      "hp": 444,
+      "vmax": 304,
+      "status": "PASS"
+    },
+    {
+      "index": 48,
+      "id": "bmw-m3-e46",
+      "make": "BMW",
+      "name": "M3 Coupé",
+      "applied": "bmw-m3-e46",
+      "hp": 444,
+      "vmax": 328,
+      "status": "PASS"
+    },
+    {
+      "index": 49,
+      "id": "alpine-a110",
+      "make": "Alpine",
+      "name": "A110",
+      "applied": "alpine-a110",
+      "hp": 444,
+      "vmax": 337,
+      "status": "PASS"
+    },
+    {
+      "index": 50,
+      "id": "aston-martin-vantage-2018",
+      "make": "Aston Martin",
+      "name": "Vantage",
+      "applied": "aston-martin-vantage-2018",
+      "hp": 444,
+      "vmax": 315,
+      "status": "PASS"
+    },
+    {
+      "index": 51,
+      "id": "lotus-emira",
+      "make": "Lotus",
+      "name": "Emira",
+      "applied": "lotus-emira",
+      "hp": 444,
+      "vmax": 314,
+      "status": "PASS"
+    },
+    {
+      "index": 52,
+      "id": "subaru-wrx-sti-va",
+      "make": "Subaru",
+      "name": "WRX STI",
+      "applied": "subaru-wrx-sti-va",
+      "hp": 444,
+      "vmax": 323,
+      "status": "PASS"
+    },
+    {
+      "index": 53,
+      "id": "mitsubishi-lancer-evo-x",
+      "make": "Mitsubishi",
+      "name": "Lancer Evolution X",
+      "applied": "mitsubishi-lancer-evo-x",
+      "hp": 444,
+      "vmax": 314,
+      "status": "PASS"
+    }
+  ],
+  "cameraInteraction": {
+    "ok": true,
+    "canvasFound": true
+  },
+  "tuningAudit": {
+    "categories": [
+      "power",
+      "brakes",
+      "suspension",
+      "aero",
+      "weight",
+      "livery"
+    ],
+    "clickResults": [
+      {
+        "cat": "power",
+        "active": true
+      },
+      {
+        "cat": "brakes",
+        "active": false
+      },
+      {
+        "cat": "suspension",
+        "active": false
+      },
+      {
+        "cat": "aero",
+        "active": false
+      },
+      {
+        "cat": "weight",
+        "active": false
+      },
+      {
+        "cat": "livery",
+        "active": false
+      }
+    ],
+    "deltaItemCount": 4
+  },
+  "modeAuditResults": [
+    {
+      "mode": "Circuit Sprint",
+      "targetRoute": "#/race",
+      "landedRoute": "race",
+      "visibleLayer": "screen-race",
+      "status": "PASS"
+    },
+    {
+      "mode": "Drift Battles",
+      "targetRoute": "#/drift",
+      "landedRoute": "drift",
+      "visibleLayer": "screen-drift",
+      "status": "PASS"
+    },
+    {
+      "mode": "Stunt Arcade",
+      "targetRoute": "#/arcade",
+      "landedRoute": "arcade",
+      "visibleLayer": "screen-arcade",
+      "status": "PASS"
+    },
+    {
+      "mode": "Demolition Derby",
+      "targetRoute": "#/derby",
+      "landedRoute": "derby",
+      "visibleLayer": "screen-derby",
+      "status": "PASS"
+    },
+    {
+      "mode": "1/4-Mile Drag",
+      "targetRoute": "#/drag",
+      "landedRoute": "drag",
+      "visibleLayer": "screen-drag",
+      "status": "PASS"
+    },
+    {
+      "mode": "Formula 1",
+      "targetRoute": "#/f1",
+      "landedRoute": "f1",
+      "visibleLayer": "screen-f1",
+      "status": "PASS"
+    },
+    {
+      "mode": "Time Trial",
+      "targetRoute": "#/timetrial",
+      "landedRoute": "menu",
+      "visibleLayer": "screen-hub",
+      "status": "WARN"
+    },
+    {
+      "mode": "Career Mode",
+      "targetRoute": "#/career",
+      "landedRoute": "career",
+      "visibleLayer": "screen-hub",
+      "status": "PASS"
+    },
+    {
+      "mode": "Driving School",
+      "targetRoute": "#/challenges",
+      "landedRoute": "challenges",
+      "visibleLayer": "screen-hub",
+      "status": "PASS"
+    },
+    {
+      "mode": "Multiplayer Lobby",
+      "targetRoute": "#/multiplayer",
+      "landedRoute": "multiplayer",
+      "visibleLayer": "screen-multiplayer",
+      "status": "PASS"
+    }
+  ],
+  "ui1Audit": {
+    "isUi2Active": false,
+    "ui2RootPresent": false,
+    "gnavVisible": false,
+    "atelierPresent": false,
+    "hubPresent": false,
+    "sidenavPresent": false,
+    "perfStripPresent": false
+  },
+  "network404s": [
+    "/api/signal"
+  ],
+  "consoleErrors": []
+}
