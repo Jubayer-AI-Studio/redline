@@ -2283,9 +2283,9 @@ var CB = (globalThis.CB = globalThis.CB || {});
     }
     void SH;
     // ---- Official As-Sunnah Racing Livery on Doors and Hood
-    // xd: door centre x — shifted rearward (0.48 from 0.58) to clear the side-mirror stalk
-    // yd: door centre y — lowered (0.38 from 0.48) to clear the belt line and mirror shadow
-    var xd = lerp(aR.x + aR.r, aF.x - aF.r, 0.48), yTop = Math.max(aF.cy + aF.r, aR.cy + aR.r), yd = lerp(yTop, Sh.beltY, 0.38);
+    // xd: door centre x — shifted further rearward (0.40) to fully clear the side-mirror stalk
+    // yd: door centre y — lowered (0.35) to stay comfortably below the belt line and mirror shadow
+    var xd = lerp(aR.x + aR.r, aF.x - aF.r, 0.40), yTop = Math.max(aF.cy + aF.r, aR.cy + aR.r), yd = lerp(yTop, Sh.beltY, 0.35);
     // Enlarged decal: clamp raised to [0.18, 0.30] for bold door branding
     var hBox = clamp((Sh.beltY - yTop) * 0.65, 0.18, 0.30);
     var wBox = hBox * 2.3;
