@@ -91,7 +91,7 @@
       desc: 'Full-grid championship racing on international tarmac circuits',
       players: '1–12 PLAYERS',
       req: 1,
-      img: 'docs/smoke_screens/smoke_01_race.png'
+      img: 'img/modes/smoke_01_race.png'
     },
     {
       id: 'drift',
@@ -100,7 +100,7 @@
       desc: 'Tandem drift score attacks, clipping zones & angle multipliers',
       players: '1–8 PLAYERS',
       req: 1,
-      img: 'docs/smoke_screens/smoke_02_drift.png'
+      img: 'img/modes/smoke_02_drift.png'
     },
     {
       id: 'arcade',
@@ -109,7 +109,7 @@
       desc: 'High-speed loops, corkscrews, nitro boost pads & item power-ups',
       players: '1–4 PLAYERS',
       req: 2,
-      img: 'docs/smoke_screens/smoke_03_arcade.png'
+      img: 'img/modes/smoke_03_arcade.png'
     },
     {
       id: 'derby',
@@ -118,7 +118,7 @@
       desc: 'Arena destruction combat: flamethrowers, ramming & last car standing',
       players: '1–8 PLAYERS',
       req: 3,
-      img: 'docs/smoke_screens/smoke_04_derby.png'
+      img: 'img/modes/smoke_04_derby.png'
     },
     {
       id: 'drag',
@@ -127,7 +127,7 @@
       desc: 'Burnout tire warmup, Christmas tree staging & high-rpm clutch drop',
       players: '1–2 PLAYERS',
       req: 3,
-      img: 'docs/smoke_screens/smoke_05_drag.png'
+      img: 'img/modes/smoke_05_drag.png'
     },
     {
       id: 'f1',
@@ -136,7 +136,7 @@
       desc: 'High-downforce open-wheel racing with real aerodynamic DRS',
       players: '1–20 PLAYERS',
       req: 4,
-      img: 'docs/smoke_screens/smoke_06_f1.png'
+      img: 'img/modes/smoke_06_f1.png'
     },
     {
       id: 'timetrial',
@@ -145,7 +145,7 @@
       desc: 'Solo hot laps against personal best and global leaderboard ghosts',
       players: '1 PLAYER',
       req: 1,
-      img: 'docs/smoke_screens/smoke_07_timetrial.png'
+      img: 'img/modes/smoke_07_timetrial.png'
     },
     {
       id: 'career',
@@ -154,7 +154,7 @@
       desc: '5 prestige tiers from Rookie Cup to Hypercar World Championship',
       players: '5 TIERS',
       req: 1,
-      img: 'docs/smoke_screens/smoke_08_career.png'
+      img: 'img/modes/smoke_08_career.png'
     },
     {
       id: 'challenges',
@@ -163,7 +163,7 @@
       desc: 'Precision slalom, threshold braking & launch control challenges',
       players: '1 PLAYER',
       req: 2,
-      img: 'docs/smoke_screens/smoke_09_challenges.png'
+      img: 'img/modes/smoke_09_challenges.png'
     },
     {
       id: 'multiplayer',
@@ -172,12 +172,90 @@
       desc: 'Realtime WebRTC peer-to-peer multiplayer with matchmaking lobby',
       players: '2–16 PLAYERS',
       req: 5,
-      img: 'docs/smoke_screens/smoke_10_multiplayer.png'
+      img: 'img/modes/smoke_10_multiplayer.png'
     }
   ];
 
   // DOM Elements
-  var rootEl, topbarEl, viewportEl, carouselEl;
+  var rootEl, topbarEl, mobileNavEl, viewportEl, carouselEl, toastEl;
+  var toastTimer = null;
+  var specCollapsed = false;
+  var garageCatsCollapsed = false;
+  var garageTuneCollapsed = false;
+  var pendingPatch = {};
+
+  var AUDIO_MUTE_KEY = 'redline.ui2.muted';
+
+  function getAudioMuted() {
+    try {
+      var ls = localStorage.getItem(AUDIO_MUTE_KEY);
+      if (ls === '1' || ls === '0') return ls === '1';
+    } catch (e) {}
+    if (CB.game && CB.game.profile && typeof CB.game.profile.getSetting === 'function') {
+      try { return !!CB.game.profile.getSetting('audio.muted', false); } catch (e) {}
+    }
+    var a = document.getElementById('as-sunnah-theme-audio');
+    return !!(a && a.muted);
+  }
+
+  function updateMuteButton(muted) {
+    var btn = $('ui2-btn-mute');
+    if (!btn) return;
+    btn.classList.toggle('is-muted', !!muted);
+    btn.setAttribute('aria-pressed', muted ? 'true' : 'false');
+    btn.setAttribute('aria-label', muted ? 'Unmute audio' : 'Mute audio');
+    btn.setAttribute('title', muted ? 'Unmute audio' : 'Mute audio');
+    btn.innerHTML = muted
+      ? '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>'
+      : '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+  }
+
+  function applyAudioMuted(muted) {
+    muted = !!muted;
+    var a = document.getElementById('as-sunnah-theme-audio');
+    if (a) a.muted = muted;
+    try { localStorage.setItem(AUDIO_MUTE_KEY, muted ? '1' : '0'); } catch (e) {}
+    if (CB.game && CB.game.profile && typeof CB.game.profile.setSetting === 'function') {
+      try { CB.game.profile.setSetting('audio.muted', muted); } catch (e) {}
+    }
+    if (CB.music && typeof CB.music.setMuted === 'function') {
+      try { CB.music.setMuted(muted); } catch (e) {}
+    }
+    updateMuteButton(muted);
+  }
+
+  function showToast(title, message) {
+    if (!rootEl) return;
+    if (!toastEl) {
+      toastEl = document.createElement('div');
+      toastEl.id = 'ui2-toast';
+      toastEl.className = 'ui2-toast';
+      toastEl.setAttribute('role', 'status');
+      toastEl.setAttribute('aria-live', 'polite');
+      rootEl.appendChild(toastEl);
+    }
+    toastEl.innerHTML =
+      '<div class="ui2-toast-icon" aria-hidden="true">&#128274;</div>' +
+      '<div class="ui2-toast-body">' +
+        '<div class="ui2-toast-title">' + esc(title) + '</div>' +
+        '<div class="ui2-toast-msg">' + esc(message) + '</div>' +
+      '</div>' +
+      '<button type="button" class="ui2-toast-close" id="ui2-toast-close" aria-label="Dismiss notification">&times;</button>';
+
+    toastEl.classList.add('is-visible');
+    var closeBtn = $('ui2-toast-close');
+    if (closeBtn) {
+      closeBtn.onclick = function () {
+        toastEl.classList.remove('is-visible');
+        if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; }
+      };
+    }
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      if (toastEl) toastEl.classList.remove('is-visible');
+      toastTimer = null;
+    }, 5000);
+  }
 
   function mountUI2() {
     if (typeof document === 'undefined' || !document.body) {
@@ -195,6 +273,15 @@
     topbarEl.className = 'ui2-topbar';
     rootEl.appendChild(topbarEl);
     renderTopBar();
+    applyAudioMuted(getAudioMuted());
+
+    // Mobile Portrait Navigation Bar
+    mobileNavEl = document.createElement('nav');
+    mobileNavEl.id = 'ui2-mobile-nav';
+    mobileNavEl.className = 'ui2-mobile-nav';
+    mobileNavEl.setAttribute('aria-label', 'Mobile Navigation');
+    rootEl.appendChild(mobileNavEl);
+    renderMobileNav();
 
     // Viewport Content Stage
     viewportEl = document.createElement('main');
@@ -214,19 +301,100 @@
       document.documentElement.setAttribute('data-theme', 'dark');
     } catch (e) {}
 
-    var sa = document.getElementById('screen-atelier');
-    if (sa) sa.removeAttribute('hidden');
-    var sh = document.getElementById('screen-hub');
-    if (sh) sh.setAttribute('hidden', '');
-
     showView('home');
+    syncRouteVisibility();
+
+    // Subscribe to route changes so UI2 cleanly yields to all sub-screens
+    document.addEventListener('cb:route', function (e) {
+      syncRouteVisibility(e && e.detail);
+    });
+    window.addEventListener('hashchange', function () {
+      syncRouteVisibility();
+    });
 
     // Subscribe to state changes to refresh specs and active car
     if (CB.state && typeof CB.state.subscribe === 'function') {
-      CB.state.subscribe(function () {
+      CB.state.subscribe(function (build, change) {
         if (currentTab === 'home') refreshSpecPanel();
+        else if (currentTab === 'garage') {
+          if (!change || change.type !== 'preview') {
+            pendingPatch = {};
+            renderGarageView();
+          }
+        }
         updateCarouselActiveCard();
       });
+    }
+  }
+
+  function navigateTo(route) {
+    if (!route) return;
+    if (CB.router && typeof CB.router.go === 'function') {
+      CB.router.go(route);
+    } else {
+      window.location.hash = route;
+    }
+  }
+
+  function getRouteState(detail) {
+    if (detail && detail.route) {
+      return { route: detail.route, sub: detail.sub || null };
+    }
+    if (CB.router && typeof CB.router.current === 'function') {
+      var c = CB.router.current();
+      if (c && c.route) return { route: c.route, sub: c.sub || null };
+    }
+    var h = (typeof window !== 'undefined' && window.location) ? (window.location.hash || '') : '';
+    if (!h || h === '#' || h === '#/' || h === '#/menu' || h.indexOf('#/menu?') === 0) {
+      return { route: 'menu', sub: null };
+    }
+    if (h.indexOf('#/menu/') === 0) {
+      var after = h.slice('#/menu/'.length).split('?')[0];
+      return { route: 'menu', sub: after || null };
+    }
+    return { route: 'other', sub: null };
+  }
+
+  function syncRouteVisibility(detail) {
+    var st = getRouteState(detail);
+    var isMenuRoot = (st.route === 'menu' && !st.sub);
+    var docEl = document.documentElement;
+    var sa = document.getElementById('screen-atelier');
+    var sh = document.getElementById('screen-hub');
+
+    if (isMenuRoot) {
+      docEl.classList.remove('ui2-subroute');
+      if (rootEl) {
+        rootEl.hidden = false;
+        rootEl.style.display = 'flex';
+      }
+      if (sh) sh.setAttribute('hidden', '');
+      if (sa) {
+        if (currentTab === 'modes') sa.setAttribute('hidden', '');
+        else sa.removeAttribute('hidden');
+      }
+      setTimeout(function () {
+        try { window.dispatchEvent(new Event('resize')); } catch (e) {}
+      }, 30);
+    } else {
+      if (currentTab === 'garage' && Object.keys(pendingPatch).length > 0) {
+        pendingPatch = {};
+        if (CB.studio3d && typeof CB.studio3d.update === 'function' && CB.state && CB.state.get) {
+          try {
+            var b = CB.state.get();
+            var m = (CB.physics && CB.physics.compute) ? CB.physics.compute(b) : null;
+            CB.studio3d.update(b, m);
+          } catch (e) {}
+        }
+      }
+      docEl.classList.add('ui2-subroute');
+      if (rootEl) {
+        rootEl.hidden = true;
+        rootEl.style.display = 'none';
+      }
+      if (sa && st.route !== 'atelier') {
+        sa.setAttribute('hidden', '');
+      }
     }
   }
 
@@ -268,6 +436,7 @@
         '</button>' +
       '</nav>' +
       '<div class="ui2-header-meta">' +
+        '<button type="button" class="ui2-mute-btn" id="ui2-btn-mute" aria-label="Mute audio" aria-pressed="false" title="Mute / Unmute audio"></button>' +
         '<div class="ui2-driver-chip">' +
           '<span>DRIVER: <strong>' + esc(p.driverName || 'JUBAYER') + '</strong> · LV ' + (p.level || 2) + '</span>' +
         '</div>' +
@@ -278,6 +447,13 @@
       '</div>';
 
     // Hook click listeners
+    var muteBtn = $('ui2-btn-mute');
+    if (muteBtn) {
+      updateMuteButton(getAudioMuted());
+      muteBtn.onclick = function () {
+        applyAudioMuted(!getAudioMuted());
+      };
+    }
     var bHome = $('ui2-brand-home');
     if (bHome) bHome.onclick = function () { showView('home'); };
     var tHome = $('ui2-tab-home');
@@ -287,9 +463,45 @@
     var tGarage = $('ui2-tab-garage');
     if (tGarage) tGarage.onclick = function () { showView('garage'); };
     var tMp = $('ui2-tab-multiplayer');
-    if (tMp) tMp.onclick = function () { window.location.hash = '#/multiplayer'; };
+    if (tMp) tMp.onclick = function () { navigateTo('#/multiplayer'); };
     var tSet = $('ui2-tab-settings');
-    if (tSet) tSet.onclick = function () { window.location.hash = '#/settings'; };
+    if (tSet) tSet.onclick = function () { navigateTo('#/settings'); };
+  }
+
+  function renderMobileNav() {
+    if (!mobileNavEl) return;
+    mobileNavEl.innerHTML =
+      '<button type="button" class="ui2-mobile-tab-btn' + (currentTab === 'home' ? ' is-active' : '') + '" id="ui2-mtab-home">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>' +
+        '<span>HOME</span>' +
+      '</button>' +
+      '<button type="button" class="ui2-mobile-tab-btn' + (currentTab === 'modes' ? ' is-active' : '') + '" id="ui2-mtab-modes">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="8" cy="12" r="1.5"/><circle cx="16" cy="12" r="1.5"/></svg>' +
+        '<span>MODES</span>' +
+      '</button>' +
+      '<button type="button" class="ui2-mobile-tab-btn' + (currentTab === 'garage' ? ' is-active' : '') + '" id="ui2-mtab-garage">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>' +
+        '<span>GARAGE</span>' +
+      '</button>' +
+      '<button type="button" class="ui2-mobile-tab-btn' + (currentTab === 'multiplayer' ? ' is-active' : '') + '" id="ui2-mtab-multiplayer">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' +
+        '<span>MULTI</span>' +
+      '</button>' +
+      '<button type="button" class="ui2-mobile-tab-btn' + (currentTab === 'settings' ? ' is-active' : '') + '" id="ui2-mtab-settings">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>' +
+        '<span>SETTINGS</span>' +
+      '</button>';
+
+    var mHome = $('ui2-mtab-home');
+    if (mHome) mHome.onclick = function () { showView('home'); };
+    var mModes = $('ui2-mtab-modes');
+    if (mModes) mModes.onclick = function () { showView('modes'); };
+    var mGarage = $('ui2-mtab-garage');
+    if (mGarage) mGarage.onclick = function () { showView('garage'); };
+    var mMp = $('ui2-mtab-multiplayer');
+    if (mMp) mMp.onclick = function () { navigateTo('#/multiplayer'); };
+    var mSet = $('ui2-mtab-settings');
+    if (mSet) mSet.onclick = function () { navigateTo('#/settings'); };
   }
 
   function updateTabButtons() {
@@ -300,6 +512,11 @@
         if (t === currentTab) btn.classList.add('is-active');
         else btn.classList.remove('is-active');
       }
+      var mbtn = $('ui2-mtab-' + t);
+      if (mbtn) {
+        if (t === currentTab) mbtn.classList.add('is-active');
+        else mbtn.classList.remove('is-active');
+      }
     });
   }
 
@@ -307,8 +524,20 @@
      VIEW DISPATCHER
      ---------------------------------------------------------------------- */
   function showView(viewName) {
+    var prevTab = currentTab;
     currentTab = viewName;
     updateTabButtons();
+
+    if (prevTab === 'garage' && viewName !== 'garage' && Object.keys(pendingPatch).length > 0) {
+      pendingPatch = {};
+      if (CB.studio3d && typeof CB.studio3d.update === 'function' && CB.state && CB.state.get) {
+        try {
+          var b = CB.state.get();
+          var m = (CB.physics && CB.physics.compute) ? CB.physics.compute(b) : null;
+          CB.studio3d.update(b, m);
+        } catch (e) {}
+      }
+    }
 
     if (carouselEl) {
       carouselEl.style.display = (viewName === 'modes') ? 'none' : 'flex';
@@ -316,9 +545,11 @@
 
     var sa = document.getElementById('screen-atelier');
     if (sa) {
-      if (viewName === 'modes') {
+      var st = getRouteState();
+      var isMenuRoot = (st.route === 'menu' && !st.sub);
+      if (viewName === 'modes' || (!isMenuRoot && st.route !== 'atelier')) {
         sa.setAttribute('hidden', '');
-      } else {
+      } else if (isMenuRoot) {
         sa.removeAttribute('hidden');
       }
     }
@@ -360,9 +591,9 @@
       '</div>';
 
     // Hook buttons
-    $('ui2-btn-race-now').onclick = function () { window.location.hash = '#/race'; };
+    $('ui2-btn-race-now').onclick = function () { navigateTo('#/race'); };
     $('ui2-btn-tune').onclick = function () { showView('garage'); };
-    $('ui2-btn-test-drive').onclick = function () { window.location.hash = '#/timetrial'; };
+    $('ui2-btn-test-drive').onclick = function () { navigateTo('#/timetrial'); };
 
     refreshSpecPanel();
   }
@@ -387,63 +618,77 @@
     var drive = (build.drivetrain && build.drivetrain.drive) ? build.drivetrain.drive.toUpperCase() : (sp.d || 'RWD').toUpperCase();
     var styleName = (curModel.style || 'SUPERCAR').toUpperCase();
 
+    if (specCollapsed) specEl.classList.add('is-collapsed');
+    else specEl.classList.remove('is-collapsed');
+
     specEl.innerHTML =
-      '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+      '<div class="ui2-panel-hdr">' +
         '<span class="ui2-pi-tag">' + esc(pi) + '</span>' +
         '<span class="ui2-turntable-tag">TURNTABLE 3D</span>' +
+        '<button type="button" class="ui2-collapse-btn" id="ui2-toggle-spec" aria-expanded="' + (!specCollapsed) + '" aria-label="Toggle specs">' + (specCollapsed ? '&#9656; SPECS' : '&#9662;') + '</button>' +
       '</div>' +
       '<div class="ui2-car-headings">' +
         '<h2 class="ui2-car-title">' + esc(curModel.make + ' ' + curModel.name).toUpperCase() + '</h2>' +
         '<span class="ui2-car-subtitle">' + esc(styleName) + ' &middot; TRACK SPEC</span>' +
       '</div>' +
-      '<div class="ui2-spec-grid">' +
-        '<div class="ui2-spec-row">' +
-          '<div class="ui2-spec-item-left">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>' +
-            '<span>POWER</span>' +
+      '<div class="ui2-spec-body">' +
+        '<div class="ui2-spec-grid">' +
+          '<div class="ui2-spec-row">' +
+            '<div class="ui2-spec-item-left">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>' +
+              '<span>POWER</span>' +
+            '</div>' +
+            '<div class="ui2-spec-val">' + hp + ' HP</div>' +
           '</div>' +
-          '<div class="ui2-spec-val">' + hp + ' HP</div>' +
-        '</div>' +
-        '<div class="ui2-spec-row">' +
-          '<div class="ui2-spec-item-left">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>' +
-            '<span>TORQUE</span>' +
+          '<div class="ui2-spec-row">' +
+            '<div class="ui2-spec-item-left">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>' +
+              '<span>TORQUE</span>' +
+            '</div>' +
+            '<div class="ui2-spec-val">' + nm + ' NM</div>' +
           '</div>' +
-          '<div class="ui2-spec-val">' + nm + ' NM</div>' +
-        '</div>' +
-        '<div class="ui2-spec-row">' +
-          '<div class="ui2-spec-item-left">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 3v18M3 12h18"/></svg>' +
-            '<span>WEIGHT</span>' +
+          '<div class="ui2-spec-row">' +
+            '<div class="ui2-spec-item-left">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 3v18M3 12h18"/></svg>' +
+              '<span>WEIGHT</span>' +
+            '</div>' +
+            '<div class="ui2-spec-val">' + kg.toLocaleString() + ' KG</div>' +
           '</div>' +
-          '<div class="ui2-spec-val">' + kg.toLocaleString() + ' KG</div>' +
-        '</div>' +
-        '<div class="ui2-spec-row">' +
-          '<div class="ui2-spec-item-left">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>' +
-            '<span>TOP SPEED</span>' +
+          '<div class="ui2-spec-row">' +
+            '<div class="ui2-spec-item-left">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>' +
+              '<span>TOP SPEED</span>' +
+            '</div>' +
+            '<div class="ui2-spec-val">' + vmax + ' KM/H</div>' +
           '</div>' +
-          '<div class="ui2-spec-val">' + vmax + ' KM/H</div>' +
-        '</div>' +
-        '<div class="ui2-spec-row">' +
-          '<div class="ui2-spec-item-left">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>' +
-            '<span>0–100 KM/H</span>' +
+          '<div class="ui2-spec-row">' +
+            '<div class="ui2-spec-item-left">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>' +
+              '<span>0–100 KM/H</span>' +
+            '</div>' +
+            '<div class="ui2-spec-val">' + acc + ' S</div>' +
           '</div>' +
-          '<div class="ui2-spec-val">' + acc + ' S</div>' +
-        '</div>' +
-        '<div class="ui2-spec-row">' +
-          '<div class="ui2-spec-item-left">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/></svg>' +
-            '<span>DRIVETRAIN</span>' +
+          '<div class="ui2-spec-row">' +
+            '<div class="ui2-spec-item-left">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/></svg>' +
+              '<span>DRIVETRAIN</span>' +
+            '</div>' +
+            '<div class="ui2-spec-val">' + esc(drive) + '</div>' +
           '</div>' +
-          '<div class="ui2-spec-val">' + esc(drive) + '</div>' +
         '</div>' +
-      '</div>' +
-      '<div class="ui2-live-tag">' +
-        '<span class="ui2-live-dot"></span>' +
-        '<span>LIVE WEBGL 3D ROTATION</span>' +
+        '<div class="ui2-live-tag">' +
+          '<span class="ui2-live-dot"></span>' +
+          '<span>LIVE WEBGL 3D ROTATION</span>' +
+        '</div>' +
       '</div>';
+
+    var toggleSpec = $('ui2-toggle-spec');
+    if (toggleSpec) {
+      toggleSpec.onclick = function () {
+        specCollapsed = !specCollapsed;
+        refreshSpecPanel();
+      };
+    }
   }
 
   /* ----------------------------------------------------------------------
@@ -461,7 +706,7 @@
         : '<span class="ui2-badge-locked">🔒 LV ' + m.req + '</span>';
 
       return (
-        '<div class="ui2-mode-card ui2-glass-card' + (isUnlocked ? '' : ' is-locked') + '" data-mode="' + m.id + '" data-route="' + m.route + '">' +
+        '<div class="ui2-mode-card ui2-glass-card' + (isUnlocked ? '' : ' is-locked') + '" data-mode="' + m.id + '" data-route="' + m.route + '" data-locked="' + (isUnlocked ? '0' : '1') + '" data-req="' + m.req + '" data-title="' + esc(m.title) + '">' +
           '<div class="ui2-mode-hero-img" style="background-image:url(\'' + m.img + '\');">' +
             '<div class="ui2-mode-hero-overlay"></div>' +
             '<div class="ui2-mode-badge-top">' + badgeHtml + '</div>' +
@@ -500,16 +745,181 @@
     var cards = viewportEl.querySelectorAll('.ui2-mode-card');
     cards.forEach(function (card) {
       card.onclick = function () {
+        var locked = this.getAttribute('data-locked') === '1';
+        if (locked) {
+          var title = this.getAttribute('data-title') || 'MODE';
+          var req = this.getAttribute('data-req') || '2';
+          showToast(
+            title + ' LOCKED',
+            'Requires Driver Level ' + req + ' to unlock (Current: Level ' + curLvl + '). Earn XP in unlocked modes to level up.'
+          );
+          return;
+        }
         var route = this.getAttribute('data-route');
-        if (route) window.location.hash = route;
+        if (route) navigateTo(route);
       };
     });
   }
 
   /* ----------------------------------------------------------------------
-     VIEW 3: GARAGE & TUNING
+     VIEW 3: GARAGE & TUNING (REAL CB.state / CB.physics / CB.game.economy)
      ---------------------------------------------------------------------- */
   var activeCategory = 'power';
+
+  function getByPath(obj, path) {
+    var parts = String(path).split('.');
+    var cur = obj;
+    for (var i = 0; i < parts.length; i++) {
+      if (cur == null) return undefined;
+      cur = cur[parts[i]];
+    }
+    return cur;
+  }
+
+  function setPendingPath(path, val) {
+    var parts = String(path).split('.');
+    var cur = pendingPatch;
+    for (var i = 0; i < parts.length - 1; i++) {
+      if (!cur[parts[i]] || typeof cur[parts[i]] !== 'object') cur[parts[i]] = {};
+      cur = cur[parts[i]];
+    }
+    cur[parts[parts.length - 1]] = val;
+  }
+
+  function getPreviewBuild(baseBuild) {
+    if (!pendingPatch || !Object.keys(pendingPatch).length) return baseBuild;
+    var merged = (CB.util && CB.util.deepMerge)
+      ? CB.util.deepMerge(baseBuild, pendingPatch)
+      : JSON.parse(JSON.stringify(baseBuild));
+    if (CB.state && typeof CB.state.normalize === 'function') {
+      return CB.state.normalize(merged);
+    }
+    return merged;
+  }
+
+  function preview3DCar(build, metrics) {
+    if (CB.studio3d && typeof CB.studio3d.update === 'function') {
+      try { CB.studio3d.update(build, metrics); } catch (e) {}
+    }
+  }
+
+  function getGarageGroups(catId, build) {
+    var D = CB.data || {};
+    var eng = build.engine || {};
+    var drv = build.drivetrain || {};
+    if (catId === 'power') {
+      if (eng.type === 'ev') {
+        return [
+          { title: 'E-MOTORS', path: 'engine.motors', type: 'options', options: [
+            { id: 1, name: '1 Motor' }, { id: 2, name: '2 Motors' }, { id: 3, name: '3 Motors' }, { id: 4, name: '4 Motors' }
+          ] },
+          { title: 'MOTOR POWER', path: 'engine.motorPower_kw', type: 'options', options: [
+            { id: 150, name: '150 kW' }, { id: 250, name: '250 kW' }, { id: 360, name: '360 kW' }, { id: 500, name: '500 kW' }
+          ] },
+          { title: 'BATTERY CHEMISTRY', path: 'engine.chemistry', type: 'options', options: D.batteryChemistries || [] },
+          { title: 'ARCHITECTURE', path: 'engine.voltage', type: 'options', options: D.voltages || [] },
+          { title: 'THERMAL COOLING', path: 'engine.cooling', type: 'options', options: D.coolings || [] }
+        ];
+      }
+      return [
+        { title: 'ECU CALIBRATION', path: 'engine.tune', type: 'options', options: D.tunes || [] },
+        { title: 'INDUCTION', path: 'engine.aspiration', type: 'options', options: D.aspirations || [] },
+        { title: 'EXHAUST SYSTEM', path: 'engine.exhaust', type: 'options', options: D.exhausts || [] },
+        { title: 'COOLING', path: 'engine.cooling', type: 'options', options: D.coolings || [] }
+      ];
+    }
+    if (catId === 'brakes') {
+      return [
+        { title: 'BRAKE ROTORS', path: 'brakes.material', type: 'options', options: D.brakeMaterials || [] },
+        { title: 'ABS CALIBRATION', path: 'brakes.abs', type: 'options', options: D.absModes || [] },
+        { title: 'TIRE COMPOUND', path: 'tires.compound', type: 'options', options: D.tireCompounds || [] },
+        { title: 'WHEEL MATERIAL', path: 'wheels.material', type: 'options', options: D.wheelMaterials || [] }
+      ];
+    }
+    if (catId === 'suspension') {
+      var diffPath = drv.layout === 'fwd' ? 'drivetrain.frontDiff' : 'drivetrain.rearDiff';
+      var diffs = (D.differentials || []).filter(function (d) { return d.id !== 'none'; });
+      return [
+        { title: 'SUSPENSION TYPE', path: 'suspension.type', type: 'options', options: D.suspensionTypes || [] },
+        { title: 'RIDE HEIGHT', path: 'suspension.rideHeight_mm', type: 'options', options: [
+          { id: 75, name: '75 mm (Track)' },
+          { id: 100, name: '100 mm (Sport)' },
+          { id: 120, name: '120 mm (Street)' },
+          { id: 160, name: '160 mm (Raised)' }
+        ] },
+        { title: 'DAMPING STIFFNESS', path: 'suspension.damping', type: 'options', options: [
+          { id: 2, name: 'Soft (2)' },
+          { id: 5, name: 'Street (5)' },
+          { id: 8, name: 'Track (8)' },
+          { id: 10, name: 'Race (10)' }
+        ] },
+        { title: 'DIFFERENTIAL', path: diffPath, type: 'options', options: diffs }
+      ];
+    }
+    if (catId === 'aero') {
+      var aeroData = D.aero || {};
+      return [
+        { title: 'FRONT SPLITTER', path: 'aero.splitter', type: 'options', options: aeroData.splitters || [] },
+        { title: 'REAR WING', path: 'aero.wing', type: 'options', options: aeroData.wings || [] },
+        { title: 'REAR DIFFUSER', path: 'aero.diffuser', type: 'options', options: aeroData.diffusers || [] },
+        { title: 'AERO PACKAGES', type: 'toggles', options: [
+          { path: 'aero.canards', name: 'Front Canards' },
+          { path: 'aero.sideSkirts', name: 'Side Skirts' },
+          { path: 'aero.activeAero', name: 'Active Aero' }
+        ] }
+      ];
+    }
+    if (catId === 'weight') {
+      return [
+        { title: 'CHASSIS MATERIAL', path: 'body.chassisMaterial', type: 'options', options: D.chassisMaterials || [] },
+        { title: 'BODY CONSTRUCTION', path: 'body.construction', type: 'options', options: D.constructions || [] },
+        { title: 'WINDOW GLASS', path: 'weight.glass', type: 'options', options: D.glassTypes || [] },
+        { title: '12V BATTERY', path: 'weight.battery', type: 'options', options: D.batteryTypes || [] },
+        { title: 'ROLL CAGE', path: 'weight.rollCage', type: 'options', options: D.rollCages || [] },
+        { title: 'INTERIOR STRIP', type: 'toggles', options: [
+          { path: 'weight.soundDeadening', name: 'Sound Deadening' },
+          { path: 'weight.rearSeats', name: 'Rear Seats' }
+        ] }
+      ];
+    }
+    // livery
+    return [
+      { title: 'EXTERIOR PAINT', path: 'exterior.paint', type: 'swatches', options: D.paintSwatches || [] },
+      { title: 'PAINT FINISH', path: 'exterior.finish', type: 'options', options: D.paintFinishes || [] },
+      { title: 'RACING STRIPES', path: 'exterior.stripe', type: 'options', options: D.stripes || [] },
+      { title: 'ROOF PANEL', path: 'exterior.roof', type: 'options', options: D.roofTypes || [] },
+      { title: 'WHEEL DESIGN', path: 'wheels.design', type: 'options', options: D.wheelDesigns || [] }
+    ];
+  }
+
+  function formatDeltaRow(label, beforeVal, afterVal, unit, decimals, lowerIsBetter) {
+    var b = Number(beforeVal);
+    var a = Number(afterVal);
+    if (!isFinite(b)) b = 0;
+    if (!isFinite(a)) a = b;
+    var diff = a - b;
+    var factor = Math.pow(10, decimals || 0);
+    var bFmt = decimals ? b.toFixed(decimals) : Math.round(b);
+    var aFmt = decimals ? a.toFixed(decimals) : Math.round(a);
+    var dRounded = Math.round(diff * factor) / factor;
+    var hasDiff = Math.abs(dRounded) > (decimals ? 0.001 : 0);
+    var cls = '';
+    var dStr = '—';
+    if (hasDiff) {
+      var good = lowerIsBetter ? (dRounded < 0) : (dRounded > 0);
+      cls = good ? 'delta-green' : 'delta-red';
+      dStr = (dRounded > 0 ? '+' : '') + (decimals ? dRounded.toFixed(decimals) : dRounded);
+    }
+    return (
+      '<div class="ui2-delta-item">' +
+        '<span class="ui2-delta-label">' + esc(label) + '</span>' +
+        '<div class="ui2-delta-calc">' +
+          '<span>' + bFmt + ' &rarr; ' + aFmt + ' ' + esc(unit) + '</span>' +
+          '<span class="' + cls + '">' + dStr + '</span>' +
+        '</div>' +
+      '</div>'
+    );
+  }
 
   function renderGarageView() {
     var categories = [
@@ -530,76 +940,215 @@
       );
     }).join('');
 
-    // Calculate before-and-after upgrades
-    var build = (CB.state && CB.state.get) ? CB.state.get() : {};
-    var curMetrics = (CB.physics && CB.physics.compute) ? CB.physics.compute(build) : {};
+    var baseBuild = (CB.state && CB.state.get) ? CB.state.get() : {};
+    var previewBuild = getPreviewBuild(baseBuild);
+    var curMetrics = (CB.physics && CB.physics.compute) ? CB.physics.compute(baseBuild) : {};
+    var nextMetrics = (CB.physics && CB.physics.compute) ? CB.physics.compute(previewBuild) : curMetrics;
 
-    // Simulate next upgrade stage if possible
-    var nextHp = Math.round((curMetrics.power_hp || 450) + 45);
-    var nextNm = Math.round((curMetrics.torque_nm || 530) + 35);
-    var nextKg = Math.round((curMetrics.weight_kg || 1450) - 30);
-    var nextVmax = Math.round((curMetrics.topSpeed_kph || 308) + 12);
+    var econ = (CB.game && CB.game.economy) ? CB.game.economy : null;
+    var prof = getProfile();
+    var dev = !!(CB.isDevUnlock && CB.isDevUnlock());
+    var curLvl = (prof && prof.level) ? prof.level : 1;
+
+    var quote = (econ && typeof econ.upgradeQuote === 'function')
+      ? econ.upgradeQuote(baseBuild, previewBuild)
+      : { total: 0, changes: 0 };
+    var hasChanges = JSON.stringify(baseBuild) !== JSON.stringify(previewBuild);
+    var cost = dev ? 0 : Math.max(0, Math.round(quote.total || 0));
+
+    var groups = getGarageGroups(activeCategory, previewBuild);
+    var partsHtml = groups.map(function (grp) {
+      if (grp.type === 'swatches') {
+        var curPaint = String(getByPath(previewBuild, grp.path) || '').toLowerCase();
+        var swHtml = (grp.options || []).map(function (sw) {
+          var isSel = String(sw.hex).toLowerCase() === curPaint;
+          return (
+            '<button type="button" class="ui2-swatch-btn' + (isSel ? ' is-active' : '') + '" ' +
+              'data-path="' + esc(grp.path) + '" data-val="' + esc(sw.hex) + '" data-valtype="string" ' +
+              'title="' + esc(sw.name) + '" aria-label="' + esc(sw.name) + '" ' +
+              'style="background-color:' + esc(sw.hex) + ';"></button>'
+          );
+        }).join('');
+        return (
+          '<div class="ui2-part-group">' +
+            '<div class="ui2-part-group-title">' + esc(grp.title) + '</div>' +
+            '<div class="ui2-swatch-grid">' + swHtml + '</div>' +
+          '</div>'
+        );
+      }
+
+      if (grp.type === 'toggles') {
+        var tgHtml = (grp.options || []).map(function (tg) {
+          var isOn = !!getByPath(previewBuild, tg.path);
+          var fUnlocked = dev || isOn || !econ || typeof econ.isFeatureUnlocked !== 'function' || econ.isFeatureUnlocked(prof, tg.path);
+          var fReqLvl = (!fUnlocked && econ && typeof econ.featureUnlockLevel === 'function') ? econ.featureUnlockLevel(tg.path) : 1;
+          var tgBadge = !fUnlocked
+            ? '<span class="ui2-part-lock">🔒 LV ' + fReqLvl + '</span>'
+            : '<span class="ui2-part-tag">' + (isOn ? 'ON' : 'OFF') + '</span>';
+          return (
+            '<button type="button" class="ui2-part-pill' + (isOn ? ' is-active' : '') + (fUnlocked ? '' : ' is-locked') + '" ' +
+              'data-path="' + esc(tg.path) + '" data-val="' + (isOn ? '0' : '1') + '" data-valtype="bool" ' +
+              'data-locked="' + (fUnlocked ? '0' : '1') + '" data-req="' + fReqLvl + '" data-name="' + esc(tg.name) + '">' +
+              '<span class="ui2-part-name">' + esc(tg.name) + '</span>' +
+              tgBadge +
+            '</button>'
+          );
+        }).join('');
+        return (
+          '<div class="ui2-part-group">' +
+            '<div class="ui2-part-group-title">' + esc(grp.title) + '</div>' +
+            '<div class="ui2-part-pills">' + tgHtml + '</div>' +
+          '</div>'
+        );
+      }
+
+      var curVal = getByPath(previewBuild, grp.path);
+      var optsHtml = (grp.options || []).map(function (opt) {
+        var isNum = typeof opt.id === 'number';
+        var isSel = isNum ? (Number(curVal) === opt.id) : (String(curVal) === String(opt.id));
+        var unlocked = dev || !econ || typeof econ.isUnlocked !== 'function' || econ.isUnlocked(prof, grp.path, opt.id);
+        var reqLvl = (!unlocked && econ && typeof econ.partUnlockLevel === 'function') ? econ.partUnlockLevel(grp.path, opt.id) : 1;
+        var partCr = (!dev && econ && typeof econ.partCost === 'function') ? econ.partCost(grp.path, opt.id) : 0;
+        var badge = !unlocked
+          ? '<span class="ui2-part-lock">🔒 LV ' + reqLvl + '</span>'
+          : (isSel ? '<span class="ui2-part-tag">ACTIVE</span>' : (partCr > 0 ? '<span class="ui2-part-cost">CR ' + partCr.toLocaleString() + '</span>' : ''));
+        return (
+          '<button type="button" class="ui2-part-pill' + (isSel ? ' is-active' : '') + (unlocked ? '' : ' is-locked') + '" ' +
+            'data-path="' + esc(grp.path) + '" data-val="' + esc(opt.id) + '" data-valtype="' + (isNum ? 'number' : 'string') + '" ' +
+            'data-locked="' + (unlocked ? '0' : '1') + '" data-req="' + reqLvl + '" data-name="' + esc(opt.name) + '">' +
+            '<span class="ui2-part-name">' + esc(opt.name) + '</span>' +
+            badge +
+          '</button>'
+        );
+      }).join('');
+
+      return (
+        '<div class="ui2-part-group">' +
+          '<div class="ui2-part-group-title">' + esc(grp.title) + '</div>' +
+          '<div class="ui2-part-pills">' + optsHtml + '</div>' +
+        '</div>'
+      );
+    }).join('');
+
+    var piBefore = computePI(curMetrics);
+    var piAfter = computePI(nextMetrics);
+    var piLabel = hasChanges ? (piBefore + ' → ' + piAfter) : piBefore;
+    var applyLabel = !hasChanges
+      ? 'SELECT PARTS TO UPGRADE'
+      : (dev ? 'APPLY UPGRADES (FREE · DEV)' : (cost > 0 ? 'APPLY UPGRADES (CR ' + cost.toLocaleString() + ')' : 'APPLY CHANGES (FREE)'));
 
     viewportEl.innerHTML =
       '<div class="ui2-garage-container">' +
-        '<div class="ui2-garage-sidebar">' +
-          '<div class="ui2-tune-categories-header">TUNING CATEGORIES</div>' +
-          sideHtml +
+        '<div class="ui2-garage-sidebar ui2-glass-card' + (garageCatsCollapsed ? ' is-collapsed' : '') + '" id="ui2-garage-sidebar">' +
+          '<div class="ui2-panel-hdr">' +
+            '<div class="ui2-tune-categories-header">TUNING &amp; PARTS</div>' +
+            '<button type="button" class="ui2-collapse-btn" id="ui2-toggle-garage-cats" aria-expanded="' + (!garageCatsCollapsed) + '" aria-label="Toggle tuning categories">' + (garageCatsCollapsed ? '&#9656;' : '&#9662;') + '</button>' +
+          '</div>' +
+          '<div class="ui2-garage-cats-list">' +
+            sideHtml +
+          '</div>' +
+          '<div class="ui2-garage-parts" id="ui2-garage-parts">' +
+            partsHtml +
+          '</div>' +
         '</div>' +
-        '<div class="ui2-tune-panel-right ui2-glass-card">' +
-          '<div style="display:flex;justify-content:space-between;align-items:center;">' +
-            '<span class="ui2-perf-preview-title">PERFORMANCE IMPROVEMENT</span>' +
-            '<span class="ui2-pi-tag">STAGE 2 UPGRADE</span>' +
+        '<div class="ui2-tune-panel-right ui2-glass-card' + (garageTuneCollapsed ? ' is-collapsed' : '') + '" id="ui2-garage-tune-panel">' +
+          '<div class="ui2-panel-hdr">' +
+            '<span class="ui2-perf-preview-title">LIVE TELEMETRY DELTA</span>' +
+            '<span class="ui2-pi-tag">' + esc(piLabel) + '</span>' +
+            '<button type="button" class="ui2-collapse-btn" id="ui2-toggle-garage-tune" aria-expanded="' + (!garageTuneCollapsed) + '" aria-label="Toggle performance preview">' + (garageTuneCollapsed ? '&#9656;' : '&#9662;') + '</button>' +
           '</div>' +
-          '<div style="display:flex;flex-direction:column;gap:4px;margin-top:6px;">' +
-            '<div class="ui2-delta-item">' +
-              '<span class="ui2-delta-label">HORSEPOWER</span>' +
-              '<div class="ui2-delta-calc">' +
-                '<span>' + Math.round(curMetrics.power_hp || 450) + ' &rarr; ' + nextHp + ' HP</span>' +
-                '<span class="delta-green">+45</span>' +
-              '</div>' +
+          '<div class="ui2-garage-tune-body">' +
+            '<div class="ui2-delta-list">' +
+              formatDeltaRow('HORSEPOWER', curMetrics.power_hp, nextMetrics.power_hp, 'HP', 0, false) +
+              formatDeltaRow('TORQUE', curMetrics.torque_nm, nextMetrics.torque_nm, 'NM', 0, false) +
+              formatDeltaRow('CURB WEIGHT', curMetrics.weight_kg, nextMetrics.weight_kg, 'KG', 0, true) +
+              formatDeltaRow('TOP SPEED', curMetrics.topSpeed_kph, nextMetrics.topSpeed_kph, 'KM/H', 0, false) +
+              formatDeltaRow('0–100 KM/H', curMetrics.zeroTo100_s, nextMetrics.zeroTo100_s, 'S', 2, true) +
+              formatDeltaRow('LATERAL GRIP', curMetrics.lateralG, nextMetrics.lateralG, 'G', 2, false) +
+              formatDeltaRow('100–0 BRAKING', curMetrics.brakingDist_100_0_m, nextMetrics.brakingDist_100_0_m, 'M', 1, true) +
+              formatDeltaRow('DOWNFORCE @200', curMetrics.downforce_kg_200, nextMetrics.downforce_kg_200, 'KG', 0, false) +
             '</div>' +
-            '<div class="ui2-delta-item">' +
-              '<span class="ui2-delta-label">TORQUE</span>' +
-              '<div class="ui2-delta-calc">' +
-                '<span>' + Math.round(curMetrics.torque_nm || 530) + ' &rarr; ' + nextNm + ' NM</span>' +
-                '<span class="delta-green">+35</span>' +
-              '</div>' +
+            '<div class="ui2-garage-actions">' +
+              '<button type="button" class="ui2-btn-race ui2-btn-block" id="ui2-btn-apply-upgrades"' + (hasChanges ? '' : ' disabled') + '>' +
+                '<span>' + esc(applyLabel) + '</span>' +
+              '</button>' +
+              '<button type="button" class="ui2-btn-secondary" id="ui2-garage-back">&larr; BACK TO SHOWROOM</button>' +
             '</div>' +
-            '<div class="ui2-delta-item">' +
-              '<span class="ui2-delta-label">CURB WEIGHT</span>' +
-              '<div class="ui2-delta-calc">' +
-                '<span>' + Math.round(curMetrics.weight_kg || 1450) + ' &rarr; ' + nextKg + ' KG</span>' +
-                '<span class="delta-green">-30</span>' +
-              '</div>' +
-            '</div>' +
-            '<div class="ui2-delta-item">' +
-              '<span class="ui2-delta-label">TOP SPEED</span>' +
-              '<div class="ui2-delta-calc">' +
-                '<span>' + Math.round(curMetrics.topSpeed_kph || 308) + ' &rarr; ' + nextVmax + ' KM/H</span>' +
-                '<span class="delta-green">+12</span>' +
-              '</div>' +
-            '</div>' +
-          '</div>' +
-          '<div style="margin-top:auto;display:flex;flex-direction:column;gap:8px;">' +
-            '<button class="ui2-btn-race ui2-btn-block" id="ui2-btn-apply-upgrades">' +
-              '<span>APPLY UPGRADES (CR 24,500)</span>' +
-            '</button>' +
-            '<button class="ui2-btn-secondary" id="ui2-garage-back">&larr; BACK TO SHOWROOM</button>' +
           '</div>' +
         '</div>' +
       '</div>';
 
+    var tCats = $('ui2-toggle-garage-cats');
+    if (tCats) {
+      tCats.onclick = function () {
+        garageCatsCollapsed = !garageCatsCollapsed;
+        renderGarageView();
+      };
+    }
+    var tTune = $('ui2-toggle-garage-tune');
+    if (tTune) {
+      tTune.onclick = function () {
+        garageTuneCollapsed = !garageTuneCollapsed;
+        renderGarageView();
+      };
+    }
     $('ui2-garage-back').onclick = function () { showView('home'); };
+
     $('ui2-btn-apply-upgrades').onclick = function () {
-      alert('Upgrades applied successfully! Vehicle performance upgraded.');
-      showView('home');
+      if (!hasChanges) return;
+      if (!dev && cost > 0 && CB.game && CB.game.profile) {
+        if (typeof CB.game.profile.canAfford === 'function' && !CB.game.profile.canAfford(cost)) {
+          showToast('INSUFFICIENT CREDITS', 'Need CR ' + cost.toLocaleString() + ' to apply these upgrades.');
+          return;
+        }
+        if (typeof CB.game.profile.spend === 'function') {
+          var ok = CB.game.profile.spend(cost, 'Garage Upgrade', 'upgrade');
+          if (!ok) {
+            showToast('INSUFFICIENT CREDITS', 'Could not deduct CR ' + cost.toLocaleString() + '.');
+            return;
+          }
+        }
+      }
+      var patchToApply = JSON.parse(JSON.stringify(pendingPatch));
+      pendingPatch = {};
+      if (CB.state && typeof CB.state.patch === 'function') {
+        CB.state.patch(patchToApply, { label: 'Garage Upgrade' });
+      }
+      renderTopBar();
+      showToast(
+        'UPGRADES APPLIED',
+        (!dev && cost > 0)
+          ? ('Spent CR ' + cost.toLocaleString() + ' on vehicle upgrades.')
+          : 'Vehicle specification updated.'
+      );
+      renderGarageView();
     };
 
     var catBtns = viewportEl.querySelectorAll('.ui2-tune-category-btn');
     catBtns.forEach(function (btn) {
       btn.onclick = function () {
         activeCategory = this.getAttribute('data-cat');
+        renderGarageView();
+      };
+    });
+
+    var partBtns = viewportEl.querySelectorAll('.ui2-part-pill, .ui2-swatch-btn');
+    partBtns.forEach(function (btn) {
+      btn.onclick = function () {
+        if (this.getAttribute('data-locked') === '1') {
+          var name = this.getAttribute('data-name') || 'PART';
+          var req = this.getAttribute('data-req') || '2';
+          showToast(name + ' LOCKED', 'Requires Driver Level ' + req + ' (Current: Level ' + curLvl + ').');
+          return;
+        }
+        var p = this.getAttribute('data-path');
+        var raw = this.getAttribute('data-val');
+        var vt = this.getAttribute('data-valtype');
+        var val = vt === 'number' ? Number(raw) : (vt === 'bool' ? (raw === '1') : raw);
+        setPendingPath(p, val);
+        var nextB = getPreviewBuild(baseBuild);
+        var nextM = (CB.physics && CB.physics.compute) ? CB.physics.compute(nextB) : null;
+        preview3DCar(nextB, nextM);
         renderGarageView();
       };
     });
@@ -627,9 +1176,12 @@
         ? '<span class="ui2-thumb-lock-badge">🔒 LV ' + lockInfo.level + '</span>'
         : '<span class="ui2-status-ready">READY</span>';
 
-      // Vector side-profile preview
+      // Vector side-profile preview with stock paint & finish
+      var thumbBuild = (sp && sp.p && sp.p[0])
+        ? { body: { model: m.id, style: m.style }, exterior: { paint: sp.p[0], finish: sp.p[1] || 'metallic' } }
+        : { body: { model: m.id, style: m.style } };
       var svgPreview = (CB.render && typeof CB.render.thumbnail === 'function')
-        ? CB.render.thumbnail({ body: { model: m.id, style: m.style } }, { spin: false })
+        ? CB.render.thumbnail(thumbBuild, { spin: false })
         : '';
 
       return (
@@ -705,6 +1257,10 @@
 
   function selectCarById(modelId) {
     if (!modelId) return;
+    if (CB.stock && typeof CB.stock.has === 'function' && CB.stock.has(modelId) && typeof CB.stock.run === 'function') {
+      CB.stock.run({ model: modelId });
+      return;
+    }
     if (CB.state && typeof CB.state.applyModel === 'function') {
       CB.state.applyModel(modelId);
       var sp = getStock(modelId);

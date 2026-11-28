@@ -425,7 +425,7 @@ var CB = (globalThis.CB = globalThis.CB || {});
     var r = navRoute();
     var backBtn = nav.querySelector('#gnav-back-pill');
     if (backBtn) {
-      var isMenu = !r || r === 'menu';
+      var isMenu = (!r || r === 'menu') && !(cur && cur.sub);
       backBtn.style.display = isMenu ? 'none' : 'inline-flex';
     }
     Array.prototype.forEach.call(nav.querySelectorAll('[data-nav-route]'), function (a) {
