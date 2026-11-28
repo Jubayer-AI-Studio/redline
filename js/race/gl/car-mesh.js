@@ -1810,21 +1810,25 @@ var CB = (globalThis.CB = globalThis.CB || {});
       }
     }
   }
-  function numberDecals(S, G, hasTex) {
-    var sizeY = clamp((S.beltY - S.rh) * 0.88, 0.38, 0.65);
-    var sizeX = sizeY * 2.0; // 2:1 aspect ratio for official door decal
-    var xc = S.doorMid, yc = lerp(S.rh, S.beltY, 0.50);
+  function numberDecals(S, G, hasTex, minDoorZ) {
+    var sizeY = clamp((S.beltY - S.rh) * 0.88, 0.34, 0.56);
+    var sizeX = sizeY * 2.1; // 2.1:1 aspect ratio for official door decal
+    var xc = S.doorMid, yc = lerp(S.rh, S.beltY, 0.48);
     var drawn = false;
 
     // 1. Both Doors: Exact As-Sunnah Door Decal (top half of atlas)
     function sideDecal(side) {
       var rows = [], n = 6;
+      var zCenter = sideAt(S, xc, yc);
+      if (zCenter === null) zCenter = (S.W ? S.W * 0.48 : 0.95);
+      var zFloor = minDoorZ ? Math.max(zCenter, minDoorZ) : zCenter * 0.96;
       for (var i = 0; i <= n; i++) {
         var x = xc + sizeX / 2 - sizeX * i / n, row = [];
         for (var j = 0; j <= n; j++) {
           var y = yc + sizeY / 2 - sizeY * j / n, z = sideAt(S, x, y);
-          if (z === null) z = (S.W ? S.W * 0.48 : 0.95);
-          row.push([x, y, (z + 0.007) * side]);
+          if (z === null) z = zCenter;
+          // Keep decal proud of curved door panels so body triangles never clip through it
+          row.push([x, y, (Math.max(z, zFloor) + 0.016) * side]);
         }
         rows.push(row);
       }
@@ -2332,7 +2336,7 @@ var CB = (globalThis.CB = globalThis.CB || {});
       grille: material({ name: 'grille', roughness: 0.5, metallic: 0.1, clearcoat: 0.1 }),
       interior: material({ name: 'interior', roughness: 0.85, metallic: 0 }),
       driver: material({ name: 'driver', roughness: 0.35, metallic: 0.1, clearcoat: 0.8 }),
-      decal: material({ name: 'decal', roughness: 0.3, clearcoat: 1, alphaTest: 0.5, polygonOffset: [-1, -2] }),
+      decal: material({ name: 'decal', roughness: 0.3, clearcoat: 1, alphaTest: 0.5, polygonOffset: [-4, -4] }),
       // number plate (textured plates only): semi-gloss laminated plate, the albedo lives in the map (~0.62 linear)
       plate: material({ name: 'plate', roughness: 0.35, metallic: 0, clearcoat: 0.5 }),
       tyre: material({ name: 'tyre', color: [0.66, 0.66, 0.66, 1], roughness: 0.9, metallic: 0 }),
@@ -4711,23 +4715,6 @@ var CB = (globalThis.CB = globalThis.CB || {});
       parts.push(p);
     });
 
-    // Attach Official As-Sunnah Livery Decals (both doors + hood + roof) to lowpoly car
-    try {
-      var Gdec = { decal: new Geo() };
-      numberDecals(S, Gdec, true);
-      if (Gdec.decal && Gdec.decal.count > 0) {
-        parts.push({
-          geo: Gdec.decal,
-          material: { name: 'decal', baseColor: [1, 1, 1, 1], color: [1, 1, 1, 1], uBaseColor: [1, 1, 1, 1], roughness: 0.6, metallic: 0 },
-          kind: 'decal',
-          local: m4(),
-          castShadow: false,
-          attach: 'body',
-          texture: 'number'
-        });
-        tris += Gdec.decal.count / 3;
-      }
-    } catch (eDec) {}
     var A = lp.anchors || {};
     A.wheels = A.wheels || [];
     var d = lp.dims, sm = shapeModel;

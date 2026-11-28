@@ -1295,6 +1295,17 @@ var CB = (globalThis.CB = globalThis.CB || {});
       if (!p.positions || !p.positions.length) continue;
       var mesh = G.createMesh(ctx, { positions: p.positions, normals: p.normals, colors: p.colors, colorSize: 4, uvs: p.uvs, indices: p.indices });
       var mat = /^light-/.test(p.kind) ? lightMaterial(p) : p.material;
+      if (p.texture === 'number' && CB.gl && CB.gl.textures && typeof CB.gl.textures.carNumber === 'function') {
+        try {
+          var nt = CB.gl.textures.carNumber(ctx);
+          if (nt) {
+            var mm = {}, mk;
+            for (mk in mat) mm[mk] = mat[mk];
+            mm.map = nt;
+            mat = mm;
+          }
+        } catch (eTex) {}
+      }
       var it = { mesh: mesh, material: mat, model: M4.create(), part: p, castShadow: false };
       items.push(it);
       refl.push({ mesh: mesh, material: mat, model: M4.create(), part: p, castShadow: false });

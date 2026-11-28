@@ -1663,44 +1663,34 @@
     g.fillStyle = '#ea580c';
     g.fillRect(dx + 6, dy + dh - 6 - Math.max(4, W * 0.012), dw - 12, Math.max(4, W * 0.012));
 
-    // Logo Emblem Mark (Left icon)
-    var iconX = dx + dw * 0.14, iconY = dy + dh * 0.44, iconR = dh * 0.32;
+    // Logo Emblem Mark (Left icon — purple & orange S-arrow matching As-Sunnah logo)
+    var iconX = dx + dw * 0.14, iconY = dy + dh * 0.50, iconR = dh * 0.34;
     g.beginPath();
     g.arc(iconX, iconY, iconR, 0, Math.PI * 2);
-    g.fillStyle = '#f8fafc';
+    g.fillStyle = '#ffffff';
     g.fill();
-    g.strokeStyle = '#6366f1';
-    g.lineWidth = 3;
-    g.stroke();
-
-    // Stylized swirl ribbons
     g.beginPath();
-    g.arc(iconX - iconR * 0.15, iconY, iconR * 0.6, -0.6 * Math.PI, 0.6 * Math.PI);
-    g.lineWidth = iconR * 0.38;
-    g.strokeStyle = '#7c3aed';
+    g.arc(iconX - iconR * 0.12, iconY - iconR * 0.12, iconR * 0.55, -0.7 * Math.PI, 0.45 * Math.PI);
+    g.lineWidth = iconR * 0.42;
+    g.strokeStyle = '#6d28d9';
     g.lineCap = 'round';
     g.stroke();
     g.beginPath();
-    g.arc(iconX + iconR * 0.15, iconY, iconR * 0.6, 0.4 * Math.PI, 1.6 * Math.PI);
+    g.arc(iconX + iconR * 0.12, iconY + iconR * 0.12, iconR * 0.55, 0.3 * Math.PI, 1.45 * Math.PI);
     g.strokeStyle = '#ea580c';
     g.stroke();
 
     // Typography
-    var textX = dx + dw * 0.30;
+    var textX = dx + dw * 0.28;
     g.textAlign = 'left';
     g.textBaseline = 'middle';
-    g.font = '900 ' + Math.round(W * 0.060) + 'px "Arial Black", sans-serif';
+    g.font = '900 ' + Math.round(W * 0.068) + 'px "Arial Black", sans-serif';
     g.fillStyle = '#1e3a8a';
-    g.fillText('AS-SUNNAH', textX, dy + dh * 0.30);
+    g.fillText('AS-SUNNAH', textX, dy + dh * 0.36);
 
-    g.font = '800 ' + Math.round(W * 0.030) + 'px sans-serif';
+    g.font = '800 ' + Math.round(W * 0.036) + 'px sans-serif';
     g.fillStyle = '#ea580c';
-    g.fillText('SKILL DEVELOPMENT INSTITUTE', textX, dy + dh * 0.52);
-
-    // Pilot badge inside door decal
-    g.font = '900 ' + Math.round(W * 0.034) + 'px sans-serif';
-    g.fillStyle = '#0f172a';
-    g.fillText('PILOT: ' + String(pilotName).toUpperCase(), textX, dy + dh * 0.76);
+    g.fillText('SKILL DEVELOPMENT', textX, dy + dh * 0.68);
     g.restore();
 
     // Bottom Half [0, W * 0.5, W, W * 0.5]: Official Bonnet/Hood Emblem (Circular Crest)

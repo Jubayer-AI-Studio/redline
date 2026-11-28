@@ -1779,6 +1779,19 @@ var CB = (globalThis.CB = globalThis.CB || {});
       pushPart(A.tail, 'light-brake', 'tail', { castShadow: false });
       pushPart(A.rev, 'light-rev', 'rev', { castShadow: false });
       if (B.wing) pushPart(B.wing.acc, 'wing', 'wing', { wing: { pivot: B.wing.pivot, active: B.wing.active, base: B.wing.base } });
+      if (B.doorDecal && B.doorDecal.i.length) {
+        out.push({
+          kind: 'decal', mat: 'decal',
+          material: { name: 'decal', baseColor: [1, 1, 1, 1], color: [1, 1, 1, 1], uBaseColor: [1, 1, 1, 1], roughness: 0.3, metallic: 0, clearcoat: 0.8, alphaTest: 0.5, polygonOffset: [-4, -4] },
+          positions: new Float32Array(B.doorDecal.p),
+          normals: new Float32Array(B.doorDecal.n),
+          colors: new Float32Array(B.doorDecal.c),
+          uvs: new Float32Array(B.doorDecal.uvs),
+          indices: new Uint16Array(B.doorDecal.i),
+          attach: 'body', castShadow: false, transparent: false, texture: 'number',
+          triangles: B.doorDecal.i.length / 3, vertexCount: B.doorDecal.p.length / 3
+        });
+      }
       wheelParts.forEach(function (info) {
         var g = geoFor(info.front), base = { attach: 'wheel', wheel: info };
         var tyre = info.side < 0 ? mirrorAcc(g.tyre) : g.tyre, rim = info.side < 0 ? mirrorAcc(g.rim) : g.rim;
@@ -2271,49 +2284,30 @@ var CB = (globalThis.CB = globalThis.CB || {});
     void SH;
     // ---- Official As-Sunnah Racing Livery on Doors and Hood
     var xd = lerp(aR.x + aR.r, aF.x - aF.r, 0.58), yTop = Math.max(aF.cy + aF.r, aR.cy + aR.r), yd = lerp(yTop, Sh.beltY, 0.48);
-    var hBox = clamp((Sh.beltY - yTop) * 0.38, 0.11, 0.22);
-    var wBox = hBox * 2.3;
+    var hBox = clamp((Sh.beltY - yTop) * 0.55, 0.14, 0.24);
+    var wBox = hBox * 2.1;
     var zd = Sh.sideZ(xd, yd);
     if (zd !== null && hBox > 0.05) {
+      var zF = Sh.sideZ(xd + wBox * 0.85, yd) || zd;
+      var zR = Sh.sideZ(xd - wBox * 0.85, yd) || zd;
+      var zT = Sh.sideZ(xd, yd + hBox * 0.8) || zd;
+      var zB = Sh.sideZ(xd, yd - hBox * 0.8) || zd;
+      var zMax = Math.max(zd, zF, zR, zT, zB);
+      var dd = B.doorDecal = { p: [], n: [], c: [], uvs: [], i: [] };
       [1, -1].forEach(function (s) {
-        var nz = s, zz = s * (zd + 0.009);
-        // 1. Door Racing Plate (White)
-        var p0 = [xd - wBox, yd - hBox, zz], p1 = [xd + wBox, yd - hBox, zz],
-            p2 = [xd + wBox, yd + hBox, zz], p3 = [xd - wBox, yd + hBox, zz];
-        if (s > 0) B.poly('white', [p0, p1, p2, p3], [0, 0, nz]);
-        else B.poly('white', [p1, p0, p3, p2], [0, 0, nz]);
-
-        // Top blue stripe & bottom orange stripe
-        var tStripH = hBox * 0.15, zz2 = s * (zd + 0.012);
-        var sT0 = [xd - wBox, yd + hBox - tStripH, zz2], sT1 = [xd + wBox, yd + hBox - tStripH, zz2],
-            sT2 = [xd + wBox, yd + hBox, zz2], sT3 = [xd - wBox, yd + hBox, zz2];
-        if (s > 0) B.poly('asBlue', [sT0, sT1, sT2, sT3], [0, 0, nz]);
-        else B.poly('asBlue', [sT1, sT0, sT3, sT2], [0, 0, nz]);
-
-        var sB0 = [xd - wBox, yd - hBox, zz2], sB1 = [xd + wBox, yd - hBox, zz2],
-            sB2 = [xd + wBox, yd - hBox + tStripH, zz2], sB3 = [xd - wBox, yd - hBox + tStripH, zz2];
-        if (s > 0) B.poly('asOrange', [sB0, sB1, sB2, sB3], [0, 0, nz]);
-        else B.poly('asOrange', [sB1, sB0, sB3, sB2], [0, 0, nz]);
-
-        // As-Sunnah Circular Crest (Left on door plate)
-        var cX = xd - wBox * 0.52 * s, cY = yd, cR = hBox * 0.58;
-        var zz3 = s * (zd + 0.014), disc = [], discIn = [];
-        for (var k = 0; k < 12; k++) {
-          var a = (k + 0.5) / 12 * TAU;
-          disc.push([cX + Math.cos(a) * cR, cY + Math.sin(a) * cR, zz3]);
-          discIn.push([cX + Math.cos(a) * cR * 0.65, cY + Math.sin(a) * cR * 0.65, zz3 + s * 0.002]);
+        var zz = s * (zMax + 0.014);
+        var pts = s > 0
+          ? [[xd - wBox, yd - hBox, zz], [xd + wBox, yd - hBox, zz], [xd + wBox, yd + hBox, zz], [xd - wBox, yd + hBox, zz]]
+          : [[xd + wBox, yd - hBox, zz], [xd - wBox, yd - hBox, zz], [xd - wBox, yd + hBox, zz], [xd + wBox, yd + hBox, zz]];
+        var uvs = [[0, 0.5], [1, 0.5], [1, 0], [0, 0]];
+        var base = dd.p.length / 3;
+        for (var k = 0; k < 4; k++) {
+          dd.p.push(pts[k][0], pts[k][1], pts[k][2]);
+          dd.n.push(0, 0, s);
+          dd.c.push(1, 1, 1, 1);
+          dd.uvs.push(uvs[k][0], uvs[k][1]);
         }
-        if (s > 0) {
-          B.poly('asOrange', disc, [0, 0, nz]);
-          B.poly('asBlue', discIn, [0, 0, nz]);
-        } else {
-          B.poly('asOrange', disc.reverse(), [0, 0, nz]);
-          B.poly('asBlue', discIn.reverse(), [0, 0, nz]);
-        }
-
-        // Racing number badge
-        var tX = xd + wBox * 0.18 * s, tY = yd;
-        digits(B, String(S.number || '7'), tX, tY, hBox * 0.95, s * (zd + 0.016), s);
+        dd.i.push(base, base + 1, base + 2, base, base + 2, base + 3);
       });
     }
 

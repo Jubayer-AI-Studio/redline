@@ -2758,10 +2758,7 @@ animation:gh-in .3s both;box-shadow:var(--shadow-lg,0 10px 30px rgba(0,0,0,.5));
         derby: 4, drag: 5, f1: 7
       };
       var isModeLocked = function (id) {
-        if (CB.isDevUnlock && CB.isDevUnlock()) return false;
-        var req = MODE_LEVELS[id] || 1;
-        var curLevel = (p && p.level) ? p.level : 1;
-        return curLevel < req ? { locked: true, level: req } : false;
+        return false;
       };
       var playIds = {};
       var tiles = PLAY.filter(function (t) { return byId[t.id]; }).map(function (t) {

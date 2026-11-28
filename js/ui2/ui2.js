@@ -58,12 +58,8 @@
   }
 
   function isCarLocked(model) {
-    if (!model || (CB.isDevUnlock && CB.isDevUnlock())) return false;
-    var p = getProfile();
-    var lvl = (p && p.level) ? p.level : 1;
-    var style = (model.bodyStyle || (model.ref && model.ref.style) || 'coupe');
-    var req = (CB.game && CB.game.economy && CB.game.economy.bodyStyleUnlockLevel) ? CB.game.economy.bodyStyleUnlockLevel(style) : 1;
-    return lvl < req ? { locked: true, level: req } : false;
+    // All 53 vehicles are open for everyone to drive and customize
+    return false;
   }
 
   function computePI(metrics) {
@@ -700,10 +696,8 @@
     var dev = CB.isDevUnlock && CB.isDevUnlock();
 
     var cardsHtml = MODES.map(function (m) {
-      var isUnlocked = dev || curLvl >= m.req;
-      var badgeHtml = isUnlocked
-        ? '<span class="ui2-badge-ready">READY</span>'
-        : '<span class="ui2-badge-locked">🔒 LV ' + m.req + '</span>';
+      var isUnlocked = true;
+      var badgeHtml = '<span class="ui2-badge-ready">READY</span>';
 
       return (
         '<div class="ui2-mode-card ui2-glass-card' + (isUnlocked ? '' : ' is-locked') + '" data-mode="' + m.id + '" data-route="' + m.route + '" data-locked="' + (isUnlocked ? '0' : '1') + '" data-req="' + m.req + '" data-title="' + esc(m.title) + '">' +
@@ -980,11 +974,9 @@
       if (grp.type === 'toggles') {
         var tgHtml = (grp.options || []).map(function (tg) {
           var isOn = !!getByPath(previewBuild, tg.path);
-          var fUnlocked = dev || isOn || !econ || typeof econ.isFeatureUnlocked !== 'function' || econ.isFeatureUnlocked(prof, tg.path);
-          var fReqLvl = (!fUnlocked && econ && typeof econ.featureUnlockLevel === 'function') ? econ.featureUnlockLevel(tg.path) : 1;
-          var tgBadge = !fUnlocked
-            ? '<span class="ui2-part-lock">🔒 LV ' + fReqLvl + '</span>'
-            : '<span class="ui2-part-tag">' + (isOn ? 'ON' : 'OFF') + '</span>';
+          var fUnlocked = true;
+          var fReqLvl = 1;
+          var tgBadge = '<span class="ui2-part-tag">' + (isOn ? 'ON' : 'OFF') + '</span>';
           return (
             '<button type="button" class="ui2-part-pill' + (isOn ? ' is-active' : '') + (fUnlocked ? '' : ' is-locked') + '" ' +
               'data-path="' + esc(tg.path) + '" data-val="' + (isOn ? '0' : '1') + '" data-valtype="bool" ' +
@@ -1006,12 +998,10 @@
       var optsHtml = (grp.options || []).map(function (opt) {
         var isNum = typeof opt.id === 'number';
         var isSel = isNum ? (Number(curVal) === opt.id) : (String(curVal) === String(opt.id));
-        var unlocked = dev || !econ || typeof econ.isUnlocked !== 'function' || econ.isUnlocked(prof, grp.path, opt.id);
-        var reqLvl = (!unlocked && econ && typeof econ.partUnlockLevel === 'function') ? econ.partUnlockLevel(grp.path, opt.id) : 1;
+        var unlocked = true;
+        var reqLvl = 1;
         var partCr = (!dev && econ && typeof econ.partCost === 'function') ? econ.partCost(grp.path, opt.id) : 0;
-        var badge = !unlocked
-          ? '<span class="ui2-part-lock">🔒 LV ' + reqLvl + '</span>'
-          : (isSel ? '<span class="ui2-part-tag">ACTIVE</span>' : (partCr > 0 ? '<span class="ui2-part-cost">CR ' + partCr.toLocaleString() + '</span>' : ''));
+        var badge = isSel ? '<span class="ui2-part-tag">ACTIVE</span>' : (partCr > 0 ? '<span class="ui2-part-cost">CR ' + partCr.toLocaleString() + '</span>' : '');
         return (
           '<button type="button" class="ui2-part-pill' + (isSel ? ' is-active' : '') + (unlocked ? '' : ' is-locked') + '" ' +
             'data-path="' + esc(grp.path) + '" data-val="' + esc(opt.id) + '" data-valtype="' + (isNum ? 'number' : 'string') + '" ' +
@@ -1248,6 +1238,10 @@
     cards.forEach(function (c) {
       if (c.getAttribute('data-id') === curModelId) {
         c.classList.add('is-active');
+        var prevEl = c.querySelector('.ui2-thumb-preview');
+        if (prevEl && CB.render && typeof CB.render.thumbnail === 'function') {
+          prevEl.innerHTML = CB.render.thumbnail(curBuild, { spin: false });
+        }
         c.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
       } else {
         c.classList.remove('is-active');

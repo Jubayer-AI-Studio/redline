@@ -45,8 +45,14 @@ html.ui2-active:not(.ui2-subroute) #cb-showroom-ctrls,
 html.ui2-active:not(.ui2-subroute) #gnav,
 html.ui2-active:not(.ui2-subroute) #atelier-root,
 html.ui2-active:not(.ui2-subroute) #game-hub,
-html.ui2-active:not(.ui2-subroute) #portrait-orientation-guard,
-html.ui2-active:not(.ui2-subroute) .portrait-guard,
+html.ui2-active #portrait-orientation-guard,
+html.ui2-active .portrait-guard {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 html.ui2-active:not(.ui2-subroute) .cb-showroom-ctrls,
 html.ui2-active:not(.ui2-subroute) .garage-hero,
 html.ui2-active:not(.ui2-subroute) .simple-strip,
