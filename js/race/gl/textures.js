@@ -1736,10 +1736,12 @@
     g.fillText('AS-SUNNAH', hX, hY + hR * 0.60);
     g.restore();
 
-    // If external images are fully loaded, blend them in
+    // If external images are fully loaded, REPLACE procedural draw (clear first to prevent double-render)
     if (typeof Image !== 'undefined') {
       var imgs = getAsSunnahImages();
       if (imgs.door && imgs.door.complete && imgs.door.naturalWidth > 0) {
+        // Clear the top-half procedural draw then stamp the external image
+        g.clearRect(0, 0, W, W * 0.5);
         g.drawImage(imgs.door, 0, 0, W, W * 0.5);
       }
       if (imgs.emblem && imgs.emblem.complete && imgs.emblem.naturalWidth > 0) {
@@ -1747,6 +1749,8 @@
         var targetW = targetH * (imgs.emblem.naturalWidth / imgs.emblem.naturalHeight);
         var ex = (W - targetW) / 2;
         var ey = W * 0.5 + (W * 0.5 - targetH) / 2;
+        // Clear the bottom-half procedural draw then stamp the external emblem
+        g.clearRect(0, W * 0.5, W, W * 0.5);
         g.drawImage(imgs.emblem, ex, ey, targetW, targetH);
       }
     }
