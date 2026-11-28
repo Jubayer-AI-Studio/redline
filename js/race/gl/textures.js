@@ -1680,15 +1680,20 @@
     g.strokeStyle = '#ea580c';
     g.stroke();
 
-    // Typography
+    // Typography — bold, crisp, oversized for 3D readability
     var textX = dx + dw * 0.28;
     g.textAlign = 'left';
     g.textBaseline = 'middle';
-    g.font = '900 ' + Math.round(W * 0.068) + 'px "Arial Black", sans-serif';
+    // Dark shadow pass for depth
+    g.fillStyle = 'rgba(0,0,0,0.18)';
+    g.font = '900 ' + Math.round(W * 0.080) + 'px "Arial Black", Arial, sans-serif';
+    g.fillText('AS-SUNNAH', textX + 2, dy + dh * 0.36 + 2);
+    // Main text
+    g.font = '900 ' + Math.round(W * 0.080) + 'px "Arial Black", Arial, sans-serif';
     g.fillStyle = '#1e3a8a';
     g.fillText('AS-SUNNAH', textX, dy + dh * 0.36);
 
-    g.font = '800 ' + Math.round(W * 0.036) + 'px sans-serif';
+    g.font = '700 ' + Math.round(W * 0.042) + 'px "Arial", sans-serif';
     g.fillStyle = '#ea580c';
     g.fillText('SKILL DEVELOPMENT', textX, dy + dh * 0.68);
     g.restore();
@@ -1722,9 +1727,11 @@
     g.strokeStyle = '#ea580c';
     g.stroke();
 
-    g.font = '900 ' + Math.round(W * 0.032) + 'px sans-serif';
+    g.font = '900 ' + Math.round(W * 0.040) + 'px "Arial Black", Arial, sans-serif';
     g.textAlign = 'center';
     g.textBaseline = 'middle';
+    g.fillStyle = 'rgba(0,0,0,0.15)';
+    g.fillText('AS-SUNNAH', hX + 1, hY + hR * 0.60 + 1);
     g.fillStyle = '#1e3a8a';
     g.fillText('AS-SUNNAH', hX, hY + hR * 0.60);
     g.restore();

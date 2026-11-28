@@ -2284,8 +2284,9 @@ var CB = (globalThis.CB = globalThis.CB || {});
     void SH;
     // ---- Official As-Sunnah Racing Livery on Doors and Hood
     var xd = lerp(aR.x + aR.r, aF.x - aF.r, 0.58), yTop = Math.max(aF.cy + aF.r, aR.cy + aR.r), yd = lerp(yTop, Sh.beltY, 0.48);
-    var hBox = clamp((Sh.beltY - yTop) * 0.55, 0.14, 0.24);
-    var wBox = hBox * 2.1;
+    // Enlarged decal: clamp raised to [0.18, 0.30] for bold door branding
+    var hBox = clamp((Sh.beltY - yTop) * 0.65, 0.18, 0.30);
+    var wBox = hBox * 2.3;
     var zd = Sh.sideZ(xd, yd);
     if (zd !== null && hBox > 0.05) {
       var zF = Sh.sideZ(xd + wBox * 0.85, yd) || zd;
@@ -2294,11 +2295,13 @@ var CB = (globalThis.CB = globalThis.CB || {});
       var zB = Sh.sideZ(xd, yd - hBox * 0.8) || zd;
       var zMax = Math.max(zd, zF, zR, zT, zB);
       var dd = B.doorDecal = { p: [], n: [], c: [], uvs: [], i: [] };
+      // Door decals — both flanks; UV top-half [0,0]→[1,0.5] = door plate region of carNumber texture
       [1, -1].forEach(function (s) {
-        var zz = s * (zMax + 0.014);
+        var zz = s * (zMax + 0.016);
         var pts = s > 0
           ? [[xd - wBox, yd - hBox, zz], [xd + wBox, yd - hBox, zz], [xd + wBox, yd + hBox, zz], [xd - wBox, yd + hBox, zz]]
           : [[xd + wBox, yd - hBox, zz], [xd - wBox, yd - hBox, zz], [xd - wBox, yd + hBox, zz], [xd + wBox, yd + hBox, zz]];
+        // UV: top half of texture = door decal region
         var uvs = [[0, 0.5], [1, 0.5], [1, 0], [0, 0]];
         var base = dd.p.length / 3;
         for (var k = 0; k < 4; k++) {
@@ -2309,22 +2312,46 @@ var CB = (globalThis.CB = globalThis.CB || {});
         }
         dd.i.push(base, base + 1, base + 2, base, base + 2, base + 3);
       });
-    }
 
-    // Hood (Bonnet) As-Sunnah Crest Emblem
-    var xFA_safe = (f.wheels && f.wheels.front && f.wheels.front.x) || (aF.x || 1.3);
-    var xF_safe = (f.body && f.body.noseX) || (xFA_safe + 0.7);
-    var xH = lerp(xFA_safe, xF_safe, 0.45);
-    var yH = (Sh.noseY ? lerp(Sh.noseY, Sh.beltY, 0.65) : 0.70) + 0.006;
-    var rH = clamp(hBox * 0.85, 0.10, 0.20);
-    var hDisc = [], hDiscIn = [];
-    for (var k2 = 0; k2 < 12; k2++) {
-      var a2 = (k2 + 0.5) / 12 * TAU;
-      hDisc.push([xH + Math.cos(a2) * rH, yH, Math.sin(a2) * rH]);
-      hDiscIn.push([xH + Math.cos(a2) * rH * 0.65, yH + 0.002, Math.sin(a2) * rH * 0.65]);
+      // Hood (Bonnet) As-Sunnah Crest — texture-mapped quad using bottom half of carNumber texture
+      var xFA_safe = (f.wheels && f.wheels.front && f.wheels.front.x) || (aF.x || 1.3);
+      var xF_safe = (f.body && f.body.noseX) || (xFA_safe + 0.7);
+      var xH = lerp(xFA_safe, xF_safe, 0.45);
+      var yH = (Sh.noseY ? lerp(Sh.noseY, Sh.beltY, 0.65) : 0.70);
+      var rH = clamp(hBox * 0.90, 0.12, 0.22);
+      // Flat quad lying on hood surface (normal = +Y up)
+      // UV: bottom half of texture = hood crest region  [0,0.5]→[1,1]
+      var hd = dd; // reuse doorDecal buffer for hood quad (same texture, same part)
+      var hPts = [
+        [xH - rH, yH + 0.004, -rH], [xH + rH, yH + 0.004, -rH],
+        [xH + rH, yH + 0.004,  rH], [xH - rH, yH + 0.004,  rH]
+      ];
+      var hUvs = [[0, 1], [1, 1], [1, 0.5], [0, 0.5]];
+      var hBase = hd.p.length / 3;
+      for (var kh = 0; kh < 4; kh++) {
+        hd.p.push(hPts[kh][0], hPts[kh][1], hPts[kh][2]);
+        hd.n.push(0, 1, 0);
+        hd.c.push(1, 1, 1, 1);
+        hd.uvs.push(hUvs[kh][0], hUvs[kh][1]);
+      }
+      // Winding: 0→2→1 and 0→3→2 so face normal = +Y (up), matching n=[0,1,0]
+      hd.i.push(hBase, hBase + 2, hBase + 1, hBase, hBase + 3, hBase + 2);
+    } else {
+      // Fallback solid-colour hood emblem when decal geometry unavailable
+      var xFA_safe = (f.wheels && f.wheels.front && f.wheels.front.x) || (aF.x || 1.3);
+      var xF_safe = (f.body && f.body.noseX) || (xFA_safe + 0.7);
+      var xH = lerp(xFA_safe, xF_safe, 0.45);
+      var yH = (Sh.noseY ? lerp(Sh.noseY, Sh.beltY, 0.65) : 0.70) + 0.006;
+      var rH = 0.14;
+      var hDisc = [], hDiscIn = [];
+      for (var k2 = 0; k2 < 12; k2++) {
+        var a2 = (k2 + 0.5) / 12 * TAU;
+        hDisc.push([xH + Math.cos(a2) * rH, yH, Math.sin(a2) * rH]);
+        hDiscIn.push([xH + Math.cos(a2) * rH * 0.65, yH + 0.002, Math.sin(a2) * rH * 0.65]);
+      }
+      B.poly('asGold', hDisc, [0, 1, 0]);
+      B.poly('asBlue', hDiscIn, [0, 1, 0]);
     }
-    B.poly('asGold', hDisc, [0, 1, 0]);
-    B.poly('asBlue', hDiscIn, [0, 1, 0]);
   }
   // seven-segment digits as flat quads in the z plane (s: +1 right flank reading front->rear... x flips for the left)
   var SEG = { 0: 'abcdef', 1: 'bc', 2: 'abged', 3: 'abgcd', 4: 'fgbc', 5: 'afgcd', 6: 'afgedc', 7: 'abc', 8: 'abcdefg', 9: 'abfgcd' };
