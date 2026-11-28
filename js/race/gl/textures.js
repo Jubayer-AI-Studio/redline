@@ -1736,24 +1736,10 @@
     g.fillText('AS-SUNNAH', hX, hY + hR * 0.60);
     g.restore();
 
-    // If external images are fully loaded, REPLACE procedural draw (clear first to prevent double-render)
-    if (typeof Image !== 'undefined') {
-      var imgs = getAsSunnahImages();
-      if (imgs.door && imgs.door.complete && imgs.door.naturalWidth > 0) {
-        // Clear the top-half procedural draw then stamp the external image
-        g.clearRect(0, 0, W, W * 0.5);
-        g.drawImage(imgs.door, 0, 0, W, W * 0.5);
-      }
-      if (imgs.emblem && imgs.emblem.complete && imgs.emblem.naturalWidth > 0) {
-        var targetH = W * 0.40;
-        var targetW = targetH * (imgs.emblem.naturalWidth / imgs.emblem.naturalHeight);
-        var ex = (W - targetW) / 2;
-        var ey = W * 0.5 + (W * 0.5 - targetH) / 2;
-        // Clear the bottom-half procedural draw then stamp the external emblem
-        g.clearRect(0, W * 0.5, W, W * 0.5);
-        g.drawImage(imgs.emblem, ex, ey, targetW, targetH);
-      }
-    }
+    // External image blending intentionally removed — the high-quality procedural draw
+    // above (white pill + blue/orange stripes + bold AS-SUNNAH text + hood crest) is
+    // the single source of truth.  Drawing an external PNG on top caused white-background
+    // loss (transparent PNG) and double-text stacking.  Procedural path handles all cases.
 
     var px = readPixels(g, W, W), meta = { style: 'as_sunnah' };
     dilateRGB(px.data, W, W, 4);
